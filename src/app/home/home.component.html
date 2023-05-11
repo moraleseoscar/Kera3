@@ -85,7 +85,7 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Nombre">
+                                        <input class="uk-search-input" type="search" placeholder="Nombre" [(ngModel)]="nombre">
                                     </form>
                                 </div>
                             </div>
@@ -102,7 +102,7 @@
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Estado:</label>
                                     <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
-                                        <option value="all">Todos</option>
+                                        <option value="0">Todos</option>
                                         <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{ estado.nombre_estado }}</option>
                                     </select>
                                 </div>
@@ -132,7 +132,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngIf="categoriaValue === 'A1' || categoriaValue === 'all'">
+                                    <tr *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '7' || estadoValue === '0')">
                                         <td>AA123</td>
                                         <td>Botella Grande Plastica Transparente</td>
                                         <td>Envases</td>
@@ -140,7 +140,7 @@
                                         <td>102</td>
                                         <td class="uk-text-success">DISPONIBLE</td>
                                     </tr>
-                                    <tr *ngIf="categoriaValue === 'A1' || categoriaValue === 'all'">
+                                    <tr *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '8' || estadoValue === '0')">
                                         <td>AA124</td>
                                         <td>Botella Grande Plastica Negra</td>
                                         <td>Envases</td>
@@ -148,7 +148,7 @@
                                         <td>5</td>
                                         <td class="uk-text-danger">DESCONTINUADO</td>
                                     </tr>
-                                    <tr *ngIf="categoriaValue === 'A2' || categoriaValue === 'all'">
+                                    <tr *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all') && (estadoValue === '9' || estadoValue === '0')">
                                         <td>AA125</td>
                                         <td>Base de Maquillaje Obscura</td>
                                         <td>Maquillaje</td>
@@ -156,7 +156,7 @@
                                         <td>0</td>
                                         <td class="uk-text-warning">EN TRANSITO</td>
                                     </tr>
-                                    <tr *ngIf="categoriaValue === 'A2' || categoriaValue === 'all'">
+                                    <tr *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all')  && (estadoValue === '7' || estadoValue === '0')">
                                         <td>AA126</td>
                                         <td>Labial Rojo</td>
                                         <td>Maquillaje</td>

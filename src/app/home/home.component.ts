@@ -11,7 +11,8 @@ export class HomeComponent {
   categorias: any = [];
   estados: any = [];
   categoriaValue = 'all';
-  estadoValue = 'all';
+  estadoValue = '0';
+  nombre = '';
 
   constructor(private kera3Service: Kera3ServiceService){
     this.getCategorias();
