@@ -8,9 +8,11 @@ import { Kera3ServiceService } from '../services/kera3-service.service';
 })
 export class HomeComponent {
 
-  categorias = [];
-  estados = [];
-  
+  categorias: any = [];
+  estados: any = [];
+  categoriaValue = 'all';
+  estadoValue = 'all';
+
   constructor(private kera3Service: Kera3ServiceService){
     this.getCategorias();
     this.getEstados();
@@ -21,6 +23,7 @@ export class HomeComponent {
   getCategorias(){
     this.kera3Service.getCategorias().subscribe((resp: any)=>{
       this.categorias = resp;
+      console.log(resp)
     });
   }
 
