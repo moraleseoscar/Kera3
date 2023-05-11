@@ -16,8 +16,14 @@ export class HomeComponent {
   constructor(private kera3Service: Kera3ServiceService){
     this.getCategorias();
     this.getEstados();
+    setTimeout(() => {
+      this.hola();
+    }, 10000);
   }
 
+  hola(){
+    console.log(this.categoriaValue, this.estadoValue)
+  }
   
 
   getCategorias(){
