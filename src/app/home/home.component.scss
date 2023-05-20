@@ -216,3 +216,16 @@
 	display: flex;
     align-items: center;
 }
+
+.add-product{
+	position: absolute;
+	right:    0;
+	bottom:   0;
+	margin-right: 0;
+}
+
+@media only screen and (max-width: 768px) {
+	.add-product{
+		position: relative;
+	}
+}

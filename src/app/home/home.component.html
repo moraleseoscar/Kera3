@@ -4,7 +4,8 @@
         <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
             <div class="uk-navbar-left">
                 <div class="uk-navbar-item uk-hidden@m">
-                    <a class="uk-logo" href="#"><img class="custom-logo" src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
+                    <a class="uk-logo" href="#"><img class="custom-logo"
+                            src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
                             alt=""></a>
                 </div>
             </div>
@@ -21,7 +22,8 @@
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-back-third">
     <div class="left-content-box  content-box-dark">
-        <img src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F" alt="" class="uk-border-circle profile-img">
+        <img src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
+            alt="" class="uk-border-circle profile-img">
         <h4 class="uk-text-center uk-margin-remove-vertical text-light">Rosa Elena Juárez</h4>
 
         <div class="uk-position-relative uk-text-center uk-display-block">
@@ -34,8 +36,7 @@
             <h5>Datos del día</h5>
             <div>
                 <span class="uk-text-small">Algo <small>(405)</small></span>
-                <progress [value]="65"
-                    [max]="100"></progress>
+                <progress [value]="65" [max]="100"></progress>
             </div>
         </div>
 
@@ -57,20 +58,26 @@
 <!-- CONTENT -->
 <div id="content" data-uk-height-viewport="expand: true">
     <div class="uk-container uk-container-expand">
-        <div class="uk-grid uk-grid-divider uk-grid-medium uk-child-width-1-2 uk-child-width-1-4@l uk-child-width-1-5@xl"
-            data-uk-grid>
+        <div class="uk-grid-divider uk-grid-medium uk-child-width-1-1 uk-child-width-1-2@s" data-uk-grid>
             <div>
-                <span class="uk-text-small"><span data-uk-icon="icon:thumbnails"
-                        class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
-                <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Inventario</h1>
+                <div class="uk-child-width-1-2" uk-grid>
+                    <div>
+                        <span class="uk-text-small"><span data-uk-icon="icon:thumbnails"
+                                class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
+                        <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Inventario</h1>
+                    </div>
+                    <div>
+                        <span class="uk-text-small"><span data-uk-icon="icon:cart"
+                                class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
+                        <h1 class="uk-heading-primary uk-margin-remove uk-text-third">5.284</h1>
+                        <div class="uk-text-small">
+                            <span class="uk-text-success" data-uk-icon="icon: triangle-up"> 7%</span> more than last week.
+                        </div>
+                    </div>
+                </div>
             </div>
             <div>
-                <span class="uk-text-small"><span data-uk-icon="icon:cart"
-                        class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
-                <h1 class="uk-heading-primary uk-margin-remove uk-text-third">5.284</h1>
-                <div class="uk-text-small">
-                    <span class="uk-text-success" data-uk-icon="icon: triangle-up"> 7%</span> more than last week.
-                </div>
+                <button class="add-product uk-button uk-align-left uk-button-primary" (click)="holamundo()"><span uk-icon="icon: plus"></span> Agregar producto</button>
             </div>
         </div>
         <hr>
@@ -85,7 +92,8 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Nombre" [(ngModel)]="nombre">
+                                        <input class="uk-search-input" type="search" placeholder="Nombre"
+                                            [(ngModel)]="nombre">
                                     </form>
                                 </div>
                             </div>
@@ -94,7 +102,9 @@
                                     <label for="" style="margin-right: 5%;">Categoría:</label>
                                     <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
                                         <option value="all">Todos</option>
-                                        <option *ngFor="let categoria of categorias" [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}</option>
+                                        <option *ngFor="let categoria of categorias"
+                                            [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -103,7 +113,8 @@
                                     <label for="" style="margin-right: 5%;">Estado:</label>
                                     <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
                                         <option value="0">Todos</option>
-                                        <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{ estado.nombre_estado }}</option>
+                                        <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
+                                            estado.nombre_estado }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -132,7 +143,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '7' || estadoValue === '0')">
+                                    <tr
+                                        *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '7' || estadoValue === '0')">
                                         <td>AA123</td>
                                         <td>Botella Grande Plastica Transparente</td>
                                         <td>Envases</td>
@@ -140,7 +152,8 @@
                                         <td>102</td>
                                         <td class="uk-text-success">DISPONIBLE</td>
                                     </tr>
-                                    <tr *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '8' || estadoValue === '0')">
+                                    <tr
+                                        *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '8' || estadoValue === '0')">
                                         <td>AA124</td>
                                         <td>Botella Grande Plastica Negra</td>
                                         <td>Envases</td>
@@ -148,7 +161,8 @@
                                         <td>5</td>
                                         <td class="uk-text-danger">DESCONTINUADO</td>
                                     </tr>
-                                    <tr *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all') && (estadoValue === '9' || estadoValue === '0')">
+                                    <tr
+                                        *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all') && (estadoValue === '9' || estadoValue === '0')">
                                         <td>AA125</td>
                                         <td>Base de Maquillaje Obscura</td>
                                         <td>Maquillaje</td>
@@ -156,7 +170,8 @@
                                         <td>0</td>
                                         <td class="uk-text-warning">EN TRANSITO</td>
                                     </tr>
-                                    <tr *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all')  && (estadoValue === '7' || estadoValue === '0')">
+                                    <tr
+                                        *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all')  && (estadoValue === '7' || estadoValue === '0')">
                                         <td>AA126</td>
                                         <td>Labial Rojo</td>
                                         <td>Maquillaje</td>
@@ -182,7 +197,8 @@
         <footer class="uk-section uk-section-small uk-text-center">
             <hr>
             <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
-                    href="https://www.facebook.com/profile.php?id=100054286971522">Kera3</a> | Proyecto Ingenieria de Software</span>
+                    href="https://www.facebook.com/profile.php?id=100054286971522">Kera3</a> | Proyecto Ingenieria de
+                Software</span>
         </footer>
     </div>
 </div>
