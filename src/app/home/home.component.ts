@@ -11,6 +11,7 @@ export class HomeComponent {
 
   categorias: any = [];
   estados: any = [];
+  products: any = [];
   categoriaValue = 'all';
   estadoValue = '0';
   nombre = '';
@@ -18,6 +19,7 @@ export class HomeComponent {
   constructor(private kera3Service: Kera3ServiceService){
     this.getCategorias();
     this.getEstados();
+    this.getAllProducts();
     setTimeout(() => {
       this.hola();
     }, 10000);
@@ -56,6 +58,12 @@ export class HomeComponent {
       this.estados = resp;
     });
   }
-
+  
+  getAllProducts(){
+    this.kera3Service.getAllProducts().subscribe((resp:any)=>{
+      this.products = resp;
+    });
+    
+  }
 
 }

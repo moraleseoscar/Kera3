@@ -143,42 +143,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr
-                                        *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '7' || estadoValue === '0')">
-                                        <td>AA123</td>
-                                        <td>Botella Grande Plastica Transparente</td>
-                                        <td>Envases</td>
-                                        <td>UNIDAD</td>
-                                        <td>102</td>
-                                        <td class="uk-text-success">DISPONIBLE</td>
-                                    </tr>
-                                    <tr
-                                        *ngIf="(categoriaValue === 'A1' || categoriaValue === 'all') && (estadoValue === '8' || estadoValue === '0')">
-                                        <td>AA124</td>
-                                        <td>Botella Grande Plastica Negra</td>
-                                        <td>Envases</td>
-                                        <td>UNIDAD</td>
-                                        <td>5</td>
-                                        <td class="uk-text-danger">DESCONTINUADO</td>
-                                    </tr>
-                                    <tr
-                                        *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all') && (estadoValue === '9' || estadoValue === '0')">
-                                        <td>AA125</td>
-                                        <td>Base de Maquillaje Obscura</td>
-                                        <td>Maquillaje</td>
-                                        <td>Kg</td>
-                                        <td>0</td>
-                                        <td class="uk-text-warning">EN TRANSITO</td>
-                                    </tr>
-                                    <tr
-                                        *ngIf="(categoriaValue === 'A2' || categoriaValue === 'all')  && (estadoValue === '7' || estadoValue === '0')">
-                                        <td>AA126</td>
-                                        <td>Labial Rojo</td>
-                                        <td>Maquillaje</td>
-                                        <td>UNIDAD</td>
-                                        <td>20</td>
-                                        <td class="uk-text-success">DISPONIBLE</td>
-                                    </tr>
+                                    <ng-container *ngFor="let product of products">
+                                        <tr *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
+                                          <td>{{ product.codigo_producto }}</td>
+                                          <td>{{ product.nombre_producto }}</td>
+                                          <td>{{ product.nombre_categoria }}</td>
+                                          <td>{{ product.codigo_dimensional }}</td>
+                                          <td>{{ product.cantidad}}</td>
+                                          <td>{{ product.nombre_estado }}</td>
+                                        </tr>
+                                    </ng-container>
                                 </tbody>
                             </table>
                             <ng-template #empty>

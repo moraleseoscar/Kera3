@@ -35,4 +35,15 @@ export class Kera3ServiceService {
     return this.http.get(this.url + 'estado?select=*', options);
   }
 
+  getAllProducts() { 
+    const body = {}; // cuerpo vacío si no se especifica
+    const headers = {
+      'content-type': 'application/json',
+      'apikey': this.apiKey,
+      'Authorization': this.authorization
+    };
+    const options = { headers: headers };
+    return this.http.get(this.url +'globalinventory_view', options)
+  }
+
 }
