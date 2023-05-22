@@ -223,7 +223,15 @@
 	bottom:   0;
 	margin-right: 0;
 }
-
+.EN {&.TRANSITO{
+	color: orange;
+}}
+.DISPONIBLE{
+	color: green;
+}
+.DESCONTINUADO{
+	color: red;
+}
 @media only screen and (max-width: 768px) {
 	.add-product{
 		position: relative;
