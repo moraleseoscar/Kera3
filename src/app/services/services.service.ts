@@ -19,7 +19,6 @@ export class Kera3Service {
     )
    }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
-   console.log(categoria)
    return categoria || null 
    }
    async getAllStates(){let { data: estado, error } = await this.supabase.from('estado').select('*')
@@ -27,7 +26,6 @@ export class Kera3Service {
    }
    async getAllDimens(){
     let { data: dimensional, error } = await this.supabase.from('dimensional').select('*')
-    console.log(dimensional)
     return dimensional  
   }
    async getAllProducts(){
@@ -35,26 +33,14 @@ export class Kera3Service {
     return data
     }
   async addProduct(values: any){
-    console.log(`Codigo: ${values.codigo}`)
-    console.log(`Nombre: ${values.nombre}`)
-    console.log(`Descripcion: ${values.descripcion}`)
-    console.log(`Dimensional: ${values.unidad}`)
-    console.log(`Precio: ${values.precio}`)
-    console.log(`Categoria: ${values.categoria}`)
-    const { data, error } = await this.supabase
-    .from('producto')
-    .insert([
-      { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },
-    ])
-    console.log(data)
-    console.log(error)
+    console.log(values)
+    const { data, error } = await this.supabase.from('producto').insert([  { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },])
   }
   async addProductCategory(values:any){
-    const { data, error } = await this.supabase
-    .from('producto_categoria')
-    .insert([
-      { codigo_producto: values.codigo, codigo_categoria: values.categoria },
-    ])
+    const { data, error } = await this.supabase.from('producto_categoria').insert([  { codigo_producto: values.codigo, codigo_categoria: values.categoria },])
+  }
+  async addInventoryRegister(values:any){
+    const { data, error } = await this.supabase.from('registro_inventario').insert([  { codigo_instalacion: 'CC1', codigo_producto: values.codigo, cantidad: '10', codigo_proveedor: 'PP001', codigo_estado: '7' },])
     console.log(data)
     console.log(error)
   }
