@@ -19,14 +19,43 @@ export class Kera3Service {
     )
    }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
+   console.log(categoria)
    return categoria || null 
    }
    async getAllStates(){let { data: estado, error } = await this.supabase.from('estado').select('*')
    return estado || null
    }
+   async getAllDimens(){
+    let { data: dimensional, error } = await this.supabase.from('dimensional').select('*')
+    console.log(dimensional)
+    return dimensional  
+  }
    async getAllProducts(){
     let { data: data, error } = await this.supabase.from('globalinventory_view').select('*')
     return data
     }
-   
+  async addProduct(values: any){
+    console.log(`Codigo: ${values.codigo}`)
+    console.log(`Nombre: ${values.nombre}`)
+    console.log(`Descripcion: ${values.descripcion}`)
+    console.log(`Dimensional: ${values.unidad}`)
+    console.log(`Precio: ${values.precio}`)
+    console.log(`Categoria: ${values.categoria}`)
+    const { data, error } = await this.supabase
+    .from('producto')
+    .insert([
+      { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },
+    ])
+    console.log(data)
+    console.log(error)
+  }
+  async addProductCategory(values:any){
+    const { data, error } = await this.supabase
+    .from('producto_categoria')
+    .insert([
+      { codigo_producto: values.codigo, codigo_categoria: values.categoria },
+    ])
+    console.log(data)
+    console.log(error)
+  }
 }
