@@ -143,7 +143,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ng-container *ngFor="let product of products">
+                                    <ng-container *ngFor="let product of data">
                                         <tr *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
                                           <td>{{ product.codigo_producto }}</td>
                                           <td>{{ product.nombre_producto }}</td>

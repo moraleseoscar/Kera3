@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Kera3ServiceService } from '../services/kera3-service.service';
 import Swal from 'sweetalert2'
+import { Kera3Service } from '../services/services.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit{
 
   categorias: any = [];
   estados: any = [];
@@ -15,8 +16,8 @@ export class HomeComponent {
   categoriaValue = 'all';
   estadoValue = '0';
   nombre = '';
-
-  constructor(private kera3Service: Kera3ServiceService){
+  data:any = {}
+  constructor(private kera3Service: Kera3ServiceService, private service: Kera3Service){
     this.getCategorias();
     this.getEstados();
     this.getAllProducts();
@@ -24,7 +25,9 @@ export class HomeComponent {
       this.hola();
     }, 10000);
   }
-
+  async ngOnInit(){
+    this.data = await this.service.getAllProducts()
+  }
   hola(){
     console.log(this.categoriaValue, this.estadoValue)
   }
