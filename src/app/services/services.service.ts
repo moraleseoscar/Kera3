@@ -29,9 +29,10 @@ export class Kera3Service {
     return dimensional  
   }
    async getAllProducts(){
-    let { data: data, error } = await this.supabase.from('globalinventory_view').select('*')
-    return data
-    }
+    let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
+    console.log(inventario)
+    return inventario
+  }
   async addProduct(values: any){
     console.log(values)
     const { data, error } = await this.supabase.from('producto').insert([  { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },])
