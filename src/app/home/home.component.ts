@@ -23,8 +23,11 @@ export class HomeComponent implements OnInit{
     this.data = await this.service.getAllProducts()
     this.categorias = await this.service.getAllCategories()
     this.dimens = await this.service.getAllDimens()
+    await this.service.query()
   }
-  
+  searchProduct() {
+    console.log(`El valor es: ${this.nombre}`)
+  }
   insertingProduct() {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
