@@ -23,9 +23,8 @@ export class HomeComponent implements OnInit{
     this.data = await this.service.getAllProducts()
     this.categorias = await this.service.getAllCategories()
     this.dimens = await this.service.getAllDimens()
-  }
-  
-  insertingProduct() {
+  } 
+   async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
     var indexDime = ""
@@ -68,13 +67,15 @@ export class HomeComponent implements OnInit{
           descripcion: descripcion 
         };
       }
-    }).then((result) => {
+    }).then( async (result) => {
       if (result.isConfirmed) {
         this.service.addProduct(result.value)
         setTimeout(()=> {
           this.service.addProductCategory(result.value)
           this.service.addInventoryRegister(result.value)
         }, 1000)
+        this.data = await this.service.getAllProducts()
+        console.log(this.data)
       }
     });
   }
