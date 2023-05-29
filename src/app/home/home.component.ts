@@ -130,7 +130,7 @@ export class HomeComponent implements OnInit{
         }
       }
     } else {
-      this.data = this.products
+      this.data = this.products.slice(this.minIndex, this.maxIndex)
     }
   }
 }
