@@ -17,10 +17,52 @@ export class HomeComponent implements OnInit{
   estadoValue = '0'
   data:any = {}
   searchQuery: string = ''
+  minIndex:number = 0
+  maxIndex:number = 5
+  currentPage: number = 1
+  itemsPerPage: number = 5
   constructor(private service: Kera3Service){}
+  get totalPages(): number {
+    return Math.ceil(this.products.length / this.itemsPerPage);
+  }
+  get paginatedData(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.data = this.products.slice(startIndex, endIndex);
+    console.log(this.products)
+    return this.products.slice(startIndex, endIndex);
+  }
+  returnFirstPage() {
+    this.currentPage = 1
+    this.maxIndex = this.itemsPerPage;
+    this.minIndex = 0;
+    this.data = this.products.slice(this.minIndex,this.maxIndex)
+  }
+  returnLastPage() {
+    this.currentPage = this.totalPages
+    this.maxIndex = this.products.length;
+    this.minIndex = this.products.length-this.itemsPerPage;
+    this.data = this.products.slice(this.minIndex,this.maxIndex)
+  }
+  nextPage() {
+    if (this.currentPage !== this.totalPages){
+      this.currentPage +=1
+      this.maxIndex+=this.itemsPerPage
+      this.minIndex+=this.itemsPerPage
+      this.data = this.products.slice(this.minIndex, this.maxIndex)
+    }
+  }
+  prevPage() {
+    if (this.currentPage !== 1) {
+      this.currentPage -=1
+      this.maxIndex-=this.itemsPerPage
+      this.minIndex-=this.itemsPerPage
+      this.data = this.products.slice(this.minIndex, this.maxIndex)
+    }
+  }
   async ngOnInit(){
     this.products = await this.service.getAllProducts()
-    this.data = this.products
+    this.data = this.products.slice(this.minIndex, this.maxIndex)
     this.categorias = await this.service.getAllCategories()
     this.dimens = await this.service.getAllDimens()
   }
@@ -74,7 +116,8 @@ export class HomeComponent implements OnInit{
           this.service.addProductCategory(result.value)
           this.service.addInventoryRegister(result.value)
         }, 1000)
-        this.data = await this.service.getAllProducts()
+        this.products = await this.service.getAllProducts()
+        this.data = this.products
       }
     });
   }

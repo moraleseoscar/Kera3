@@ -30,7 +30,6 @@
             <p class="uk-text-small uk-text-muted uk-display-block uk-text-center">Administrador</p>
         </div>
     </div>
-
     <div class="left-nav-wrap">
         <div class="left-content-box uk-margin-top">
             <h5>Datos del día</h5>
@@ -39,7 +38,6 @@
                 <progress [value]="65" [max]="100"></progress>
             </div>
         </div>
-
     </div>
     <div class="bar-bottom uk-back-black">
         <ul class="uk-subnav uk-flex uk-flex-center uk-child-width-1-5" data-uk-grid>
@@ -153,6 +151,19 @@
                                         </tr>
                                     </ng-container>
                                 </tbody>
+                                <tbody class="last">
+                                  <tr>
+                                    <td>
+                                      <button type="button" class="btn btn-danger" [disabled]="currentPage===1" (click)="returnFirstPage()">First</button>
+                                      <button type="button" class="btn btn-danger" [disabled]="currentPage === 1" (click)="prevPage()">Previous</button>
+                                    </td>
+                                    <td><span>{{ currentPage }} / {{ totalPages }}</span></td>
+                                    <td>
+                                      <button type="button" class="btn btn-success" [disabled]="currentPage === totalPages" (click)="nextPage()">Next</button>
+                                      <button type="button" class="btn btn-success" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Last</button>
+                                    </td>
+                                  </tr>
+                              </tbody>
                             </table>
                             <ng-template #empty>
                                 <h3>Datos no encontrados, por favor verifica tus filtros.</h3>
