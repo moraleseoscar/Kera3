@@ -9,21 +9,21 @@ import { Kera3Service } from '../services/services.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit{
-
-  categorias: any = [];
-  estados: any = [];
-  products: any = [];
-  dimens: any = [];
-  categoriaValue = 'all';
-  estadoValue = '0';
-  nombre = '';
+  categorias: any = []
+  estados: any = []
+  products: any = []
+  dimens: any = []
+  categoriaValue = 'all'
+  estadoValue = '0'
   data:any = {}
-  constructor(private kera3Service: Kera3ServiceService, private service: Kera3Service){}
+  searchQuery: string = ''
+  constructor(private service: Kera3Service){}
   async ngOnInit(){
-    this.data = await this.service.getAllProducts()
+    this.products = await this.service.getAllProducts()
+    this.data = this.products
     this.categorias = await this.service.getAllCategories()
     this.dimens = await this.service.getAllDimens()
-  } 
+  }
    async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit{
           categoria: indexCat,
           unidad: indexDime,
           precio: precio,
-          descripcion: descripcion 
+          descripcion: descripcion
         };
       }
     }).then( async (result) => {
@@ -75,8 +75,19 @@ export class HomeComponent implements OnInit{
           this.service.addInventoryRegister(result.value)
         }, 1000)
         this.data = await this.service.getAllProducts()
-        console.log(this.data)
       }
     });
+  }
+  onSearch() {
+    if (this.searchQuery !== "") {
+      this.data = []
+      for (let index = 0; index < this.products.length; index++) {
+        if (this.searchQuery.toLocaleUpperCase() === this.products[index]['nombre_producto'].toLocaleUpperCase()){
+          this.data = [...this.data, this.products[index]]
+        }
+      }
+    } else {
+      this.data = this.products
+    }
   }
 }
