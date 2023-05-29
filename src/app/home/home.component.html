@@ -92,8 +92,7 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Nombre"
-                                            [(ngModel)]="nombre" oninput="console.log(`onda`)">
+                                        <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                                     </form>
                                 </div>
                             </div>

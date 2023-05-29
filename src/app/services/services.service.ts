@@ -19,18 +19,17 @@ export class Kera3Service {
     )
    }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
-   return categoria || null 
+   return categoria || null
    }
    async getAllStates(){let { data: estado, error } = await this.supabase.from('estado').select('*')
    return estado || null
    }
    async getAllDimens(){
     let { data: dimensional, error } = await this.supabase.from('dimensional').select('*')
-    return dimensional  
+    return dimensional
   }
    async getAllProducts(){
     let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
-    console.log(inventario)
     return inventario
   }
   async addProduct(values: any){
