@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit{
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
+  navcurrent: string = 'inv' //variable de navegacion
   constructor(private service: Kera3Service){}
   get totalPages(): number {
     return Math.ceil(this.products.length / this.itemsPerPage);
@@ -72,6 +73,7 @@ export class HomeComponent implements OnInit{
       title: 'Detalles',
       html:`
       <p>${product.nombre_producto}</p>
+      <p>${product.descripcion_producto}</p>
       <p>codigo: ${product.codigo_producto}</p>
       <p>Cantidad:  ${product.cantidad} ${product.codigo_dimensional}</p>
       <p class=${product.nombre_estado}>Estado: ${product.nombre_estado}</p>
@@ -145,5 +147,8 @@ export class HomeComponent implements OnInit{
     } else {
       this.data = this.products.slice(this.minIndex, this.maxIndex)
     }
+  }
+  setCurrentNav(panel :string){
+    this.navcurrent = panel
   }
 }
