@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Kera3ServiceService } from '../services/kera3-service.service';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -65,6 +66,18 @@ export class HomeComponent implements OnInit{
     this.data = this.products.slice(this.minIndex, this.maxIndex)
     this.categorias = await this.service.getAllCategories()
     this.dimens = await this.service.getAllDimens()
+  }
+  async getDetails(product : any){ //ver los detalles del producto
+    Swal.fire({
+      title: 'Detalles',
+      html:`
+      <p>${product.nombre_producto}</p>
+      <p>codigo: ${product.codigo_producto}</p>
+      <p>Cantidad:  ${product.cantidad} ${product.codigo_dimensional}</p>
+      <p class=${product.nombre_estado}>Estado: ${product.nombre_estado}</p>
+      <p> precio: Q ${product.precio_producto}</p>
+      `
+  } )
   }
    async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
