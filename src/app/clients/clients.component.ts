@@ -58,9 +58,10 @@ export class ClientsComponent implements OnInit {
   }
   onSearch() {
     if (this.searchQuery !== "") {
+      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
       this.data = []
       for (let index = 0; index < this.clients.length; index++) {
-        if (this.searchQuery.toLocaleUpperCase() === this.clients[index]['nombres'].toLocaleUpperCase() || this.searchQuery.toLocaleUpperCase() === this.clients[index]['apellidos'].toLocaleUpperCase()){
+        if (rgx_search.test( this.clients[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.clients[index]['apellidos'].toLocaleUpperCase())){
           this.data = [...this.data, this.clients[index]]
         }
       }

@@ -58,9 +58,10 @@ export class InstalacionesComponent implements OnInit {
   }
   onSearch() {
     if (this.searchQuery !== "") {
+      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
       this.data = []
       for (let index = 0; index < this.instalaciones.length; index++) {
-        if (this.searchQuery.toLocaleUpperCase() === this.instalaciones[index]['nombre_instalacion']||this.searchQuery.toLocaleUpperCase() === this.instalaciones[index]['codigo_instalacion']){
+        if (rgx_search.test( this.instalaciones[index]['nombre_instalacion'] )||rgx_search.test( this.instalaciones[index]['codigo_instalacion'])){
           this.data = [...this.data, this.instalaciones[index]]
         }
       }

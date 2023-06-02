@@ -138,9 +138,10 @@ export class HomeComponent implements OnInit{
   }
   onSearch() {
     if (this.searchQuery !== "") {
+      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
       this.data = []
       for (let index = 0; index < this.products.length; index++) {
-        if (this.searchQuery.toLocaleUpperCase() === this.products[index]['nombre_producto'].toLocaleUpperCase()){
+        if (rgx_search.test(this.products[index]['nombre_producto'].toLocaleUpperCase()) || rgx_search.test(this.products[index]['codigo_producto'].toLocaleUpperCase())){
           this.data = [...this.data, this.products[index]]
         }
       }
