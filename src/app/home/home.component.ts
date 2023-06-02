@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
+<<<<<<< Updated upstream
 export class HomeComponent {
 
   categorias: any = [];
@@ -23,6 +24,25 @@ export class HomeComponent {
     setTimeout(() => {
       this.hola();
     }, 10000);
+=======
+export class HomeComponent implements OnInit{
+  categorias: any = []
+  estados: any = []
+  products: any = []
+  dimens: any = []
+  categoriaValue = 'all'
+  estadoValue = '0'
+  data:any = {}
+  searchQuery: string = ''
+  minIndex:number = 0
+  maxIndex:number = 5
+  currentPage: number = 1
+  itemsPerPage: number = 5
+  currentDashboard: string = 'inv'
+  constructor(private service: Kera3Service){}
+  get totalPages(): number {
+    return Math.ceil(this.products.length / this.itemsPerPage);
+>>>>>>> Stashed changes
   }
 
   hola(){
@@ -58,6 +78,7 @@ export class HomeComponent {
       this.estados = resp;
     });
   }
+<<<<<<< Updated upstream
   
   getAllProducts(){
     this.kera3Service.getAllProducts().subscribe((resp:any)=>{
@@ -66,4 +87,9 @@ export class HomeComponent {
     
   }
 
+=======
+  changeDashboard(name: string){
+    this.currentDashboard = name
+  }
+>>>>>>> Stashed changes
 }

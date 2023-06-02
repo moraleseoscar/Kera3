@@ -6,15 +6,17 @@ import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home/home.component';
+import { DispachComponent } from './dispach/dispach.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SettingsComponent,
     NotFoundComponent,
-    HomeComponent
+    HomeComponent,
+    DispachComponent
   ],
   imports: [
     BrowserModule,

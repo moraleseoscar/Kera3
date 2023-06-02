@@ -33,11 +33,8 @@
 
     <div class="left-nav-wrap">
         <div class="left-content-box uk-margin-top">
-            <h5>Datos del día</h5>
-            <div>
-                <span class="uk-text-small">Algo <small>(405)</small></span>
-                <progress [value]="65" [max]="100"></progress>
-            </div>
+            <h5 class="nav-option {{ currentDashboard === 'inv' ? 'active' : '' }}" (click)="changeDashboard('inv')">Inventario</h5>
+            <h5 class="nav-option {{ currentDashboard === 'desp' ? 'active' : '' }}" (click)="changeDashboard('desp')">Despachos</h5>
         </div>
 
     </div>
@@ -57,7 +54,7 @@
 <!-- /LEFT BAR -->
 <!-- CONTENT -->
 <div id="content" data-uk-height-viewport="expand: true">
-    <div class="uk-container uk-container-expand">
+    <div class="uk-container uk-container-expand" *ngIf="currentDashboard == 'inv'">
         <div class="uk-grid-divider uk-grid-medium uk-child-width-1-1 uk-child-width-1-2@s" data-uk-grid>
             <div>
                 <div class="uk-child-width-1-2" uk-grid>
@@ -143,8 +140,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+<<<<<<< Updated upstream
                                     <ng-container *ngFor="let product of products">
                                         <tr *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
+=======
+                                    <ng-container *ngFor="let product of data">
+                                        <tr class="hover-apply" (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
+>>>>>>> Stashed changes
                                           <td>{{ product.codigo_producto }}</td>
                                           <td>{{ product.nombre_producto }}</td>
                                           <td>{{ product.nombre_categoria }}</td>
@@ -175,6 +177,7 @@
                 Software</span>
         </footer>
     </div>
+    <app-dispach *ngIf="currentDashboard == 'desp'"></app-dispach>
 </div>
 <!-- /CONTENT -->
 <!-- OFFCANVAS -->
@@ -182,6 +185,8 @@
     <div class="uk-offcanvas-bar uk-offcanvas-bar-animation uk-offcanvas-slide uk-back-third">
         <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
         <ul class="uk-nav uk-nav-default uk-position-center">
+            <li><h5 class="nav-option {{ currentDashboard === 'inv' ? 'active' : '' }}" (click)="changeDashboard('inv')">Inventario</h5></li>
+            <li><h5 class="nav-option {{ currentDashboard === 'desp' ? 'active' : '' }}" (click)="changeDashboard('desp')">Despachos</h5></li>
             <li class="uk-nav-header">Opciones</li>
             <li><a href="https://www.trident-vape.com.gt/"><span class="uk-margin-small-right uk-icon"
                         data-uk-icon="icon: cart"></span> Ir a página</a></li>

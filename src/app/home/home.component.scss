@@ -232,6 +232,20 @@
 .DESCONTINUADO{
 	color: red;
 }
+.hover-apply{
+  &:hover{
+    background: rgba(51, 153, 255, 0.264);
+  }
+}
+.nav-option{
+  margin:0;
+  &:hover{
+    background: rgba(51, 153, 255, 0.264);
+  }
+  &.active{
+    background: rgba(51, 153, 255, 0.264);
+  }
+}
 @media only screen and (max-width: 768px) {
 	.add-product{
 		position: relative;
