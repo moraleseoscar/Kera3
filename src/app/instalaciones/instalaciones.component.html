@@ -6,7 +6,7 @@
                   <div>
                       <span class="uk-text-small"><span data-uk-icon="icon:thumbnails"
                               class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
-                      <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Clientes</h1>
+                      <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Instalaciones</h1>
                   </div>
                   <div>
                       <span class="uk-text-small"><span data-uk-icon="icon:cart"
@@ -19,7 +19,7 @@
               </div>
           </div>
           <div>
-              <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Cliente</button>
+              <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Instalacion</button>
           </div>
       </div>
       <hr>
@@ -61,11 +61,11 @@
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
-                                  <label for="" style="margin-right: 5%;">Tipo de cliente:</label>
+                                  <label for="" style="margin-right: 5%;">Tipo:</label>
                                   <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
                                       <option value="0">Todos</option>
-                                      <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{
-                                        estado.tipo_cliente }}</option>
+                                      <option *ngFor="let estado of types" [value]="estado.nombre_tipo_instalacion">{{
+                                        estado.nombre_tipo_instalacion }}</option>
                                   </select>
                               </div>
                           </div>
@@ -76,21 +76,20 @@
                           <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                               <thead>
                                   <tr>
-                                      <th class="uk-table-large">Nombres</th>
-                                      <th class="uk-table-expand">Apellidos</th>
+                                      <th class="uk-table-large">Codigo</th>
+                                      <th class="uk-table-expand">Nombre</th>
                                       <th class="uk-table-small">Tipo</th>
-                                      <th class="uk-table-small">Telefono</th>
-                                      <th class="uk-table-expand">Direccion</th>
+                                      <th class="uk-table-small">Direccion</th>
                                   </tr>
                               </thead>
                               <tbody>
-                                  <ng-container *ngFor="let client of data">
-                                      <tr *ngIf ="(estadoValue == '0' || estadoValue == client.tipo)">
-                                        <td>{{ client.nombres }}</td>
-                                        <td>{{ client.apellidos }}</td>
-                                        <td>{{ client.tipo }}</td>
-                                        <td>{{ client.telefono}}</td>
-                                        <td>{{ client.direccion }}</td>
+                                  <ng-container *ngFor="let instalacion of data">
+                                      <tr *ngIf ="(estadoValue == '0' || estadoValue == instalacion.nombre_tipo_instalacion)">
+                                        <td>{{ instalacion.codigo_instalacion }}</td>
+                                        <td>{{ instalacion.nombre_instalacion }}</td>
+                                        <td>{{ instalacion.nombre_tipo_instalacion }}</td>
+                                        <td>{{ instalacion.direccion }}</td>
+
                                       </tr>
                                   </ng-container>
                               </tbody>

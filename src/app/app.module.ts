@@ -10,15 +10,17 @@ import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home/home.component';
 import { DispatchComponent } from './dispatch/dispatch.component';
 import { ClientsComponent } from './clients/clients.component';
+import { InstalacionesComponent } from './instalaciones/instalaciones.component';
 
 @NgModule({
-  declarations: [		
+  declarations: [			
     AppComponent,
     SettingsComponent,
     NotFoundComponent,
     HomeComponent,
       DispatchComponent,
-      ClientsComponent
+      ClientsComponent,
+      InstalacionesComponent
    ],
   imports: [
     BrowserModule,
