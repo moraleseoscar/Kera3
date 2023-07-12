@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
-import Swal from 'sweetalert2'
+
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',

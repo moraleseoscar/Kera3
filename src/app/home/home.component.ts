@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Kera3ServiceService } from '../services/kera3-service.service';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
