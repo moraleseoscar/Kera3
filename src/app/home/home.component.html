@@ -2,6 +2,19 @@
 <header id="top-head" class="uk-position-fixed">
     <div class="uk-container uk-container-expand uk-background-third">
         <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
+            <div class="uk-navbar-left">
+                <div class="uk-navbar-item uk-hidden@m">
+                    <a class="uk-logo" href="#"><img class="custom-logo"
+                            src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
+                            alt=""></a>
+                </div>
+            </div>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                    <li><a class="uk-navbar-toggle uk-hidden@m" data-uk-toggle data-uk-navbar-toggle-icon
+                            href="#offcanvas-nav" title="Offcanvas" data-uk-tooltip></a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 </header>
@@ -166,11 +179,6 @@
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
             <li class="uk-nav-header">Opciones</li>
-            <li><a href="https://www.trident-vape.com.gt/"><span class="uk-margin-small-right uk-icon"
-                        data-uk-icon="icon: cart"></span> Ir a página</a></li>
-            <li><a href="#"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: settings"></span>
-                    Configuración</a></li>
-            <li class="uk-nav-divider"></li>
             <li><a href="/login"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: sign-out"></span>
                     Salir</a></li>
         </ul>
