@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit{
   dimens: any = []
   categoriaValue = 'all'
   estadoValue = '0'
-  data:any = {}
+  data:any = []
   searchQuery: string = ''
   minIndex:number = 0
   maxIndex:number = 5
@@ -62,8 +62,9 @@ export class HomeComponent implements OnInit{
   }
   async ngOnInit(){
     this.products = await this.service.getAllProducts()
-    this.data = this.products.slice(this.minIndex, this.maxIndex)
+    this.data = await this.products.slice(this.minIndex, this.maxIndex)
     this.categorias = await this.service.getAllCategories()
+    this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
   }
   async getDetails(product : any){ //ver los detalles del producto

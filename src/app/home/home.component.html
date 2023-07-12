@@ -2,13 +2,6 @@
 <header id="top-head" class="uk-position-fixed">
     <div class="uk-container uk-container-expand uk-background-third">
         <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
-            <div class="uk-navbar-left">
-                <div class="uk-navbar-item uk-hidden@m">
-                    <a class="uk-logo" href="#"><img class="custom-logo"
-                            src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
-                            alt=""></a>
-                </div>
-            </div>
             <div class="uk-navbar-right">
                 <ul class="uk-navbar-nav">
                     <li><a class="uk-navbar-toggle uk-hidden@m" data-uk-toggle data-uk-navbar-toggle-icon
@@ -22,8 +15,6 @@
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-back-third">
     <div class="left-content-box  content-box-dark">
-        <img src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
-            alt="" class="uk-border-circle profile-img">
         <h4 class="uk-text-center uk-margin-remove-vertical text-light">Rosa Elena Juárez</h4>
 
         <div class="uk-position-relative uk-text-center uk-display-block">
@@ -75,7 +66,7 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                                        <input class="uk-search-input" type="search" placeholder="Búsqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                                     </form>
                                 </div>
                             </div>
@@ -102,7 +93,7 @@
                             </div>
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
-                                    <label for="" style="margin-right: 5%;">Otro:</label>
+                                    <label for="" style="margin-right: 5%;">Instalación:</label>
                                     <select class="uk-select" placeholder="Otro filtro">
                                         <option value="all">Todos</option>
                                         <option>Opción</option>
@@ -116,7 +107,7 @@
                             <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                                 <thead>
                                     <tr>
-                                        <th class="uk-table-small">Codigo</th>
+                                        <th class="uk-table-small">Código</th>
                                         <th class="uk-table-large">Nombre</th>
                                         <th class="uk-table-expand">Categoría</th>
                                         <th class="uk-table-small">Dimensional</th>

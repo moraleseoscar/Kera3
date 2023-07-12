@@ -12,7 +12,7 @@ export class InstalacionesComponent implements OnInit {
   currentPage: number = 1
   itemsPerPage: number = 5
   instalaciones: any = []
-  data:any = {}
+  data:any = []
   searchQuery: string = ''
   types: any = []
   estadoValue = '0'
