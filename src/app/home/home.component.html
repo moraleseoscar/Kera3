@@ -73,7 +73,7 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Categoría:</label>
-                                    <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
+                                    <select class="uk-select" [(ngModel)]="categoriaValue">
                                         <option value="all">Todos</option>
                                         <option *ngFor="let categoria of categorias"
                                             [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
@@ -84,7 +84,7 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Estado:</label>
-                                    <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                    <select class="uk-select" [(ngModel)]="estadoValue">
                                         <option value="0">Todos</option>
                                         <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
                                             estado.nombre_estado }}</option>
@@ -94,9 +94,10 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Instalación:</label>
-                                    <select class="uk-select" placeholder="Otro filtro">
+                                    <select class="uk-select" [(ngModel)]="instalacionValue">
                                         <option value="all">Todos</option>
-                                        <option>Opción</option>
+                                        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{
+                                            instalacion.nombre_instalacion }}</option>
                                     </select>
                                 </div>
                             </div>

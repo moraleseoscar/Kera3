@@ -10,9 +10,11 @@ import { Kera3Service } from '../services/services.service';
 export class HomeComponent implements OnInit{
   categorias: any = []
   estados: any = []
+  instalaciones:any = []
   products: any = []
   dimens: any = []
   categoriaValue = 'all'
+  instalacionValue = 'all'
   estadoValue = '0'
   data:any = []
   searchQuery: string = ''
@@ -66,6 +68,8 @@ export class HomeComponent implements OnInit{
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
+    this.instalaciones = await this.service.getInstalaciones()
+    
   }
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({
