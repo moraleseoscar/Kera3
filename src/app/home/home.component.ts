@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Kera3ServiceService } from '../services/kera3-service.service';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -12,11 +10,13 @@ import { Title } from '@angular/platform-browser';
 export class HomeComponent implements OnInit{
   categorias: any = []
   estados: any = []
+  instalaciones:any = []
   products: any = []
   dimens: any = []
   categoriaValue = 'all'
+  instalacionValue = 'all'
   estadoValue = '0'
-  data:any = {}
+  data:any = []
   searchQuery: string = ''
   minIndex:number = 0
   maxIndex:number = 5
@@ -64,9 +64,12 @@ export class HomeComponent implements OnInit{
   }
   async ngOnInit(){
     this.products = await this.service.getAllProducts()
-    this.data = this.products.slice(this.minIndex, this.maxIndex)
+    this.data = await this.products.slice(this.minIndex, this.maxIndex)
     this.categorias = await this.service.getAllCategories()
+    this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
+    this.instalaciones = await this.service.getInstalaciones()
+    
   }
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({

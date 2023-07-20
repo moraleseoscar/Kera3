@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
-import Swal from 'sweetalert2'
+
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
@@ -12,7 +12,7 @@ export class ClientsComponent implements OnInit {
   currentPage: number = 1
   itemsPerPage: number = 5
   clients: any = []
-  data:any = {}
+  data:any = []
   searchQuery: string = ''
   types: any = []
   estadoValue = '0'

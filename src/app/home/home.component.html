@@ -2,13 +2,6 @@
 <header id="top-head" class="uk-position-fixed">
     <div class="uk-container uk-container-expand uk-background-third">
         <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
-            <div class="uk-navbar-left">
-                <div class="uk-navbar-item uk-hidden@m">
-                    <a class="uk-logo" href="#"><img class="custom-logo"
-                            src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
-                            alt=""></a>
-                </div>
-            </div>
             <div class="uk-navbar-right">
                 <ul class="uk-navbar-nav">
                     <li><a class="uk-navbar-toggle uk-hidden@m" data-uk-toggle data-uk-navbar-toggle-icon
@@ -22,8 +15,6 @@
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-back-third">
     <div class="left-content-box  content-box-dark">
-        <img src="https://scontent.fgua9-2.fna.fbcdn.net/v/t39.30808-6/268610409_1328623707584014_3008026027832024472_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dg9iGcUMloAAX8ivcYT&_nc_ht=scontent.fgua9-2.fna&oh=00_AfCUEe3fftbMcPl5S6ETPhD4qhGTCN15K0X9wHPFK7wI5g&oe=6461076F"
-            alt="" class="uk-border-circle profile-img">
         <h4 class="uk-text-center uk-margin-remove-vertical text-light">Rosa Elena Juárez</h4>
 
         <div class="uk-position-relative uk-text-center uk-display-block">
@@ -41,11 +32,6 @@
     <div class="bar-bottom uk-back-black">
         <ul class="uk-subnav uk-flex uk-flex-center uk-child-width-1-5" data-uk-grid>
             <li>
-                <a href="https://www.trident-vape.com.gt/" class="uk-icon-link" data-uk-icon="icon: cart"
-                    title="Página compra" data-uk-tooltip></a>
-            </li>
-
-            <li>
                 <a class="uk-icon-link" data-uk-icon="icon: sign-out" data-uk-tooltip="Salir"></a>
             </li>
         </ul>
@@ -60,17 +46,7 @@
             <div>
                 <div class="uk-child-width-1-2" uk-grid>
                     <div>
-                        <span class="uk-text-small"><span data-uk-icon="icon:thumbnails"
-                                class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
                         <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Inventario</h1>
-                    </div>
-                    <div>
-                        <span class="uk-text-small"><span data-uk-icon="icon:cart"
-                                class="uk-margin-small-right uk-text-third"></span>Lorem ipsum</span>
-                        <h1 class="uk-heading-primary uk-margin-remove uk-text-third">5.284</h1>
-                        <div class="uk-text-small">
-                            <span class="uk-text-success" data-uk-icon="icon: triangle-up"> 7%</span> more than last week.
-                        </div>
                     </div>
                 </div>
             </div>
@@ -90,14 +66,14 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                                        <input class="uk-search-input" type="search" placeholder="Búsqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                                     </form>
                                 </div>
                             </div>
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Categoría:</label>
-                                    <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
+                                    <select class="uk-select" [(ngModel)]="categoriaValue">
                                         <option value="all">Todos</option>
                                         <option *ngFor="let categoria of categorias"
                                             [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
@@ -108,7 +84,7 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Estado:</label>
-                                    <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                    <select class="uk-select" [(ngModel)]="estadoValue">
                                         <option value="0">Todos</option>
                                         <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
                                             estado.nombre_estado }}</option>
@@ -117,10 +93,11 @@
                             </div>
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
-                                    <label for="" style="margin-right: 5%;">Otro:</label>
-                                    <select class="uk-select" placeholder="Otro filtro">
+                                    <label for="" style="margin-right: 5%;">Instalación:</label>
+                                    <select class="uk-select" [(ngModel)]="instalacionValue">
                                         <option value="all">Todos</option>
-                                        <option>Opción</option>
+                                        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{
+                                            instalacion.nombre_instalacion }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -131,7 +108,7 @@
                             <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                                 <thead>
                                     <tr>
-                                        <th class="uk-table-small">Codigo</th>
+                                        <th class="uk-table-small">Código</th>
                                         <th class="uk-table-large">Nombre</th>
                                         <th class="uk-table-expand">Categoría</th>
                                         <th class="uk-table-small">Dimensional</th>
@@ -194,11 +171,6 @@
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
             <li class="uk-nav-header">Opciones</li>
-            <li><a href="https://www.trident-vape.com.gt/"><span class="uk-margin-small-right uk-icon"
-                        data-uk-icon="icon: cart"></span> Ir a página</a></li>
-            <li><a href="#"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: settings"></span>
-                    Configuración</a></li>
-            <li class="uk-nav-divider"></li>
             <li><a href="/login"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: sign-out"></span>
                     Salir</a></li>
         </ul>
