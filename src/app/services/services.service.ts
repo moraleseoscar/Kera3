@@ -57,8 +57,17 @@ export class Kera3Service {
     return cliente || null
   }
   async getInstalacionesTipos(){
-
-let { data: tipo_instalacion, error } = await this.supabase.from('tipo_instalacion').select('*')
+  let { data: tipo_instalacion, error } = await this.supabase.from('tipo_instalacion').select('*')
     return tipo_instalacion || null
+  }
+  async login(username:string, password:string){
+     return await this.supabase.auth.signInWithPassword({email: username, password: password})
+  }
+  async logOut(){
+    this.supabase.auth.signOut()
+  }
+  async getUserData(email:string){
+    return await this.supabase.rpc('get_user_extra_data', {mail:email})
+
   }
 }

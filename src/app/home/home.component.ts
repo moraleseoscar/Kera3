@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
-
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -23,7 +23,12 @@ export class HomeComponent implements OnInit{
   currentPage: number = 1
   itemsPerPage: number = 5
   navcurrent: string = 'inv' //variable de navegacion
-  constructor(private service: Kera3Service){}
+  name: string = ''
+  lname: string = ''
+  rol_interno: string = ''
+  codigo_instalacion_actual: string = ''
+
+  constructor(private service: Kera3Service , private route: ActivatedRoute){}
   get totalPages(): number {
     return Math.ceil(this.products.length / this.itemsPerPage);
   }
@@ -69,7 +74,22 @@ export class HomeComponent implements OnInit{
     this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
-    
+    let email = '';
+    this.route.queryParams.subscribe(async params => {
+      email = params['email'];
+      let {data , error} = await this.service.getUserData(email);
+      if(error) {
+        console.log(error)
+      }else{
+        this.name = data.user_nombres
+        this.lname = data.user_apellidos,
+        this.rol_interno = data.rol_interno
+        this.codigo_instalacion_actual = data.codigo_instalacion
+        console.log(data)
+      }
+
+    });
+
   }
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({
@@ -154,5 +174,8 @@ export class HomeComponent implements OnInit{
   }
   setCurrentNav(panel :string){
     this.navcurrent = panel
+  }
+  logOut(){
+    this.service.logOut();
   }
 }

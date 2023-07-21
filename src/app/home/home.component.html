@@ -15,10 +15,9 @@
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-back-third">
     <div class="left-content-box  content-box-dark">
-        <h4 class="uk-text-center uk-margin-remove-vertical text-light">Rosa Elena Juárez</h4>
-
+        <h4 class="uk-text-center uk-margin-remove-vertical text-light">{{name}} {{lname}}</h4>
         <div class="uk-position-relative uk-text-center uk-display-block">
-            <p class="uk-text-small uk-text-muted uk-display-block uk-text-center">Administrador</p>
+            <p class="uk-text-small uk-text-muted uk-display-block uk-text-center">{{rol_interno}}</p>
         </div>
     </div>
     <div class="left-nav-wrap">
@@ -32,7 +31,7 @@
     <div class="bar-bottom uk-back-black">
         <ul class="uk-subnav uk-flex uk-flex-center uk-child-width-1-5" data-uk-grid>
             <li>
-                <a class="uk-icon-link" data-uk-icon="icon: sign-out" data-uk-tooltip="Salir"></a>
+                <a class="uk-icon-link" data-uk-icon="icon: sign-out" data-uk-tooltip="Salir" (click)="logOut()"></a>
             </li>
         </ul>
     </div>
@@ -171,7 +170,7 @@
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
             <li class="uk-nav-header">Opciones</li>
-            <li><a href="/login"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: sign-out"></span>
+            <li><a href="/login"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: sign-out" (click)="logOut()"></span>
                     Salir</a></li>
         </ul>
     </div>
