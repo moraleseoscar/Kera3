@@ -96,7 +96,7 @@
                                     <select class="uk-select" [(ngModel)]="instalacionValue">
                                         <option value="all">Todos</option>
                                         <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{
-                                            instalacion.nombre_instalacion }}</option>
+                                          instalacion.nombre_instalacion }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -113,17 +113,22 @@
                                         <th class="uk-table-small">Dimensional</th>
                                         <th class="uk-table-small">Disponible</th>
                                         <th class="uk-table-expand">Estado</th>
+                                        <th class="uk-table-expand">Ubicación</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <ng-container *ngFor="let product of data">
-                                        <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
+                                        <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all')
+                                        && (estadoValue == product.codigo_estado || estadoValue === '0')
+                                        && (product.codigo_instalacion == instalacionValue || instalacionValue == 'all')
+                                        ">
                                           <td>{{ product.codigo_producto }}</td>
                                           <td>{{ product.nombre_producto }}</td>
                                           <td>{{ product.nombre_categoria }}</td>
                                           <td>{{ product.codigo_dimensional }}</td>
                                           <td>{{ product.cantidad}}</td>
                                           <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                                          <td>{{product.codigo_instalacion}}</td>
                                         </tr>
                                     </ng-container>
                                 </tbody>

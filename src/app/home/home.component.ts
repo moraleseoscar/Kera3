@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute , Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit{
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
 
-  constructor(private service: Kera3Service , private route: ActivatedRoute){}
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router){}
   get totalPages(): number {
     return Math.ceil(this.products.length / this.itemsPerPage);
   }
@@ -85,12 +85,13 @@ export class HomeComponent implements OnInit{
       console.log(Object.entries(params))
       let user = await this.service.getUserData(email)
       console.log(email);
-      if(user != null) {
+      try{
         this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
         codigo_instalacion: user[0]['user_apeelidos'],
         rol_interno: user[0]['rol_interno'],
         email: user[0]['email']}
-        console.log(user)
+        this.instalacionValue = user[0]['codigo_instalacion']
+      }catch (error){
       }
     });
 
@@ -181,5 +182,6 @@ export class HomeComponent implements OnInit{
   }
   logOut(){
     this.service.logOut();
+    this.router.navigate(['/login']);
   }
 }
