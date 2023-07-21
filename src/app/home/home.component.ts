@@ -90,12 +90,10 @@ export class HomeComponent implements OnInit{
     var indexDime = ""
     var indexCat = ""
     for (let index = 0; index < this.dimens.length; index++) {
-      dime = dime+`<option [value]="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
-      indexDime = this.dimens[index].codigo_dimensional
+      dime = dime+`<option value="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
     }
     for (let index = 0; index < this.categorias.length; index++) {
-      cat = cat+`<option [value]="${this.categorias[index].codigo_categoria}">${this.categorias[index].nombre_categoria}</option>`
-      indexCat = this.categorias[index].codigo_categoria
+      cat = cat+`<option value="${this.categorias[index].codigo_categoria}">${this.categorias[index].nombre_categoria}</option>`
     }
     Swal.fire({
       title: 'Agregar producto',
@@ -118,6 +116,8 @@ export class HomeComponent implements OnInit{
         const nombre = (<HTMLInputElement>document.getElementById('nombre')).value;
         const precio = (<HTMLSelectElement>document.getElementById('precio')).value;
         const descripcion = (<HTMLSelectElement>document.getElementById('descripcion')).value;
+        const indexCat = (<HTMLSelectElement>document.getElementById('categoria')).value;
+        const indexDime = (<HTMLSelectElement>document.getElementById('unidad')).value;
         return {
           codigo: codigo,
           nombre: nombre,
