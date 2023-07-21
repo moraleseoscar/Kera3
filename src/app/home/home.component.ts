@@ -23,10 +23,15 @@ export class HomeComponent implements OnInit{
   currentPage: number = 1
   itemsPerPage: number = 5
   navcurrent: string = 'inv' //variable de navegacion
-  name: string = ''
-  lname: string = ''
-  rol_interno: string = ''
-  codigo_instalacion_actual: string = ''
+  userData : {user_nombres : string ;
+                user_apellidos: string;
+                codigo_instalacion: string;
+                rol_interno: string;
+                email: string}
+              = {user_nombres :'username' , user_apellidos : 'last names',
+              codigo_instalacion: '',
+              rol_interno: 'USER ROL',
+              email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
 
   constructor(private service: Kera3Service , private route: ActivatedRoute){}
   get totalPages(): number {
@@ -77,17 +82,16 @@ export class HomeComponent implements OnInit{
     let email = '';
     this.route.queryParams.subscribe(async params => {
       email = params['email'];
-      let {data , error} = await this.service.getUserData(email);
-      if(error) {
-        console.log(error)
-      }else{
-        this.name = data.user_nombres
-        this.lname = data.user_apellidos,
-        this.rol_interno = data.rol_interno
-        this.codigo_instalacion_actual = data.codigo_instalacion
-        console.log(data)
+      console.log(Object.entries(params))
+      let user = await this.service.getUserData(email)
+      console.log(email);
+      if(user != null) {
+        this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
+        codigo_instalacion: user[0]['user_apeelidos'],
+        rol_interno: user[0]['rol_interno'],
+        email: user[0]['email']}
+        console.log(user)
       }
-
     });
 
   }

@@ -15,9 +15,9 @@
 <!-- LEFT BAR -->
 <aside id="left-col" class="uk-light uk-visible@m uk-back-third">
     <div class="left-content-box  content-box-dark">
-        <h4 class="uk-text-center uk-margin-remove-vertical text-light">{{name}} {{lname}}</h4>
+        <h4 class="uk-text-center uk-margin-remove-vertical text-light">{{userData.user_nombres}} {{userData.user_apellidos}}</h4>
         <div class="uk-position-relative uk-text-center uk-display-block">
-            <p class="uk-text-small uk-text-muted uk-display-block uk-text-center">{{rol_interno}}</p>
+            <p class="uk-text-small uk-text-muted uk-display-block uk-text-center">{{userData.rol_interno.toUpperCase()}}</p>
         </div>
     </div>
     <div class="left-nav-wrap">
