@@ -106,6 +106,7 @@ export class HomeComponent implements OnInit{
       <p>Cantidad:  ${product.cantidad} ${product.codigo_dimensional}</p>
       <p class=${product.nombre_estado}>Estado: ${product.nombre_estado}</p>
       <p> precio: Q ${product.precio_producto}</p>
+      <p> Ubicacion: ${product.codigo_instalacion}</p>
       `
   } )
   }
