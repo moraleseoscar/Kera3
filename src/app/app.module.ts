@@ -22,7 +22,7 @@ import { LoginComponent } from './login/login.component';
     DispatchComponent,
     ClientsComponent,
     InstalacionesComponent,
-      LoginComponent
+    LoginComponent
    ],
   imports: [
     BrowserModule,

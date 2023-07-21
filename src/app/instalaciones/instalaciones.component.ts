@@ -72,6 +72,43 @@ export class InstalacionesComponent implements OnInit {
   }
 
   async insertingInstallation () {
+    var tipo = `<option value="" disabled selected>Tipo de Instalación</option>`
+    for (let index = 0; index < this.types.length; index++) {
+      tipo = tipo+`<option value="${this.types[index].codigo_tipo_instalacion}">${this.types[index].nombre_tipo_instalacion}</option>`
+    }
 
+    Swal.fire({
+      title: 'Agregar instalación',
+      html: `
+        <input type="text" id="codigo" class="swal2-input" placeholder="Código">
+        <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
+        <input type="text" id="descripcion" class="swal2-input" placeholder="Descripción">
+        <input type="text" id="direccion" class="swal2-input" placeholder="Dirección">
+        <select class="uk-select" id="tipo" placeholder="Tipo de Instalación">
+          ${tipo}
+        </select>
+      `,
+      confirmButtonText: 'Ingrese nueva instalación',
+      focusConfirm: false,
+      preConfirm: () => {
+        const codigo = (<HTMLInputElement>document.getElementById('codigo')).value;
+        const nombre = (<HTMLInputElement>document.getElementById('nombre')).value;
+        const descripcion = (<HTMLSelectElement>document.getElementById('descripcion')).value;
+        const direccion = (<HTMLSelectElement>document.getElementById('direccion')).value;
+        const indexTipo = (<HTMLSelectElement>document.getElementById('tipo')).value;
+        return {
+          codigo: codigo,
+          nombre: nombre,
+          descripcion: descripcion,
+          direccion: direccion,
+          tipo: indexTipo
+        };
+      }
+    }).then( async (result) => {
+      if (result.isConfirmed) {
+        this.service.addInstallation(result.value)
+        this.instalaciones = await this.service.getInstalaciones()
+      }
+    });
   }
 }

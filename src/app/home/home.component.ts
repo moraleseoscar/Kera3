@@ -112,8 +112,6 @@ export class HomeComponent implements OnInit{
    async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
-    var indexDime = ""
-    var indexCat = ""
     for (let index = 0; index < this.dimens.length; index++) {
       dime = dime+`<option value="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
     }
