@@ -44,7 +44,7 @@ export class Kera3Service {
     const { data, error } = await this.supabase.from('producto_categoria').insert([  { codigo_producto: values.codigo, codigo_categoria: values.categoria },])
   }
   async addInventoryRegister(values:any){
-    const { data, error } = await this.supabase.from('registro_inventario').insert([  { codigo_instalacion: 'CC1', codigo_producto: values.codigo, cantidad: '10', codigo_proveedor: 'PP001', codigo_estado: '7' },])
+    const { data, error } = await this.supabase.from('registro_inventario').insert([  { codigo_instalacion: values.cod_instalacion, codigo_producto: values.codigo, cantidad: values.cantidad, codigo_proveedor: 'PP001', codigo_estado: '7' },])
     console.log(data)
     console.log(error)
   }

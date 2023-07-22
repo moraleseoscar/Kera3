@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
 import { ActivatedRoute , Router } from '@angular/router';
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit{
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
 
-  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router){}
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){}
   get totalPages(): number {
     return Math.ceil(this.products.length / this.itemsPerPage);
   }
@@ -113,11 +113,17 @@ export class HomeComponent implements OnInit{
    async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
+    var place = `<option value="" disabled selected>Sucursal</option>`
+    var indexDime = ""
+    var indexCat = ""
     for (let index = 0; index < this.dimens.length; index++) {
       dime = dime+`<option value="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
     }
     for (let index = 0; index < this.categorias.length; index++) {
       cat = cat+`<option value="${this.categorias[index].codigo_categoria}">${this.categorias[index].nombre_categoria}</option>`
+    }
+    for (let index = 0; index < this.instalaciones.length; index++) {
+      place = place+`<option value="${this.instalaciones[index].codigo_instalacion}">${this.instalaciones[index].nombre_instalacion}</option>`
     }
     Swal.fire({
       title: 'Agregar producto',
@@ -126,12 +132,17 @@ export class HomeComponent implements OnInit{
         <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
         <input type="number" step=".01" id="precio" class="swal2-input" placeholder="Precio">
         <input type="text" id="descripcion" class="swal2-input" placeholder="Descripcion">
+        <input type="text" id="cantidad" class="swal2-input" placeholder="0">
         <select class="uk-select" id="categoria" placeholder="Categoria">
           ${cat}
         </select>
         <select class="uk-select" id="unidad" placeholder="Unidad">
           ${dime}
         </select>
+        <select class="uk-select" id="ubicacion" placeholder="Unidad">
+          ${place}
+        </select>
+
       `,
       confirmButtonText: 'Ingrese nuevo producto',
       focusConfirm: false,
@@ -142,13 +153,17 @@ export class HomeComponent implements OnInit{
         const descripcion = (<HTMLSelectElement>document.getElementById('descripcion')).value;
         const indexCat = (<HTMLSelectElement>document.getElementById('categoria')).value;
         const indexDime = (<HTMLSelectElement>document.getElementById('unidad')).value;
+        const indexLocacion = (<HTMLSelectElement>document.getElementById('ubicacion')).value;
+        const cantidadN = (<HTMLSelectElement>document.getElementById('cantidad')).value;
         return {
           codigo: codigo,
           nombre: nombre,
           categoria: indexCat,
           unidad: indexDime,
           precio: precio,
-          descripcion: descripcion
+          descripcion: descripcion,
+          cod_instalacion: indexLocacion,
+          cantidad:cantidadN
         };
       }
     }).then( async (result) => {
@@ -158,9 +173,10 @@ export class HomeComponent implements OnInit{
           this.service.addProductCategory(result.value)
           this.service.addInventoryRegister(result.value)
         }, 1000)
-        this.products = await this.service.getAllProducts()
-        this.data = this.products
       }
+      this.products = await this.service.getAllProducts()
+      this.data = await this.products.slice(this.minIndex, this.maxIndex)
+      this.changeDetectorRef.markForCheck();
     });
   }
   onSearch() {
