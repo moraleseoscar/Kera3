@@ -19,7 +19,7 @@ export class RegistroComponent implements OnInit {
   constructor(private service: Kera3Service) { }
 
   async ngOnInit() {
-    this.clients = await this.service.getClients()
+    this.clients = await this.service.getRegistro()
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.types = await this.service.getClientsTypes()
     console.log(this.types)

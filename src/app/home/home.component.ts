@@ -11,6 +11,7 @@ export class HomeComponent implements OnInit{
   categorias: any = []
   estados: any = []
   instalaciones:any = []
+  registro:any = []
   products: any = []
   dimens: any = []
   categoriaValue = 'all'
@@ -79,6 +80,7 @@ export class HomeComponent implements OnInit{
     this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
+    this.registro = await this.service.getRegistro()
     let email = '';
     this.route.queryParams.subscribe(async params => {
       email = params['email'];
