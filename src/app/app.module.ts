@@ -13,6 +13,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { InstalacionesComponent } from './instalaciones/instalaciones.component';
 import { LoginComponent } from './login/login.component';
 
+
 @NgModule({
   declarations: [				
     AppComponent,

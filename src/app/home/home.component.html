@@ -22,6 +22,8 @@
     </div>
     <div class="left-nav-wrap">
         <div class="left-content-box uk-margin-top">
+            
+          <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Registro</h5>
           <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
@@ -162,6 +164,8 @@
     <app-instalaciones *ngIf="navcurrent == 'inst'"></app-instalaciones>
     <!-- clients panel -->
     <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
+    <!-- Registro -->
+    <!-- /<app-registro *ngIf="navcurrent == 'reg'"></app-Registro> -->
 
 </div>
 <!-- /CONTENT -->
@@ -170,6 +174,7 @@
     <div class="uk-offcanvas-bar uk-offcanvas-bar-animation uk-offcanvas-slide uk-back-third">
         <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
         <ul class="uk-nav uk-nav-default uk-position-center">
+          <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Registro</h5>
           <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
