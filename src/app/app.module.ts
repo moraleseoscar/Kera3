@@ -1,14 +1,17 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
+
 import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home/home.component';
-import { DispachComponent } from './dispach/dispach.component';
+import { DispatchComponent } from './dispatch/dispatch.component';
+import { ClientsComponent } from './clients/clients.component';
+import { InstalacionesComponent } from './instalaciones/instalaciones.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -16,8 +19,11 @@ import { DispachComponent } from './dispach/dispach.component';
     SettingsComponent,
     NotFoundComponent,
     HomeComponent,
-    DispachComponent
-  ],
+    DispatchComponent,
+    ClientsComponent,
+    InstalacionesComponent,
+    LoginComponent
+   ],
   imports: [
     BrowserModule,
     AppRoutingModule,

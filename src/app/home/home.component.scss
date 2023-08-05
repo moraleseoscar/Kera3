@@ -230,20 +230,40 @@
 .DESCONTINUADO{
 	color: red;
 }
-.hover-apply{
+.nav-option {
+  background: linear-gradient(to left, transparent 50%, #67b3ff 50%);
+  background-size: 200% 100%;
+  background-position: right;
+  transition: background-position 0.3s;
   &:hover{
-    background: rgba(51, 153, 255, 0.264);
-  }
-}
-.nav-option{
-  margin:0;
-  &:hover{
-    background: rgba(51, 153, 255, 0.264);
+    background-position: left;
+    color: black;
   }
   &.active{
-    background: rgba(51, 153, 255, 0.264);
+    background-position: left;
+    color: black;
   }
 }
+.center-flex{
+  display: flex;
+  justify-content:center;
+  align-items: center;
+}
+.btn-pagination{
+  background-color: transparent;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  text-align: center;
+  padding: 1vw;
+  border: solid 0.5px #39f;
+  border-radius: 0.2rem;
+  &:hover{
+    background-color: #67b3ff ;
+    color: white;
+  }
+}
+
+
 @media only screen and (max-width: 768px) {
 	.add-product{
 		position: relative;

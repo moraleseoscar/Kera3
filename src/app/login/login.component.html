@@ -1,0 +1,26 @@
+<div class="main-container">
+  <div class="container">
+
+    <h2>Inicio de sesion</h2>
+
+    <form action="/login" method="post" >
+
+    <div class="form-group">
+      <label for="email">Correo institucional</label>
+      <input type="email" class="form-control" id="email" name="email" [(ngModel)]="_email" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">contraseña</label>
+      <input type="password" class="form-control" id="password" name="password" [(ngModel)]="_password" required>
+    </div>
+
+    <button type="submit" class="btn" (click)="login_request()">Inicio de sesion</button>
+
+    <!-- <a href="#">Forgot password?</a> -->
+
+    </form>
+
+  </div>
+</div>
+
