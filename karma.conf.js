@@ -5,7 +5,7 @@ module.exports = function (config) {
   config.set({
     files: [
       // Archivos de tus pruebas en la carpeta src/app
-      { pattern: 'src/app/**/*.spec.ts', type : 'module',watched: false }],
+      { pattern: 'src/app/**/*.spec.ts',type:'module',watched: false }],
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [

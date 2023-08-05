@@ -7,7 +7,6 @@ import { ActivatedRoute , Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-<<<<<<< Updated upstream
 export class HomeComponent implements OnInit{
   categorias: any = []
   estados: any = []
@@ -64,25 +63,6 @@ export class HomeComponent implements OnInit{
       this.minIndex+=this.itemsPerPage
       this.data = this.products.slice(this.minIndex, this.maxIndex)
     }
-=======
-export class HomeComponent implements OnInit{
-  categorias: any = []
-  estados: any = []
-  products: any = []
-  dimens: any = []
-  categoriaValue = 'all'
-  estadoValue = '0'
-  data:any = {}
-  searchQuery: string = ''
-  minIndex:number = 0
-  maxIndex:number = 5
-  currentPage: number = 1
-  itemsPerPage: number = 5
-  currentDashboard: string = 'inv'
-  constructor(private service: Kera3Service){}
-  get totalPages(): number {
-    return Math.ceil(this.products.length / this.itemsPerPage);
->>>>>>> Stashed changes
   }
   prevPage() {
     if (this.currentPage !== 1) {
@@ -215,16 +195,8 @@ export class HomeComponent implements OnInit{
   setCurrentNav(panel :string){
     this.navcurrent = panel
   }
-
-  getAllProducts(){
-    this.kera3Service.getAllProducts().subscribe((resp:any)=>{
-      this.products = resp;
-    });
-
+  logOut(){
+    this.service.logOut();
+    this.router.navigate(['/login']);
   }
-=======
-  changeDashboard(name: string){
-    this.currentDashboard = name
-  }
->>>>>>> Stashed changes
 }
