@@ -74,4 +74,8 @@ export class Kera3Service {
     let {data: user, error } = await this.supabase.rpc('get_user_extra_data', {mail:email})
     return user || null
   }
+  async getEmployees(){
+      let {data, error } = await this.supabase.from('empleado').select('*')
+      return data || error
+  }
 }
