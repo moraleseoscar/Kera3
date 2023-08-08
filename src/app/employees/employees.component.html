@@ -9,7 +9,7 @@
           </div>
       </div>
       <div>
-          <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar un empleado nuevo</button>
+          <button class="add-product uk-button uk-align-left uk-button-primary" (click)="onAddEmployee()"><span uk-icon="icon: plus"></span> Registrar un empleado nuevo</button>
       </div>
   </div>
   <hr>
@@ -54,8 +54,8 @@
                               <label for="" style="margin-right: 5%;">Tipo de cliente:</label>
                               <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
                                   <option value="0">Todos</option>
-                                  <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{
-                                    estado.tipo_cliente }}</option>
+                                  <option *ngFor="let estado of rols" [value]="estado.codigo_rol">{{
+                                    estado.nombre_rol }}</option>
                               </select>
                           </div>
                       </div>

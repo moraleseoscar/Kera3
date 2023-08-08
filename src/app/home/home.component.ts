@@ -89,7 +89,7 @@ export class HomeComponent implements OnInit{
         if(user !=null){
           console.log(user)
           this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
-          codigo_instalacion: user[0]['user_apeelidos'],
+          codigo_instalacion: user[0]['codigo_instalacion'],
           rol_interno: user[0]['rol_interno'],
           email: user[0]['email']}
           this.instalacionValue = user[0]['codigo_instalacion']

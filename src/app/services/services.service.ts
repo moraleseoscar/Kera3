@@ -78,4 +78,12 @@ export class Kera3Service {
       let {data, error } = await this.supabase.from('empleado').select('*')
       return data || error
   }
+  async getRoles(){
+    let {data, error } = await this.supabase.from('rol').select('*')
+    return data || error
+  }
+  async getDepartments(){
+    let {data, error } = await this.supabase.from('departamento').select('*')
+    return data || error
+  }
 }
