@@ -26,6 +26,7 @@ export class EmployeesComponent {
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.rols = await this.service.getRoles()
     this.dpts = await this.service.getDepartments()
+    console.log(this.dpts)
   }
 
   returnFirstPage() {
@@ -90,7 +91,7 @@ export class EmployeesComponent {
       <select class="uk-select" id="categoria" placeholder="Categoria">
       ${rol}
       </select>
-      <select class="uk-select" id="categoria" placeholder="Categoria">
+      <select class="uk-select" id="dpt" placeholder="Categoria">
       ${dpt}
       </select>
       <input type="text" id="telefono" class="swal2-input" placeholder="Telefono">
@@ -101,7 +102,9 @@ export class EmployeesComponent {
       confirmButtonText: 'Agregar',
       focusConfirm: false,
       preConfirm: () => {
+
         const cui = (<HTMLInputElement>document.getElementById('cui')).value;
+        console.log(cui);
         const nombre = (<HTMLInputElement>document.getElementById('nombre')).value;
         const apellido = (<HTMLInputElement>document.getElementById('apellido')).value;
         const categoria = (<HTMLInputElement>document.getElementById('categoria')).value;
@@ -139,12 +142,16 @@ export class EmployeesComponent {
           pwrd2: pwrd2,
         };
       },
-    }).then(result => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         const empleadoData = result.value;
         // Aquí puedes realizar acciones con los datos del empleado ingresados
         console.log(empleadoData);
+        this.service.addNewEmployee(empleadoData)
+        this.clients = await this.service.getEmployees()
+        this.data = this.clients.slice(this.minIndex, this.maxIndex)
       }
+      this.service.updateEmployee(result.value)
     });
 
 
