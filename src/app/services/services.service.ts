@@ -74,4 +74,39 @@ export class Kera3Service {
     let {data: user, error } = await this.supabase.rpc('get_user_extra_data', {mail:email})
     return user || null
   }
+  async getEmployees(){
+      let {data, error } = await this.supabase.from('empleado').select('*')
+      return data || error
+  }
+  async getRoles(){
+    let {data, error } = await this.supabase.from('rol').select('*')
+    return data || error
+  }
+  async getDepartments(){
+    let {data, error } = await this.supabase.from('departamento').select('*')
+    return data || error
+  }
+  async addNewEmployee(user: any){
+    let { data, error:sign_err } = await this.supabase.auth.signUp({
+      email: user.correo,
+      password: user.pwrd1
+    })
+    console.log(sign_err)
+
+    return data;
+  }
+  async updateEmployee(user: any){
+    const { data:employee, error:update } = await this.supabase
+    .from('empleado')
+    .update([
+      { cui: user.cui, codigo_rol: user.categoria ,
+        codigo_dptm: user.dpt , nombres: user.nombre ,
+        apellidos: user.apellido , telefono:user.telefono
+      },
+    ])
+    .eq('email',user.correo)
+    .select()
+   console.log(update);
+  }
+
 }
