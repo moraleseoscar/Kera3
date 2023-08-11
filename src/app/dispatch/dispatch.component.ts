@@ -14,10 +14,14 @@ export class DispatchComponent implements OnInit {
   products: any = []
   data:any = {}
   searchQuery: string = ''
+  despachos: any = []
   constructor(private service: Kera3Service) { }
 
-  ngOnInit() {
-  }
+  async ngOnInit() {
+      this.despachos = await this.service.getDespachos()
+      this.data = this.despachos.slice(this.minIndex, this.maxIndex)
+      console.log(this.despachos)
+    }
 
   returnFirstPage() {
     this.currentPage = 1
