@@ -41,16 +41,6 @@
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
-                                  <!-- <label for="" style="margin-right: 5%;">Estado:</label>
-                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
-                                      <option value="0">Todos</option>
-                                      <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
-                                          estado.nombre_estado }}</option>
-                                  </select> -->
-                              </div>
-                          </div>
-                          <div class="uk-width-expand uk-width-1-4">
-                              <div class="display--filters">
                                   <label for="" style="margin-right: 5%;">Otro:</label>
                                   <select class="uk-select" placeholder="Otro filtro">
                                       <option value="all">Todos</option>
@@ -65,25 +55,30 @@
                           <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                               <thead>
                                   <tr>
-                                      <th class="uk-table-small">Codigo</th>
-                                      <th class="uk-table-large">Nombre</th>
-                                      <th class="uk-table-expand">Categoría</th>
-                                      <th class="uk-table-small">Dimensional</th>
-                                      <th class="uk-table-small">Disponible</th>
-                                      <th class="uk-table-expand">Estado</th>
+                                    <th class="uk-table-small">Fecha inicial</th>
+                                    <th class="uk-table-small">Fecha final</th>
+                                    <th class="uk-table-large">Encargado</th>
+                                    <th class="uk-table-expand">Instalacion Emitente</th>
+                                    <th class="uk-table-small">Instalacion Receptora</th>
+                                    <th class="uk-table-small">Producto</th>
+                                    <th class="uk-table-expand">Cantidad</th>
+                                    <th class="uk-table-expand">Estado</th>
                                   </tr>
                               </thead>
                               <tbody>
-                                  <!-- <ng-container *ngFor="let product of data">
-                                      <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
-                                        <td>{{ product.codigo_producto }}</td>
-                                        <td>{{ product.nombre_producto }}</td>
-                                        <td>{{ product.nombre_categoria }}</td>
-                                        <td>{{ product.codigo_dimensional }}</td>
-                                        <td>{{ product.cantidad}}</td>
-                                        <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                                  <ng-container *ngFor="let despacho of data">
+                                      <!-- <tr  *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')"> -->
+                                      <tr>
+                                        <td>{{ despacho.fecha_inicio }}</td>
+                                        <td>{{ despacho.fecha_final }}</td>
+                                        <td>{{ despacho.encargado }}</td>
+                                        <td>{{ despacho.instalacion_emitente }}</td>
+                                        <td>{{ despacho.instalacion_receptora }}</td>
+                                        <td>{{ despacho.nombre_producto }}</td>
+                                        <td>{{ despacho.cantidad_producto }}</td>
+                                        <td>{{ despacho.estado }}</td>
                                       </tr>
-                                  </ng-container> -->
+                                  </ng-container>
                               </tbody>
                           </table>
                           <ng-template #empty>
