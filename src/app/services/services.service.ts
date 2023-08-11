@@ -12,12 +12,16 @@ export const ALL = '*'
 })
 export class Kera3Service {
   private supabase: SupabaseClient;
+  private tmp_user: any;
   constructor() {
     this.supabase = createClient(
         'https://mocyzargxwwmjcppskkc.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY3l6YXJneHd3bWpjcHBza2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODMyMjU0MzcsImV4cCI6MTk5ODgwMTQzN30._7r2cvTzNNcWVBkGoCf_OjOjK85QwG1UJSf_FUT_p2E'
     )
    }
+
+
+
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }
@@ -86,16 +90,42 @@ export class Kera3Service {
     let {data, error } = await this.supabase.from('departamento').select('*')
     return data || error
   }
-  async addNewEmployee(user: any){
-    let { data, error:sign_err } = await this.supabase.auth.signUp({
-      email: user.correo,
-      password: user.pwrd1
-    })
-    console.log(sign_err)
-
-    return data;
+  async signUp(mail:string, password:string){
+    let { data, error } = await this.supabase
+    .from('temporal_emp_data_holder')
+    .select('email')
+    .eq('email', mail)
+    if(data?.length != undefined){
+      if(data.length > 0){
+        let { data:signUp, error:sign_err } = await this.supabase.auth.signUp({
+          email: mail,
+          password: password,
+        })
+        if(sign_err){
+          return false
+        }
+        return true
+      }
+    }
+    return false; // no puede hacer sign up, es decir no hay ningun empleado que se espere su ingreso por ser nuevo
+  }
+  async AddMetadata(user: any){
+    const { data, error} = await this.supabase
+    .from('temporal_emp_data_holder')
+    .insert([
+      { cui: user.cui, codigo_rol: user.categoria ,
+        codigo_dptm: user.dpt , nombres: user.nombre ,
+        apellidos: user.apellido , telefono:user.telefono,
+        email: user.correo ,codigo_instalacion:user.instalacion
+      }
+    ])
+    .select()
+    if(error){
+      console.log(error)
+    }
   }
   async updateEmployee(user: any){
+    while(await this.supabase.from('employees').select('*').eq('email',user.correo)){}
     const { data:employee, error:update } = await this.supabase
     .from('empleado')
     .update([

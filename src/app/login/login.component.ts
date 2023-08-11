@@ -22,7 +22,12 @@ export class LoginComponent implements OnInit {
     if(this._email!='' && this._password!='' && this._password.length>=8) {
       let {data, error} = await this.service.login(this._email, this._password);
       if(error) {
-        this.alert(error.message);
+        let isSignup = await this.service.signUp(this._email, this._password);
+        if(isSignup){
+          this.router.navigate(['/home'], { queryParams: {email: this._email}})
+        }else{
+          this.alert(error.message);
+        }
       }else{
         this.router.navigate(['/home'], { queryParams: {email: this._email}})
       }
