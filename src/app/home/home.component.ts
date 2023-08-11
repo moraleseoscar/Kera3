@@ -86,11 +86,16 @@ export class HomeComponent implements OnInit{
       let user = await this.service.getUserData(email)
       console.log(email);
       try{
-        this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
-        codigo_instalacion: user[0]['user_apeelidos'],
-        rol_interno: user[0]['rol_interno'],
-        email: user[0]['email']}
-        this.instalacionValue = user[0]['codigo_instalacion']
+        if(user !=null){
+          console.log(user)
+          this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
+          codigo_instalacion: user[0]['codigo_instalacion'],
+          rol_interno: user[0]['rol_interno'],
+          email: user[0]['email']}
+          this.instalacionValue = user[0]['codigo_instalacion']
+        }
+
+
       }catch (error){
       }
     });
