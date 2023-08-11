@@ -60,6 +60,10 @@ export class Kera3Service {
     let { data: cliente, error } = await this.supabase.rpc('get_cliente_tipos')
     return cliente || null
   }
+  async getDespachos(){
+    let { data: cliente, error } = await this.supabase.rpc('get_despachos')
+    return cliente || null
+  }
   async getInstalaciones(){
     let { data: cliente, error } = await this.supabase.rpc('get_registro_instalaciones')
     return cliente || null
