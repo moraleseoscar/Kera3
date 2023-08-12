@@ -80,6 +80,22 @@
                                       </tr>
                                   </ng-container>
                               </tbody>
+                              <tbody>
+                                <ng-container *ngFor="let product of data">
+                                    <tr  (click)="ngOnInit()" *ngIf="(products === product.codigo_categoria || products === 'all')
+                                    && (minIndex == product.codigo_estado )
+                                    && (product.codigo_instalacion == despachos || despachos == 'all')
+                                    ">
+                                      <td>{{ product.codigo_producto }}</td>
+                                      <td>{{ product.nombre_producto }}</td>
+                                      <td>{{ product.nombre_categoria }}</td>
+                                      <td>{{ product.codigo_dimensional }}</td>
+                                      <td>{{ product.cantidad}}</td>
+                                      <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                                      <td>{{product.codigo_instalacion}}</td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
                           </table>
                           <ng-template #empty>
                               <h3>Datos no encontrados, por favor verifica tus filtros.</h3>
