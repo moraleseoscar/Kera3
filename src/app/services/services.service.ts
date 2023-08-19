@@ -13,6 +13,7 @@ export const ALL = '*'
 export class Kera3Service {
   private supabase: SupabaseClient;
   private tmp_user: any;
+  private invSubs: any;
   constructor() {
     this.supabase = createClient(
         'https://mocyzargxwwmjcppskkc.supabase.co',
@@ -20,8 +21,9 @@ export class Kera3Service {
     )
    }
 
-
-
+   getSupabase(){
+    return this.supabase
+   }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }
@@ -139,4 +141,22 @@ export class Kera3Service {
    console.log(update);
   }
 
+  //realtime handlers
+  subscribeToInvChanges() {
+    this.invSubs = this.supabase.channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          console.log('Change received!', payload);
+          // Handle the change payload as needed
+        }
+      )
+      .subscribe();
+  }
+  unsubscribeToInvChanges() {
+    if (this.invSubs) {
+      this.invSubs.unsubscribe();
+    }
+  }
 }
