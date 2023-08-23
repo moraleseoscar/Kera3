@@ -32,7 +32,8 @@ export class VentasComponent {
         options[client['codigo_cliente']] = `${client['nombres']} ${client['apellidos']}`;
         return options;
       }, {}),
-      inputPlaceholder: 'Select a client'
+      inputPlaceholder: 'Select a client',
+      showCancelButton: true,
     });
 
     if (!selectedClient) {
@@ -46,7 +47,8 @@ export class VentasComponent {
         options[product['codigo_producto']] = product['nombre_producto'];
         return options;
       }, {}),
-      inputPlaceholder: 'Select products'
+      inputPlaceholder: 'Select products',
+      showCancelButton: true,
     });
 
     if (!selectedProducts) {
