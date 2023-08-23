@@ -125,12 +125,10 @@ export class EmployeesComponent {
           Swal.showValidationMessage('Por favor complete todos los campos');
           return;
         }
-
         if (cui.length !== 13 || !/^\d+$/.test(cui)) {
           Swal.showValidationMessage('El CUI debe tener 13 dígitos y ser numérico');
           return;
         }
-
         return {
           cui: cui,
           nombre: nombre,

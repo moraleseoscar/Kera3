@@ -11,6 +11,7 @@ export const ALL = '*'
   providedIn: 'root'
 })
 export class Kera3Service {
+
   private supabase: SupabaseClient;
   private tmp_user: any;
   private invSubs: any;
@@ -24,6 +25,15 @@ export class Kera3Service {
    getSupabase(){
     return this.supabase
    }
+   async getProducts(sucursal: string) {
+    let { data, error } = await this.supabase
+      .rpc('get_registro_inventario_place', {
+        _codplace: sucursal
+      })
+
+    return data || null
+
+  }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }
@@ -92,6 +102,14 @@ export class Kera3Service {
     let {data, error } = await this.supabase.from('departamento').select('*')
     return data || error
   }
+
+  async getSaldoClientes() {
+  let { data: saldo_clientes, error } = await this.supabase
+  .from('saldo_clientes')
+  .select('*')
+  return saldo_clientes || null
+  }
+
   async signUp(mail:string, password:string){
     let { data, error } = await this.supabase
     .from('temporal_emp_data_holder')
@@ -139,24 +157,5 @@ export class Kera3Service {
     .eq('email',user.correo)
     .select()
    console.log(update);
-  }
-
-  //realtime handlers
-  subscribeToInvChanges() {
-    this.invSubs = this.supabase.channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          console.log('Change received!', payload);
-          // Handle the change payload as needed
-        }
-      )
-      .subscribe();
-  }
-  unsubscribeToInvChanges() {
-    if (this.invSubs) {
-      this.invSubs.unsubscribe();
-    }
   }
 }

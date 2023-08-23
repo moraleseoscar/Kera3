@@ -25,6 +25,7 @@
           <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
+          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sales')">Ventas</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
           <h5 class="nav-option {{ navcurrent === 'hr' ? 'active' : '' }}" (click)="setCurrentNav('hr')" *ngIf="userData.rol_interno == 'ADMINISTRADOR'" >Empleados</h5>
         </div>
@@ -163,6 +164,8 @@
     <app-instalaciones *ngIf="navcurrent == 'inst'"></app-instalaciones>
     <!-- clients panel -->
     <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
+    <!-- pandel de ventas -->
+    <app-ventas [instalation] = "this.userData.codigo_instalacion" *ngIf="navcurrent == 'sales'"></app-ventas>
     <!-- employees panel -->
     <app-employees *ngIf="navcurrent == 'hr' && userData.rol_interno == 'ADMINISTRADOR'"></app-employees>
 
@@ -177,6 +180,7 @@
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
+          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sales')">Ventas</h5>
           <h5 class="nav-option {{ navcurrent === 'hr' ? 'active' : '' }}" (click)="setCurrentNav('hr')" *ngIf="userData.rol_interno == 'ADMINISTRADOR'">Empleados</h5>
             <li class="uk-nav-header">Opciones</li>
             <li><a href="/login"><span class="uk-margin-small-right uk-icon" data-uk-icon="icon: sign-out" (click)="logOut()"></span>
