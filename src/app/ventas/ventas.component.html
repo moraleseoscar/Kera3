@@ -8,11 +8,12 @@
           </div>
       </div>
       <div>
-          <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
       </div>
   </div>
   <hr>
-  <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+  <!-- main panel  -->
+  <div *ngIf="!showSaleForm" class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
 
       <!-- panel -->
       <div class="uk-width-1-1">
@@ -94,13 +95,47 @@
       </div>
       <!-- /panel -->
   </div>
-  <ul class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul *ngIf="!showSaleForm" class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
   </ul>
+  <!-- Register new sale form -->
+<section *ngIf="showSaleForm">
+  <h2>Registrar una venta</h2>
+  <div>
+    <div class="uk-inline">
+      <button class="uk-button uk-button-default" type="button">Selecctionar cliente</button>
+    <div class="uk-dropdown-large" uk-dropdown>
+        <ul cuk-dropdown="mode: click">
+            <li class="uk-active"><a href="#">Active</a></li>
+            <li><a href="#">Item</a></li>
+            <li class="uk-nav-header">Header</li>
+            <li><a href="#">Item</a></li>
+            <li><a href="#">Item</a></li>
+            <li class="uk-nav-divider"></li>
+            <li><a href="#">Item</a></li>
+        </ul>
+    </div>
+    </div>
+  </div>
+  <div>
+    <label for="productDropdown">Select Product:</label>
+    <select id="productDropdown" class="form-control">
+      <!-- Populate options dynamically from products data -->
+    </select>
+    <input id="quantityInput" type="number" placeholder="Quantity">
+    <button (click)="addProduct()">Add Product</button>
+  </div>
+  <div *ngFor="let product of selectedProducts; let i = index">
+    <label>Product: {{ product.name }}</label>
+    <input type="number" [(ngModel)]="product.quantity">
+  </div>
+  <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
+  <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+</section>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
