@@ -26,7 +26,7 @@ import { VentasComponent } from './ventas/ventas.component';
     InstalacionesComponent,
     LoginComponent,
     EmployeesComponent,
-    VentasComponent
+    VentasComponent,
    ],
   imports: [
     BrowserModule,

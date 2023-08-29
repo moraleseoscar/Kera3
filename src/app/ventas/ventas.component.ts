@@ -12,51 +12,51 @@ export class VentasComponent {
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
+  products:any[] = []
   sales: any = []
   data:any = []
   searchQuery: string = ''
   estadoValue = '0'
+  selectedProducts: { name: string, quantity: number }[] = [];
   @Input() instalation: string = ''
+  showSaleForm: boolean = false;
   constructor(private service: Kera3Service) {}
 
-  ngOnInit() {
-
+  async ngOnInit() {
+    this.products = await this.service.getProducts(this.instalation);
   }
-  async onAddSales() {
-    let _clients = await this.service.getClients();
-    let _products = await this.service.getProducts(this.instalation);
-    const { value: selectedClient } = await Swal.fire({
-      title: 'Select a client',
-      input: 'select',
-      inputOptions: _clients?.reduce((options, client) => {
-        options[client['codigo_cliente']] = `${client['nombres']} ${client['apellidos']}`;
-        return options;
-      }, {}),
-      inputPlaceholder: 'Select a client',
-      showCancelButton: true,
-    });
+  changePanelMode(){
+    this.showSaleForm = !this.showSaleForm
+  }
 
-    if (!selectedClient) {
-      return; // User canceled selection
+
+   // Method to add a product to selectedProducts array
+   addProduct() {
+    const productDropdown = document.getElementById('productDropdown') as HTMLSelectElement;
+    const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+    const selectedProduct = productDropdown.value;
+    const quantity = parseInt(quantityInput.value, 10);
+
+    if (selectedProduct && quantity > 0) {
+      this.selectedProducts.push({ name: selectedProduct, quantity });
+      productDropdown.selectedIndex = 0;
+      quantityInput.value = '';
     }
+  }
 
-    const { value: selectedProducts } = await Swal.fire({
-      title: 'Select products',
-      input: 'select',
-      inputOptions: _products?.reduce((options: { [x: string]: any; }, product: { [x: string]: any; }) => {
-        options[product['codigo_producto']] = product['nombre_producto'];
-        return options;
-      }, {}),
-      inputPlaceholder: 'Select products',
-      showCancelButton: true,
-    });
+  // Method to confirm sale
+  confirmSale() {
+    // Perform actions to save the sale
+    // Reset form
+    this.showSaleForm = false;
+    this.selectedProducts = [];
+  }
 
-    if (!selectedProducts) {
-      return; // User canceled selection
-    }
-
-    // Now you have selectedClient (client ID) and selectedProducts (array of product IDs)
-    // You can proceed to handle the sale registration
+  // Method to cancel sale
+  cancelSale() {
+    // Reset form
+    this.showSaleForm = false;
+    this.selectedProducts = [];
   }
 
   returnFirstPage() {
