@@ -3,17 +3,16 @@
       <div>
           <div class="uk-child-width-1-2" uk-grid>
               <div>
-                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Ventas</h1>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Compras</h1>
               </div>
           </div>
       </div>
-      <div>
-          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
-      </div>
+      <!-- <div>
+          <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
+      </div> -->
   </div>
   <hr>
-  <!-- main panel  -->
-  <div *ngIf="!showSaleForm" class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+  <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
 
       <!-- panel -->
       <div class="uk-width-1-1">
@@ -24,7 +23,7 @@
                           <div class="uk-margin">
                               <form class="uk-search uk-width-expand uk-search-default">
                                   <span uk-search-icon></span>
-                                  <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                                  <!-- <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}"> -->
                               </form>
                           </div>
                       </div>
@@ -52,7 +51,7 @@
                       <div class="uk-width-expand uk-width-1-4">
                           <div class="display--filters">
                               <label for="" style="margin-right: 5%;">Otro:</label>
-                              <select title="filtro" class="uk-select" placeholder="Otro filtro">
+                              <select title="thing" class="uk-select" placeholder="Otro filtro">
                                   <option value="all">Todos</option>
                                   <option>Opción</option>
                               </select>
@@ -65,11 +64,11 @@
                       <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                           <thead>
                               <tr>
-                                  <th class="uk-table-small">Codigo</th>
                                   <th class="uk-table-large">Fecha</th>
-                                  <th class="uk-table-expand">Cliente</th>
-                                  <th class="uk-table-small">Sucursal</th>
+                                  <th class="uk-table-expand">Sucursal</th>
+                                  <th class="uk-table-small">Producto</th>
                                   <th class="uk-table-small">Total</th>
+                                  <th class="uk-table-expand">Monto</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
                           </thead>
@@ -95,43 +94,13 @@
       </div>
       <!-- /panel -->
   </div>
-  <ul *ngIf="!showSaleForm" class="uk-pagination pagination--position center-flex" uk-margin>
+  <!-- <ul class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul>
-  <!-- Register new sale form -->
-<section *ngIf="showSaleForm">
-  <h2>Registrar una venta</h2>
-  <div>
-    <div>
-      <label for="clientDropdown">Cliente:</label>
-      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
-        <option value="" disabled selected>Cliente</option>
-        <option *ngFor="let client of clients" [value]="client">{{ client.nombres }} {{ client.apellidos }}</option>
-      </select>
-
-      <label for="productDropdown">Producto:</label>
-      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
-        <option value="" disabled selected>Selecciona un producto</option>
-        <option *ngFor="let product of productsNames" [value]="product.nombre_producto">{{ product.nombre_producto }}</option>
-      </select>
-      <input id="quantityInput" type="number" placeholder="Cantidad">
-      <button (click)="addProduct()">Aniadir Producto</button>
-    </div>
-    <div>
-      <ul>
-        <li *ngFor="let product of selectedProducts; let i = index">
-            {{product.name}} {{product.quantity}} <button (click)="removeProduct(i)">X</button>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
-  <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
-</section>
+  </ul> -->
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
