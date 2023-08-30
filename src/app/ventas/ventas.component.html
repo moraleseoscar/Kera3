@@ -52,7 +52,7 @@
                       <div class="uk-width-expand uk-width-1-4">
                           <div class="display--filters">
                               <label for="" style="margin-right: 5%;">Otro:</label>
-                              <select class="uk-select" placeholder="Otro filtro">
+                              <select title="filtro" class="uk-select" placeholder="Otro filtro">
                                   <option value="all">Todos</option>
                                   <option>Opción</option>
                               </select>
@@ -106,32 +106,28 @@
 <section *ngIf="showSaleForm">
   <h2>Registrar una venta</h2>
   <div>
-    <div class="uk-inline">
-      <button class="uk-button uk-button-default" type="button">Selecctionar cliente</button>
-    <div class="uk-dropdown-large" uk-dropdown>
-        <ul cuk-dropdown="mode: click">
-            <li class="uk-active"><a href="#">Active</a></li>
-            <li><a href="#">Item</a></li>
-            <li class="uk-nav-header">Header</li>
-            <li><a href="#">Item</a></li>
-            <li><a href="#">Item</a></li>
-            <li class="uk-nav-divider"></li>
-            <li><a href="#">Item</a></li>
-        </ul>
+    <div>
+      <label for="clientDropdown">Cliente:</label>
+      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
+        <option value="" disabled selected>Cliente</option>
+        <option *ngFor="let client of clients" [value]="client">{{ client.nombres }} {{ client.apellidos }}</option>
+      </select>
+
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of productsNames" [value]="product.nombre_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <input id="quantityInput" type="number" placeholder="Cantidad">
+      <button (click)="addProduct()">Aniadir Producto</button>
     </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{product.name}} {{product.quantity}} <button (click)="removeProduct(i)">X</button>
+        </li>
+      </ul>
     </div>
-  </div>
-  <div>
-    <label for="productDropdown">Select Product:</label>
-    <select id="productDropdown" class="form-control">
-      <!-- Populate options dynamically from products data -->
-    </select>
-    <input id="quantityInput" type="number" placeholder="Quantity">
-    <button (click)="addProduct()">Add Product</button>
-  </div>
-  <div *ngFor="let product of selectedProducts; let i = index">
-    <label>Product: {{ product.name }}</label>
-    <input type="number" [(ngModel)]="product.quantity">
   </div>
   <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
   <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>

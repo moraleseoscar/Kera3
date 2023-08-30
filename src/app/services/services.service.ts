@@ -44,6 +44,10 @@ export class Kera3Service {
     let { data: dimensional, error } = await this.supabase.from('dimensional').select('*')
     return dimensional
   }
+  async getProductNames(){
+    let { data: producto, error } = await this.supabase.from('producto').select('nombre_producto')
+    return producto
+  }
    async getAllProducts(){
     let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
     return inventario

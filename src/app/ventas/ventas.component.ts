@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 @Component({
   selector: 'app-ventas',
   templateUrl: './ventas.component.html',
-  styleUrls: ['../home/home.component.scss'],
+  styleUrls: ['./ventas.component.scss','../home/home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VentasComponent {
@@ -13,10 +13,15 @@ export class VentasComponent {
   currentPage: number = 1
   itemsPerPage: number = 5
   products:any[] = []
+  productsNames:any = []
+  clients:any = []
   sales: any = []
   data:any = []
+  cart:any = []
   searchQuery: string = ''
   estadoValue = '0'
+  clienteSelected = ''
+  productSelected = ''
   selectedProducts: { name: string, quantity: number }[] = [];
   @Input() instalation: string = ''
   showSaleForm: boolean = false;
@@ -24,6 +29,8 @@ export class VentasComponent {
 
   async ngOnInit() {
     this.products = await this.service.getProducts(this.instalation);
+    this.productsNames = await this.service.getProductNames();
+    this.clients = await this.service.getClients();
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
@@ -32,18 +39,26 @@ export class VentasComponent {
 
    // Method to add a product to selectedProducts array
    addProduct() {
-    const productDropdown = document.getElementById('productDropdown') as HTMLSelectElement;
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
-    const selectedProduct = productDropdown.value;
-    const quantity = parseInt(quantityInput.value, 10);
-
-    if (selectedProduct && quantity > 0) {
-      this.selectedProducts.push({ name: selectedProduct, quantity });
-      productDropdown.selectedIndex = 0;
+    const val = parseInt(quantityInput.value, 10);
+    console.log(this.productSelected+val);
+    if (this.productSelected!='' && val > 0) {
+      this.selectedProducts.push({ name: this.productSelected, quantity: parseInt(quantityInput.value,10) });
+      this.productSelected ='';
       quantityInput.value = '';
     }
   }
-
+  removeProduct(i: number)
+  {
+    for (let index = 0; index < this.selectedProducts.length; index++) {
+      var newArray: any[] = [];
+      if(index != i)
+      {
+        newArray.push(this.selectedProducts[index]);
+      }
+      this.selectedProducts = newArray;
+    }
+  }
   // Method to confirm sale
   confirmSale() {
     // Perform actions to save the sale
