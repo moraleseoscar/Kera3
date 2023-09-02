@@ -30,22 +30,39 @@ export class VentasComponent {
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   showSaleForm: boolean = false;
+
+  //real time handlers
+  salesAllEventSubscription: any
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
     this.products = await this.service.getProducts(this.instalation);
-    console.log(this.products)
     this.clients = await this.service.getClients();
     this.states = await this.service.getAllStates();
     // Define an array of names to filter
     const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
+    this.fetchSales();
+    this.subscribeToChanges();
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
   }
-
+  getDetails(saleData:any){
+    let productList = '';
+    saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
+      productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
+      });
+      Swal.fire({
+        title: `Detalles venta a ${saleData.client_name}`,
+        html: `
+        <p>Productos:</p>
+        <pre>${productList}</pre>
+        `,
+        confirmButtonText: 'OK'
+      });
+  }
 
    // Method to add a product to selectedProducts array
    addProduct() {
@@ -130,6 +147,8 @@ export class VentasComponent {
   // Method to cancel sale
   cancelSale() {
     // Reset form
+    this.paymentSelected = '';
+    this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
   }
@@ -178,5 +197,19 @@ export class VentasComponent {
       this.data = this.sales.slice(this.minIndex, this.maxIndex)
     }
   }
-
+  subscribeToChanges(){
+    this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchSales();
+        }
+      )
+      .subscribe();
+  }
+  async fetchSales(){
+    this.sales = await this.service.getAllSales();
+    this.data = this.sales.slice(this.minIndex, this.maxIndex)
+  }
 }

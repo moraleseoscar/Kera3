@@ -68,22 +68,25 @@
                                   <th class="uk-table-small">Codigo</th>
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Cliente</th>
+                                  <th class="uk-table-expand">Cajero</th>
                                   <th class="uk-table-small">Sucursal</th>
                                   <th class="uk-table-small">Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
                           </thead>
                           <tbody>
-                              <!-- <ng-container *ngFor="let product of data">
-                                  <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
-                                    <td>{{ product.codigo_producto }}</td>
-                                    <td>{{ product.nombre_producto }}</td>
-                                    <td>{{ product.nombre_categoria }}</td>
-                                    <td>{{ product.codigo_dimensional }}</td>
-                                    <td>{{ product.cantidad}}</td>
-                                    <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                              <ng-container *ngFor="let sale of data">
+                                  <tr  (click)="getDetails(sale)" >
+                                    <td>{{ sale.sale_code }}</td>
+                                    <td>{{ sale.sale_date }}</td>
+                                    <td>{{ sale.client_name }}</td>
+                                    <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
+                                    <td>{{ sale.installation }}</td>
+                                    <td>{{ sale.total_amount}}</td>
+                                    <td>{{ sale.nombre_estado}}</td>
+
                                   </tr>
-                              </ng-container> -->
+                              </ng-container>
                           </tbody>
                       </table>
                       <ng-template #empty>

@@ -178,7 +178,6 @@ export class Kera3Service {
       .from('movimiento_producto')
       .upsert([saleData])
       .select();
-    console.log(values);
 
     if (error) {
       // Handle the error appropriately, e.g., show a message
@@ -187,7 +186,6 @@ export class Kera3Service {
     } else {
       // Successfully added the sale, now insert the sale details into detalle_movimiento
       const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
-      console.log(codigo_movimiento)
       if (codigo_movimiento) {
         for (const product of selectedProducts) {
           // Prepare the sale detail data
@@ -210,5 +208,9 @@ export class Kera3Service {
         }
       }
     }
+  }
+  async getAllSales() {
+    let {data, error} = await this.supabase.rpc('get_sales')
+    return data || null;
   }
 }
