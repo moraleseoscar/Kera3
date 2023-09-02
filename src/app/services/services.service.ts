@@ -49,11 +49,9 @@ export class Kera3Service {
     return inventario
   }
   async addProduct(values: any){
-    console.log(values)
     const { data, error } = await this.supabase.from('producto').insert([  { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },])
   }
   async addInstallation(values: any){
-    console.log(values)
     const { data, error } = await this.supabase.from('instalacion').insert([  { codigo_instalacion: values.codigo, nombre_instalacion: values.nombre, descripcion_instalacion: values.descripcion, codigo_tipo_instalacion: values.tipo, direccion: values.direccion },])
   }
   async addProductCategory(values:any){
@@ -61,8 +59,6 @@ export class Kera3Service {
   }
   async addInventoryRegister(values:any){
     const { data, error } = await this.supabase.from('registro_inventario').insert([  { codigo_instalacion: values.cod_instalacion, codigo_producto: values.codigo, cantidad: values.cantidad, codigo_proveedor: 'PP001', codigo_estado: '7' },])
-    console.log(data)
-    console.log(error)
   }
   async getClients(){
     let { data: cliente, error } = await this.supabase.from('cliente').select("*")
@@ -145,7 +141,7 @@ export class Kera3Service {
     ])
     .select()
     if(error){
-      console.log(error)
+
     }
   }
   async updateEmployee(user: any){
@@ -160,6 +156,53 @@ export class Kera3Service {
     ])
     .eq('email',user.correo)
     .select()
-   console.log(update);
+  }
+
+  async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[]) {
+    // Determine the codigo_estado based on paymentSelected
+    const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
+
+    // Prepare the sale data
+    const saleData = {
+      codigo_instalacion_emitente: instalation,
+      codigo_cliente: clienteSelected,
+      codigo_estado: codigo_estado,
+      codigo_tipo_movimiento: 'V',
+      user_id_empleado_encargado: user_id
+    };
+
+    // Insert the sale record into the movimiento_producto table
+    const { data, error } = await this.supabase
+      .from('movimiento_producto')
+      .upsert([saleData]);
+
+    if (error) {
+      // Handle the error appropriately, e.g., show a message
+      console.error('Error adding sale:');
+      console.error(error);
+    } else {
+      // Successfully added the sale, now insert the sale details into detalle_movimiento
+      const codigo_movimiento = (data as any)?.[0]?.codigo_movimiento;
+      if (codigo_movimiento) {
+        for (const product of selectedProducts) {
+          // Prepare the sale detail data
+          const saleDetailData = {
+            codigo_movimiento: codigo_movimiento,
+            codigo_producto: product.cod,
+            cantidad_producto: product.quantity
+          };
+
+          // Insert the sale detail record into detalle_movimiento
+          const { error: detailError } = await this.supabase
+            .from('detalle_movimiento')
+            .upsert([saleDetailData]);
+
+          if (detailError) {
+            // Handle the detail error appropriately, e.g., show a message
+            console.error('Error adding sale detail:', detailError);
+          }
+        }
+      }
+    }
   }
 }

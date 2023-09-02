@@ -106,6 +106,7 @@
 <section *ngIf="showSaleForm">
   <h2>Registrar una venta</h2>
   <div>
+<<<<<<< Updated upstream
     <div class="uk-inline">
       <button class="uk-button uk-button-default" type="button">Selecctionar cliente</button>
     <div class="uk-dropdown-large" uk-dropdown>
@@ -119,6 +120,34 @@
             <li><a href="#">Item</a></li>
         </ul>
     </div>
+=======
+    <div>
+      <label for="clientDropdown">Cliente:</label>
+      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
+        <option value="" disabled selected>Cliente</option>
+        <option *ngFor="let client of clients" [value]="client.codigo_cliente">{{ client.nombres }} {{ client.apellidos }}</option>
+      </select>
+      <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <option value="" disabled selected>Tipo de pago</option>
+        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <input id="quantityInput" type="number" placeholder="Cantidad">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{ product.name }}
+            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            <button (click)="removeProduct(i)">Remove</button>
+        </li>
+      </ul>
+>>>>>>> Stashed changes
     </div>
   </div>
   <div>

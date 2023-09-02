@@ -21,10 +21,8 @@ export class ClientsComponent implements OnInit {
 
   async ngOnInit() {
     this.clients = await this.convertData()
-    console.log(this.clients)
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.types = await this.service.getClientsTypes()
-    console.log(this.types)
   }
   async convertData(){
     let _clients = await this.service.getClients() //temporal hold of clients

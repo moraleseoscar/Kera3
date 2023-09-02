@@ -20,7 +20,6 @@ export class DispatchComponent implements OnInit {
   async ngOnInit() {
       this.despachos = await this.service.getDespachos()
       this.data = this.despachos.slice(this.minIndex, this.maxIndex)
-      console.log(this.despachos)
     }
 
   returnFirstPage() {

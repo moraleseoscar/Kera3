@@ -8,22 +8,49 @@ import Swal from 'sweetalert2'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VentasComponent {
+
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
   products:any[] = []
+<<<<<<< Updated upstream
   sales: any = []
   data:any = []
   searchQuery: string = ''
   estadoValue = '0'
   selectedProducts: { name: string, quantity: number }[] = [];
+=======
+  clients:any = []
+  sales: any = []
+  data:any = []
+  cart:any = []
+  states:any = []
+  paymentStates:string[]= ['UN SOLO PAGO','A PLAZOS']
+  searchQuery: string = ''
+  estadoValue = '0'
+  clienteSelected = ''
+  productSelected = ''
+  paymentSelected = ''
+
+  selectedProducts: { name: string, quantity: number,cod:string }[] = [];
+>>>>>>> Stashed changes
   @Input() instalation: string = ''
+  @Input() user_id: string = ''
   showSaleForm: boolean = false;
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
     this.products = await this.service.getProducts(this.instalation);
+<<<<<<< Updated upstream
+=======
+    this.clients = await this.service.getClients();
+    this.states = await this.service.getAllStates();
+    // Define an array of names to filter
+    const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
+    // Filter the states array to include only the valid names
+    this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
+>>>>>>> Stashed changes
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
@@ -34,6 +61,7 @@ export class VentasComponent {
    addProduct() {
     const productDropdown = document.getElementById('productDropdown') as HTMLSelectElement;
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+<<<<<<< Updated upstream
     const selectedProduct = productDropdown.value;
     const quantity = parseInt(quantityInput.value, 10);
 
@@ -45,12 +73,83 @@ export class VentasComponent {
   }
 
   // Method to confirm sale
+=======
+    // Find the selected product based on codigo_producto
+    const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
+    const val = parseInt(quantityInput.value, 10);
+    if (this.productSelected!='' && val > 0 && selectedProduct) {
+      this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
+      this.productSelected ='';
+      quantityInput.value = '';
+    }
+  }
+  removeProduct(i: number)
+  {
+    for (let index = 0; index < this.selectedProducts.length; index++) {
+      var newArray: any[] = [];
+      if(index != i)
+      {
+        newArray.push(this.selectedProducts[index]);
+      }
+      this.selectedProducts = newArray;
+    }
+  }
+>>>>>>> Stashed changes
   confirmSale() {
-    // Perform actions to save the sale
+    // Check if clienteSelected is empty
+    if (!this.clienteSelected) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debes seleccionar un cliente.'
+      });
+      return; // Don't proceed further
+    }
+
+    // Check if selectedProducts array is empty
+    if (this.selectedProducts.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ningún producto.'
+      });
+      return; // Don't proceed further
+    }
+    if(this.paymentSelected == ''){
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ningún tipo de pago'
+      });
+      return; // Don't proceed further
+    }
+    // Check for invalid quantities in selectedProducts
+    const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);
+    if (invalidProducts.length > 0) {
+      const productNames = invalidProducts.map(product => product.name).join(', ');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Las siguientes productos tienen cantidades no válidas: ${productNames}`
+      });
+      return; // Don't proceed further
+    }
+
+    // If all checks pass, you can proceed with sending the information
+    this.sendSaleData();
+  }
+
+  sendSaleData() {
+    // Perform actions to send the sale data
+    // You can send the data to your server or perform other operations here
+    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
     // Reset form
+    this.paymentSelected = '';
+    this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
   }
+
 
   // Method to cancel sale
   cancelSale() {
