@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
+import { format } from 'date-fns';
 export const PLAYER_TABLE = 'player'
 export const TEAM_TABLE = 'club'
 export const COUNTRY_TABLE = 'country'
@@ -161,20 +161,24 @@ export class Kera3Service {
   async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[]) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
-
+    const currentTimestamp = new Date();
+    const formattedTimestamp = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
     // Prepare the sale data
     const saleData = {
       codigo_instalacion_emitente: instalation,
       codigo_cliente: clienteSelected,
       codigo_estado: codigo_estado,
       codigo_tipo_movimiento: 'V',
-      user_id_empleado_encargado: user_id
+      user_id_empleado_encargado: user_id,
+      fecha_emision: formattedTimestamp
     };
 
     // Insert the sale record into the movimiento_producto table
-    const { data, error } = await this.supabase
+    const { data:values, error } = await this.supabase
       .from('movimiento_producto')
-      .upsert([saleData]);
+      .upsert([saleData])
+      .select();
+    console.log(values);
 
     if (error) {
       // Handle the error appropriately, e.g., show a message
@@ -182,7 +186,8 @@ export class Kera3Service {
       console.error(error);
     } else {
       // Successfully added the sale, now insert the sale details into detalle_movimiento
-      const codigo_movimiento = (data as any)?.[0]?.codigo_movimiento;
+      const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
+      console.log(codigo_movimiento)
       if (codigo_movimiento) {
         for (const product of selectedProducts) {
           // Prepare the sale detail data
@@ -190,6 +195,7 @@ export class Kera3Service {
             codigo_movimiento: codigo_movimiento,
             codigo_producto: product.cod,
             cantidad_producto: product.quantity
+
           };
 
           // Insert the sale detail record into detalle_movimiento

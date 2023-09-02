@@ -106,21 +106,6 @@
 <section *ngIf="showSaleForm">
   <h2>Registrar una venta</h2>
   <div>
-<<<<<<< Updated upstream
-    <div class="uk-inline">
-      <button class="uk-button uk-button-default" type="button">Selecctionar cliente</button>
-    <div class="uk-dropdown-large" uk-dropdown>
-        <ul cuk-dropdown="mode: click">
-            <li class="uk-active"><a href="#">Active</a></li>
-            <li><a href="#">Item</a></li>
-            <li class="uk-nav-header">Header</li>
-            <li><a href="#">Item</a></li>
-            <li><a href="#">Item</a></li>
-            <li class="uk-nav-divider"></li>
-            <li><a href="#">Item</a></li>
-        </ul>
-    </div>
-=======
     <div>
       <label for="clientDropdown">Cliente:</label>
       <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
@@ -147,24 +132,11 @@
             <button (click)="removeProduct(i)">Remove</button>
         </li>
       </ul>
->>>>>>> Stashed changes
     </div>
   </div>
   <div>
-    <label for="productDropdown">Select Product:</label>
-    <select id="productDropdown" class="form-control">
-      <!-- Populate options dynamically from products data -->
-    </select>
-    <input id="quantityInput" type="number" placeholder="Quantity">
-    <button (click)="addProduct()">Add Product</button>
-  </div>
-  <div *ngFor="let product of selectedProducts; let i = index">
-    <label>Product: {{ product.name }}</label>
-    <input type="number" [(ngModel)]="product.quantity">
-  </div>
   <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
   <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
-</section>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"

@@ -14,13 +14,6 @@ export class VentasComponent {
   currentPage: number = 1
   itemsPerPage: number = 5
   products:any[] = []
-<<<<<<< Updated upstream
-  sales: any = []
-  data:any = []
-  searchQuery: string = ''
-  estadoValue = '0'
-  selectedProducts: { name: string, quantity: number }[] = [];
-=======
   clients:any = []
   sales: any = []
   data:any = []
@@ -34,7 +27,6 @@ export class VentasComponent {
   paymentSelected = ''
 
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
->>>>>>> Stashed changes
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   showSaleForm: boolean = false;
@@ -42,15 +34,13 @@ export class VentasComponent {
 
   async ngOnInit() {
     this.products = await this.service.getProducts(this.instalation);
-<<<<<<< Updated upstream
-=======
+    console.log(this.products)
     this.clients = await this.service.getClients();
     this.states = await this.service.getAllStates();
     // Define an array of names to filter
     const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
->>>>>>> Stashed changes
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
@@ -61,19 +51,6 @@ export class VentasComponent {
    addProduct() {
     const productDropdown = document.getElementById('productDropdown') as HTMLSelectElement;
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
-<<<<<<< Updated upstream
-    const selectedProduct = productDropdown.value;
-    const quantity = parseInt(quantityInput.value, 10);
-
-    if (selectedProduct && quantity > 0) {
-      this.selectedProducts.push({ name: selectedProduct, quantity });
-      productDropdown.selectedIndex = 0;
-      quantityInput.value = '';
-    }
-  }
-
-  // Method to confirm sale
-=======
     // Find the selected product based on codigo_producto
     const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
     const val = parseInt(quantityInput.value, 10);
@@ -94,7 +71,6 @@ export class VentasComponent {
       this.selectedProducts = newArray;
     }
   }
->>>>>>> Stashed changes
   confirmSale() {
     // Check if clienteSelected is empty
     if (!this.clienteSelected) {

@@ -27,6 +27,7 @@ export class ClientsComponent implements OnInit {
   async convertData(){
     let _clients = await this.service.getClients() //temporal hold of clients
     let _saldos =  await this.service.getSaldoClientes();
+    console.log(_saldos)
     _clients?.map(client => {
       //verificar si tiene pendientes de pago
       const deudas = _saldos?.filter(item => item['codigo_cliente'] == client['codigo_cliente'])
@@ -41,8 +42,9 @@ export class ClientsComponent implements OnInit {
     if (clientData.deudas.length > 0) {
       // Client has debts, create a scrollable list
       let debtList = '';
-      clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_total: any; }) => {
-        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_total}\n`;
+      console.log(clientData);
+      clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_cliente: any; }) => {
+        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_cliente}\n`;
       });
 
       Swal.fire({
