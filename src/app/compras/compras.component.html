@@ -8,12 +8,11 @@
           </div>
       </div>
       <div>
-        <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
-          <!-- <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button> -->
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar compra</button>
       </div>
   </div>
   <hr>
-  <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+  <div *ngIf="!showBuyForm"  class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
 
       <!-- panel -->
       <div class="uk-width-1-1">
@@ -92,7 +91,7 @@
           </div>
       </div>
   </div>
-  <ul class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul *ngIf="!showBuyForm" class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
@@ -100,16 +99,16 @@
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
   </ul>
   <!-- Register new sale form -->
-<!-- <section *ngIf="showBuyForm">
-  <h2>Registrar una venta</h2>
+<section *ngIf="showBuyForm">
+  <h2>Registrar una compra</h2>
   <div>
     <div>
-      <label for="clientDropdown">Cliente:</label>
-      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
-        <option value="" disabled selected>Cliente</option>
-        <option *ngFor="let client of clients" [value]="client.codigo_cliente">{{ client.nombres }} {{ client.apellidos }}</option>
+      <label for="proveedorDropdown">Proveedor:</label>
+      <select id="proveedorDropdown" class="form-control" [(ngModel)]="proveedorSelected">
+        <option value="" disabled selected>Proveedor</option>
+        <option *ngFor="let proveedor of proveedores" [value]="proveedor.codigo_proveedor">{{ proveedor.nombre_proveedor }}</option>
       </select>
-      <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+      <select title="Payment" id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
         <option value="" disabled selected>Tipo de pago</option>
         <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
       </select>
@@ -118,6 +117,7 @@
         <option value="" disabled selected>Selecciona un producto</option>
         <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
       </select>
+      <label for="quantityInput">Cantidad:</label>
       <input id="quantityInput" type="number" placeholder="Cantidad">
       <button (click)="addProduct()">Agregar Producto</button>
     </div>
@@ -131,7 +131,9 @@
       </ul>
     </div>
   </div>
-  <div> -->
+    <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
+    <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+  <div>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
