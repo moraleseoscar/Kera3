@@ -78,7 +78,7 @@
                                     <td>{{ compra.fecha_inicio }}</td>
                                     <td>{{ compra.instalacion_emitente }}</td>
                                     <td>{{ compra.encargado }}</td>
-                                    <td>{{ compra.monto }}</td>
+                                    <td>Q.{{ compra.monto_total }}</td>
                                     <td class={{compra.estado}}>{{ compra.estado }}</td>
                                   </tr>
                               </ng-container>
@@ -91,7 +91,6 @@
               </div>
           </div>
       </div>
-      <!-- /panel -->
   </div>
   <ul class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
@@ -100,6 +99,39 @@
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
   </ul>
+  <!-- Register new sale form -->
+<!-- <section *ngIf="showBuyForm">
+  <h2>Registrar una venta</h2>
+  <div>
+    <div>
+      <label for="clientDropdown">Cliente:</label>
+      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
+        <option value="" disabled selected>Cliente</option>
+        <option *ngFor="let client of clients" [value]="client.codigo_cliente">{{ client.nombres }} {{ client.apellidos }}</option>
+      </select>
+      <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <option value="" disabled selected>Tipo de pago</option>
+        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <input id="quantityInput" type="number" placeholder="Cantidad">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{ product.name }}
+            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            <button (click)="removeProduct(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div> -->
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"

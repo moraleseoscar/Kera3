@@ -48,6 +48,10 @@ export class Kera3Service {
     let { data: producto, error } = await this.supabase.from('producto').select('nombre_producto')
     return producto
   }
+  async getCoso(){
+    let { data: coso, error } = await this.supabase.rpc('get_coso')
+    return coso
+  }
   async getCompras(){
     let { data: compras, error } = await this.supabase.rpc('get_compras')
     return compras

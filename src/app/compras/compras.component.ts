@@ -8,13 +8,14 @@ import Swal from 'sweetalert2';
   styleUrls: ['./compras.component.scss']
 })
 export class ComprasComponent {
+  showBuyForm = false
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
   data:any = []
   compras:any = []
-  details:any =[]
+  coso:any =[]
   paymentStates:string[]= ['UN SOLO PAGO','A PLAZOS']
   searchQuery: string = ''
   estadoValue = '0'
@@ -24,21 +25,19 @@ export class ComprasComponent {
   constructor(private service: Kera3Service) {}
   async ngOnInit() {
     this.compras = await this.service.getCompras();
+    console.log(this.compras);
     this.organizeData();
     console.log(this.data);
   }
   getDetails(buyData:any){
     let buyList = buyData.products;
     let htmlContent = '<ul>';
-
-    // Build the HTML content for the modal
     for (let compra of buyList) {
       htmlContent += `
         <li>Producto: ${compra.nombre_producto} Cantidad: ${compra.cantidad_producto}</dli>
       `;
     }
     htmlContent+=`</ul>`;
-
     Swal.fire({
       title: 'Detalles compra',
       html: htmlContent,
@@ -54,7 +53,7 @@ export class ComprasComponent {
           fecha_inicio:this.compras[index]["fecha_inicio"],
           instalacion_emitente:this.compras[index]["instalacion_emitente"],
           encargado:this.compras[index]["encargado"],
-          monto:this.compras[index]["monto"],
+          monto_total:this.compras[index]["monto_total"],
           estado:this.compras[index]["estado"],
           products:[{
             nombre_producto:this.compras[index]["nombre_producto"],
@@ -69,6 +68,9 @@ export class ComprasComponent {
         });
       }
     }
+  }
+  changePanelMode(){
+    this.showBuyForm = !this.showBuyForm;
   }
   returnFirstPage() {
     this.currentPage = 1
