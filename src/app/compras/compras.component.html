@@ -7,9 +7,10 @@
               </div>
           </div>
       </div>
-      <!-- <div>
-          <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
-      </div> -->
+      <div>
+        <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
+          <!-- <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button> -->
+      </div>
   </div>
   <hr>
   <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
@@ -66,23 +67,21 @@
                               <tr>
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Sucursal</th>
-                                  <th class="uk-table-small">Producto</th>
-                                  <th class="uk-table-small">Total</th>
-                                  <th class="uk-table-expand">Monto</th>
+                                  <th class="uk-table-small">Encargado</th>
+                                  <th class="uk-table-small">Monto Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
                           </thead>
                           <tbody>
-                              <!-- <ng-container *ngFor="let product of data">
-                                  <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
-                                    <td>{{ product.codigo_producto }}</td>
-                                    <td>{{ product.nombre_producto }}</td>
-                                    <td>{{ product.nombre_categoria }}</td>
-                                    <td>{{ product.codigo_dimensional }}</td>
-                                    <td>{{ product.cantidad}}</td>
-                                    <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                              <ng-container *ngFor="let compra of data">
+                                  <tr (click)="getDetails(compra)">
+                                    <td>{{ compra.fecha_inicio }}</td>
+                                    <td>{{ compra.instalacion_emitente }}</td>
+                                    <td>{{ compra.encargado }}</td>
+                                    <td>{{ compra.monto }}</td>
+                                    <td class={{compra.estado}}>{{ compra.estado }}</td>
                                   </tr>
-                              </ng-container> -->
+                              </ng-container>
                           </tbody>
                       </table>
                       <ng-template #empty>
@@ -94,13 +93,13 @@
       </div>
       <!-- /panel -->
   </div>
-  <!-- <ul class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul> -->
+  </ul>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
