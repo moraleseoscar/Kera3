@@ -166,9 +166,15 @@
     <!-- clients panel -->
     <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
     <!-- panel de ventas -->
+<<<<<<< HEAD
     <app-ventas [instalation] = "this.userData.codigo_instalacion" *ngIf="navcurrent == 'sales'"></app-ventas>
     <!-- panel de compras -->
     <app-compras *ngIf="navcurrent == 'buys'"></app-compras>
+=======
+    <app-ventas [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'sales'"></app-ventas>
+    <!-- panel de compras -->
+    <!-- <app-compras *ngIf="navcurrent == 'buys'"></app-compras> -->
+>>>>>>> 4a358420a58ff09e09c82de2f3a43b4d77712dd0
     <!-- employees panel -->
     <app-employees *ngIf="navcurrent == 'hr' && userData.rol_interno == 'ADMINISTRADOR'"></app-employees>
 

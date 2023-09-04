@@ -23,7 +23,6 @@ export class InstalacionesComponent implements OnInit {
     this.instalaciones = await this.service.getInstalaciones()
     this.data = this.instalaciones.slice(this.minIndex, this.maxIndex)
     this.types = await this.service.getInstalacionesTipos()
-    console.log(this.instalaciones)
   }
 
   returnFirstPage() {

@@ -23,12 +23,12 @@ export class HomeComponent implements OnInit{
   currentPage: number = 1
   itemsPerPage: number = 5
   navcurrent: string = 'inv' //variable de navegacion
-  userData : {user_nombres : string ;
+  userData : {user_id:string,user_nombres : string ;
                 user_apellidos: string;
                 codigo_instalacion: string;
                 rol_interno: string;
                 email: string}
-              = {user_nombres :'username' , user_apellidos : 'last names',
+              = {user_id:'0000',user_nombres :'username' , user_apellidos : 'last names',
               codigo_instalacion: '',
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
@@ -45,7 +45,6 @@ export class HomeComponent implements OnInit{
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.data = this.products.slice(startIndex, endIndex);
-    console.log(this.products)
     return this.products.slice(startIndex, endIndex);
   }
   returnFirstPage() {
@@ -86,13 +85,10 @@ export class HomeComponent implements OnInit{
     let email = '';
     this.route.queryParams.subscribe(async params => {
       email = params['email'];
-      console.log(Object.entries(params))
       let user = await this.service.getUserData(email)
-      console.log(email);
       try{
         if(user !=null){
-          console.log(user)
-          this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
+          this.userData= {user_id:user[0]['user_uid'],user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
           codigo_instalacion: user[0]['codigo_instalacion'],
           rol_interno: user[0]['rol_interno'],
           email: user[0]['email']}
@@ -225,7 +221,6 @@ export class HomeComponent implements OnInit{
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'registro_inventario' },
         (payload) => {
-          console.log('INSERT received!', Object.entries(payload));
           this.fetchInventory() // llamar los datos de nuevo
         }
       )
@@ -236,7 +231,6 @@ export class HomeComponent implements OnInit{
       'postgres_changes',
       { event: 'UPDATE', schema: 'public', table: 'registro_inventario' },
       (payload) => {
-        console.log('Change received!', payload.new)
         this.products?.forEach((element: { codigo_registro: any; cantidad: any; }) => {
           if(element.codigo_registro == payload.new['codigo_registro']) {
             element.cantidad = payload.new['cantidad'];
