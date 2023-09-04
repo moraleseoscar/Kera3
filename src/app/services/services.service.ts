@@ -11,8 +11,10 @@ export const ALL = '*'
   providedIn: 'root'
 })
 export class Kera3Service {
+
   private supabase: SupabaseClient;
   private tmp_user: any;
+  private invSubs: any;
   constructor() {
     this.supabase = createClient(
         'https://mocyzargxwwmjcppskkc.supabase.co',
@@ -20,8 +22,18 @@ export class Kera3Service {
     )
    }
 
+   getSupabase(){
+    return this.supabase
+   }
+   async getProducts(sucursal: string) {
+    let { data, error } = await this.supabase
+      .rpc('get_registro_inventario_place', {
+        _codplace: sucursal
+      })
 
+    return data || null
 
+  }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }
@@ -31,6 +43,10 @@ export class Kera3Service {
    async getAllDimens(){
     let { data: dimensional, error } = await this.supabase.from('dimensional').select('*')
     return dimensional
+  }
+  async getProductNames(){
+    let { data: producto, error } = await this.supabase.from('producto').select('nombre_producto')
+    return producto
   }
    async getAllProducts(){
     let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
@@ -94,6 +110,14 @@ export class Kera3Service {
     let {data, error } = await this.supabase.from('departamento').select('*')
     return data || error
   }
+
+  async getSaldoClientes() {
+  let { data: saldo_clientes, error } = await this.supabase
+  .from('saldo_clientes')
+  .select('*')
+  return saldo_clientes || null
+  }
+
   async signUp(mail:string, password:string){
     let { data, error } = await this.supabase
     .from('temporal_emp_data_holder')
@@ -142,5 +166,4 @@ export class Kera3Service {
     .select()
    console.log(update);
   }
-
 }

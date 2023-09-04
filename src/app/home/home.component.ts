@@ -32,8 +32,12 @@ export class HomeComponent implements OnInit{
               codigo_instalacion: '',
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
+    //realtime handlers
+    invUpdateSubscription:any;
+    invInsertSubscription:any;
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){
 
-  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){}
+   }
   get totalPages(): number {
     return Math.ceil(this.products.length / this.itemsPerPage);
   }
@@ -73,8 +77,8 @@ export class HomeComponent implements OnInit{
     }
   }
   async ngOnInit(){
-    this.products = await this.service.getAllProducts()
-    this.data = await this.products.slice(this.minIndex, this.maxIndex)
+    this.fetchInventory()
+    this.subscribeToInvChanges()
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
@@ -94,12 +98,20 @@ export class HomeComponent implements OnInit{
           email: user[0]['email']}
           this.instalacionValue = user[0]['codigo_instalacion']
         }
-
-
       }catch (error){
       }
     });
 
+
+  }
+  //make the realtime data available
+  async fetchInventory(): Promise<void> {
+    try {
+      this.products = await this.service.getAllProducts()
+      this.data = await this.products.slice(this.minIndex, this.maxIndex)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({
@@ -203,5 +215,43 @@ export class HomeComponent implements OnInit{
   logOut(){
     this.service.logOut();
     this.router.navigate(['/login']);
+  }
+
+  //realtime handlers
+
+  subscribeToInvChanges() {
+    this.invInsertSubscription = this.service.getSupabase().channel('custom-insert-channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          console.log('INSERT received!', Object.entries(payload));
+          this.fetchInventory() // llamar los datos de nuevo
+        }
+      )
+      .subscribe();
+
+    this.invUpdateSubscription = this.service.getSupabase().channel('custom-update-channel')
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'registro_inventario' },
+      (payload) => {
+        console.log('Change received!', payload.new)
+        this.products?.forEach((element: { codigo_registro: any; cantidad: any; }) => {
+          if(element.codigo_registro == payload.new['codigo_registro']) {
+            element.cantidad = payload.new['cantidad'];
+      }});
+        this.data = this.products.slice(this.minIndex, this.maxIndex)
+      }
+    )
+    .subscribe()
+  }
+  unsubscribeToInvChanges() {
+    if (this.invInsertSubscription) {
+      this.invInsertSubscription.unsubscribe();
+    }
+    if (this.invUpdateSubscription) {
+      this.invUpdateSubscription.unsubscribe();
+    }
   }
 }
