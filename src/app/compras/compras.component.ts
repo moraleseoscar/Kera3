@@ -75,7 +75,7 @@ export class ComprasComponent {
       }
     }
   }
-  confirmSale() {
+  confirmBuy() {
     // Check if clienteSelected is empty
     if (!this.proveedorSelected) {
       Swal.fire({

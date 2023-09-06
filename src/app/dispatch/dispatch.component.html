@@ -47,7 +47,8 @@
                                     <th class="uk-table-small">Fecha Inicio</th>
                                     <th class="uk-table-small">Fecha Final</th>
                                     <th class="uk-table-expand">Instalacion Emitente</th>
-                                    <th class="uk-table-small">Instalacion Receptora</th>
+                                    <th class="uk-table-expand">Instalacion Receptora</th>
+                                    <th class="uk-table-expand">Encargado</th>
                                     <th class="uk-table-expand">Estado</th>
                                   </tr>
                               </thead>
@@ -59,6 +60,7 @@
                                         <td>{{ despacho.fecha_final }}</td>
                                         <td>{{ despacho.instalacion_emitente }}</td>
                                         <td>{{ despacho.instalacion_receptora }}</td>
+                                        <td>{{ despacho.encargado }}</td>
                                         <td>{{ despacho.estado }}</td>
                                       </tr>
                                   </ng-container>
@@ -83,7 +85,7 @@
 
        <!-- Register new sale form -->
 <section *ngIf="showDispatchForm">
-  <h2>Registrar un despacho</h2>
+  <h2>Registrar un pedido</h2>
   <div>
     <div>
       <label for="instalacionDropdown">Instalacion:</label>
@@ -94,7 +96,7 @@
       <label for="productDropdown">Producto:</label>
       <select disabled id="productDropdown" class="form-control" [(ngModel)]="productSelected">
         <option value="" disabled selected>Selecciona un producto</option>
-        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">Producto:{{ product.nombre_producto }}</option>
       </select>
       <label for="quantityInput">Cantidad:</label>
       <input id="quantityInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Cantidad">
@@ -110,10 +112,8 @@
       </ul>
     </div>
   </div>
-    <button class="uk-align-left uk-button-primary confirmSale">Confirmar</button>
-    <button (click)="cancelSale()" class="uk-align-left uk-button-primary cancelSale" >Cancelar</button>
-    <!-- (click)="confirmSale()" -->
-
+    <button (click)="confirmDispatch()" class="uk-align-left uk-button-primary confirmSale">Confirmar</button>
+    <button (click)="cancelarPedido()" class="uk-align-left uk-button-primary cancelSale" >Cancelar</button>
   <div>
 
       <footer class="uk-section uk-section-small uk-text-center">
