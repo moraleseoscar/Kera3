@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2';
 
@@ -14,6 +14,8 @@ export class ComprasComponent {
   currentPage: number = 1
   itemsPerPage: number = 5
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
+  @Input() instalation: string = ''
+  @Input() user_id: string = ''
   data:any = []
   compras:any = []
   products:any =[]
@@ -81,7 +83,11 @@ export class ComprasComponent {
       });
       return; // Don't proceed further
     }
-
+    const quantityInput = document.getElementById('montoInput') as HTMLInputElement;
+    if (quantityInput.value.length===0){
+      Swal.fire({icon:'warning',title:"Advertencia",text:`Ingresa el valor del pago.`});
+      return;
+    }
     // Check if selectedProducts array is empty
     if (this.selectedProducts.length === 0) {
       Swal.fire({
@@ -114,14 +120,16 @@ export class ComprasComponent {
     this.sendBuyData();
   }
   sendBuyData() {
+    const quantityInput = document.getElementById('montoInput') as HTMLInputElement;
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
-    // this.service.addCompra(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
+    this.service.addCompra(this.user_id,this.instalation, this.proveedorSelected , this.paymentSelected, this.selectedProducts, parseFloat(quantityInput.value));
     // Reset form
     this.paymentSelected = '';
     this.proveedorSelected = '';
     this.showBuyForm = false;
     this.selectedProducts = [];
+    quantityInput.value = ''
   }
   cancelSale() {
     // Reset form

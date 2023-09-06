@@ -173,7 +173,7 @@ export class Kera3Service {
     .eq('email',user.correo)
     .select()
   }
-  async addCompra(user_id:string,instalation: string, proveedorSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[]) {
+  async addCompra(user_id:string,instalation: string, proveedorSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[],  montoProducto: number) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
     const currentTimestamp = new Date();
@@ -215,10 +215,19 @@ export class Kera3Service {
           const { error: detailError } = await this.supabase
             .from('detalle_movimiento')
             .upsert([saleDetailData]);
-
+            const cv = {
+              codigo_movimiento: codigo_movimiento,
+              monto: montoProducto
+            };
           if (detailError) {
             // Handle the detail error appropriately, e.g., show a message
             console.error('Error adding sale detail:', detailError);
+          }
+
+          const { error:detalle_cv_error } = await this.supabase.from("detalle_compra_venta").upsert([cv]);
+          if (detalle_cv_error)
+          {
+            console.error('Error adding buy detail:', detalle_cv_error);
           }
         }
       }

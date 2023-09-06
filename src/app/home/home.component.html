@@ -168,7 +168,7 @@
     <!-- panel de ventas -->
     <app-ventas [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'sales'"></app-ventas>
     <!-- panel de compras -->
-    <app-compras *ngIf="navcurrent == 'buys'"></app-compras>
+    <app-compras [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'buys'"></app-compras>
     <!-- employees panel -->
     <app-employees *ngIf="navcurrent == 'hr' && userData.rol_interno == 'ADMINISTRADOR'"></app-employees>
 

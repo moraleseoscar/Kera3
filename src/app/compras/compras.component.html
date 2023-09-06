@@ -118,7 +118,9 @@
         <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
       </select>
       <label for="quantityInput">Cantidad:</label>
-      <input id="quantityInput" type="number" placeholder="Cantidad">
+      <input id="quantityInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Cantidad">
+      <label for="montoInput">Monto: Q.</label>
+      <input id="montoInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Monto en quetzales">
       <button (click)="addProduct()">Agregar Producto</button>
     </div>
     <div>
