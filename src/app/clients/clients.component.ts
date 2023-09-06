@@ -19,12 +19,17 @@ export class ClientsComponent implements OnInit {
   saldoClientes: any = [];
   constructor(private service: Kera3Service) { }
 
+  //realtime handlers
+  registroPagos: any
+  salesAllEventSubscription: any
   async ngOnInit() {
+    this.fetchData()
+    this.subscribeToRealtimeEvents()
+  }
+  async fetchData(){
     this.clients = await this.convertData()
-    console.log(this.clients)
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.types = await this.service.getClientsTypes()
-    console.log(this.types)
   }
   async convertData(){
     let _clients = await this.service.getClients() //temporal hold of clients
@@ -43,8 +48,8 @@ export class ClientsComponent implements OnInit {
     if (clientData.deudas.length > 0) {
       // Client has debts, create a scrollable list
       let debtList = '';
-      clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_total: any; }) => {
-        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_total}\n`;
+      clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_cliente: any; }) => {
+        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_cliente}\n`;
       });
 
       Swal.fire({
@@ -117,5 +122,25 @@ export class ClientsComponent implements OnInit {
     } else {
       this.data = this.clients.slice(this.minIndex, this.maxIndex)
     }
+  }
+  subscribeToRealtimeEvents(){
+    this.registroPagos = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_pagos' },
+      (payload) => {
+        this.fetchData();
+      }
+    )
+    .subscribe()
+    this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchData();
+        }
+      )
+      .subscribe();
   }
 }

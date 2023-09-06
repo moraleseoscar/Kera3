@@ -7,12 +7,12 @@
               </div>
           </div>
       </div>
-      <!-- <div>
-          <button (click) = "onAddSales()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
-      </div> -->
+      <div>
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar compra</button>
+      </div>
   </div>
   <hr>
-  <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+  <div *ngIf="!showBuyForm"  class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
 
       <!-- panel -->
       <div class="uk-width-1-1">
@@ -66,23 +66,21 @@
                               <tr>
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Sucursal</th>
-                                  <th class="uk-table-small">Producto</th>
-                                  <th class="uk-table-small">Total</th>
-                                  <th class="uk-table-expand">Monto</th>
+                                  <th class="uk-table-small">Encargado</th>
+                                  <th class="uk-table-small">Monto Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
                           </thead>
                           <tbody>
-                              <!-- <ng-container *ngFor="let product of data">
-                                  <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')">
-                                    <td>{{ product.codigo_producto }}</td>
-                                    <td>{{ product.nombre_producto }}</td>
-                                    <td>{{ product.nombre_categoria }}</td>
-                                    <td>{{ product.codigo_dimensional }}</td>
-                                    <td>{{ product.cantidad}}</td>
-                                    <td class={{product.nombre_estado}}>{{ product.nombre_estado }}</td>
+                              <ng-container *ngFor="let compra of data">
+                                  <tr (click)="getDetails(compra)">
+                                    <td>{{ compra.fecha_inicio }}</td>
+                                    <td>{{ compra.instalacion_emitente }}</td>
+                                    <td>{{ compra.encargado }}</td>
+                                    <td>Q.{{ compra.monto_total }}</td>
+                                    <td class={{compra.estado}}>{{ compra.estado }}</td>
                                   </tr>
-                              </ng-container> -->
+                              </ng-container>
                           </tbody>
                       </table>
                       <ng-template #empty>
@@ -92,15 +90,52 @@
               </div>
           </div>
       </div>
-      <!-- /panel -->
   </div>
-  <!-- <ul class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul *ngIf="!showBuyForm" class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul> -->
+  </ul>
+  <!-- Register new sale form -->
+<section *ngIf="showBuyForm">
+  <h2>Registrar una compra</h2>
+  <div>
+    <div>
+      <label for="proveedorDropdown">Proveedor:</label>
+      <select id="proveedorDropdown" class="form-control" [(ngModel)]="proveedorSelected">
+        <option value="" disabled selected>Proveedor</option>
+        <option *ngFor="let proveedor of proveedores" [value]="proveedor.codigo_proveedor">{{ proveedor.nombre_proveedor }}</option>
+      </select>
+      <select title="Payment" id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <option value="" disabled selected>Tipo de pago</option>
+        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <label for="quantityInput">Cantidad:</label>
+      <input id="quantityInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Cantidad">
+      <label for="montoInput">Monto: Q.</label>
+      <input id="montoInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Monto en quetzales">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{ product.name }}
+            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            <button (click)="removeProduct(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+    <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
+    <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+  <div>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
