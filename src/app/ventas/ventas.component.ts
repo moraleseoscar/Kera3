@@ -8,42 +8,70 @@ import Swal from 'sweetalert2'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VentasComponent {
+
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
   products:any[] = []
-  productsNames:any = []
   clients:any = []
   sales: any = []
   data:any = []
   cart:any = []
+  states:any = []
+  paymentStates:string[]= ['UN SOLO PAGO','A PLAZOS']
   searchQuery: string = ''
   estadoValue = '0'
   clienteSelected = ''
   productSelected = ''
-  selectedProducts: { name: string, quantity: number }[] = [];
+  paymentSelected = ''
+
+  selectedProducts: { name: string, quantity: number,cod:string }[] = [];
   @Input() instalation: string = ''
+  @Input() user_id: string = ''
   showSaleForm: boolean = false;
+
+  //real time handlers
+  salesAllEventSubscription: any
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
     this.products = await this.service.getProducts(this.instalation);
-    this.productsNames = await this.service.getProductNames();
     this.clients = await this.service.getClients();
+    this.states = await this.service.getAllStates();
+    // Define an array of names to filter
+    const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
+    // Filter the states array to include only the valid names
+    this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
+    this.fetchSales();
+    this.subscribeToChanges();
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
   }
-
+  getDetails(saleData:any){
+    let productList = '';
+    saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
+      productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
+      });
+      Swal.fire({
+        title: `Detalles venta a ${saleData.client_name}`,
+        html: `
+        <p>Productos:</p>
+        <pre>${productList}</pre>
+        `,
+        confirmButtonText: 'OK'
+      });
+  }
 
    // Method to add a product to selectedProducts array
    addProduct() {
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+    // Find the selected product based on codigo_producto
+    const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
     const val = parseInt(quantityInput.value, 10);
-    console.log(this.productSelected+val);
-    if (this.productSelected!='' && val > 0) {
-      this.selectedProducts.push({ name: this.productSelected, quantity: parseInt(quantityInput.value,10) });
+    if (this.productSelected!='' && val > 0 && selectedProduct) {
+      this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
       this.productSelected ='';
       quantityInput.value = '';
     }
@@ -59,17 +87,67 @@ export class VentasComponent {
       this.selectedProducts = newArray;
     }
   }
-  // Method to confirm sale
   confirmSale() {
-    // Perform actions to save the sale
+    // Check if clienteSelected is empty
+    if (!this.clienteSelected) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debes seleccionar un cliente.'
+      });
+      return; // Don't proceed further
+    }
+
+    // Check if selectedProducts array is empty
+    if (this.selectedProducts.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ningún producto.'
+      });
+      return; // Don't proceed further
+    }
+    if(this.paymentSelected == ''){
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ningún tipo de pago'
+      });
+      return; // Don't proceed further
+    }
+    // Check for invalid quantities in selectedProducts
+    const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);
+    if (invalidProducts.length > 0) {
+      const productNames = invalidProducts.map(product => product.name).join(', ');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Las siguientes productos tienen cantidades no válidas: ${productNames}`
+      });
+      return; // Don't proceed further
+    }
+
+    // If all checks pass, you can proceed with sending the information
+    this.sendSaleData();
+  }
+
+  sendSaleData() {
+    // Perform actions to send the sale data
+    // You can send the data to your server or perform other operations here
+    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
     // Reset form
+    this.paymentSelected = '';
+    this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
   }
 
+
   // Method to cancel sale
   cancelSale() {
     // Reset form
+    this.paymentSelected = '';
+    this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
   }
@@ -118,5 +196,19 @@ export class VentasComponent {
       this.data = this.sales.slice(this.minIndex, this.maxIndex)
     }
   }
-
+  subscribeToChanges(){
+    this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchSales();
+        }
+      )
+      .subscribe();
+  }
+  async fetchSales(){
+    this.sales = await this.service.getAllSales();
+    this.data = this.sales.slice(this.minIndex, this.maxIndex)
+  }
 }

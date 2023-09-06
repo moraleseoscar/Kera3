@@ -27,7 +27,7 @@ export class EmployeesComponent {
     this.rols = await this.service.getRoles()
     this.dpts = await this.service.getDepartments()
     this.instalaciones = await this.service.getInstalaciones()
-    console.log(this.dpts)
+
   }
 
   returnFirstPage() {
@@ -111,7 +111,6 @@ export class EmployeesComponent {
       preConfirm: () => {
 
         const cui = (<HTMLInputElement>document.getElementById('cui')).value;
-        console.log(cui);
         const nombre = (<HTMLInputElement>document.getElementById('nombre')).value;
         const apellido = (<HTMLInputElement>document.getElementById('apellido')).value;
         const categoria = (<HTMLInputElement>document.getElementById('categoria')).value;
