@@ -32,13 +32,14 @@ export class ComprasComponent {
     this.products = await this.service.getAllProducts();
     this.proveedores = await this.service.getProveedores();
     this.organizeData();
+
   }
   getDetails(buyData:any){
     let buyList = buyData.products;
-    let htmlContent = '<ul>';
+    let htmlContent = `Proveedor:${buyData.nombre_proveedor}<ul>`;
     for (let compra of buyList) {
       htmlContent += `
-        <li>Producto: ${compra.nombre_producto} Cantidad: ${compra.cantidad_producto}</dli>
+        <li>Producto: ${compra.nombre_producto} Cantidad: ${compra.cantidad_producto}</li>
       `;
     }
     htmlContent+=`</ul>`;
@@ -53,6 +54,7 @@ export class ComprasComponent {
       const dataIndex = this.data.findIndex((dat: any) => dat.numero_movimiento === this.compras[index]["numero_movimiento"]);
       if(dataIndex === -1){
         this.data.push({
+          nombre_proveedor:this.compras[index]["nombre_proveedor"],
           numero_movimiento:this.compras[index]["numero_movimiento"],
           fecha_inicio:this.compras[index]["fecha_inicio"],
           instalacion_emitente:this.compras[index]["instalacion_emitente"],
