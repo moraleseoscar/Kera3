@@ -24,7 +24,6 @@ export class DispatchComponent implements OnInit {
   instalacionSelected = ''
   productSelected = ''
   constructor(private service: Kera3Service) { }
-
   async ngOnInit() {
     this.despachos = await this.service.getDespachos();
     console.log(this.despachos);
@@ -60,7 +59,7 @@ export class DispatchComponent implements OnInit {
   }
   getDetails(dispatchData:any){
     let dispatchList = dispatchData.products;
-    let htmlContent = `Encargado:${dispatchData.encargado}<ul>`;
+    let htmlContent = `<ul>`;
     for (let dispatch of dispatchList) {
       htmlContent += `
         <li>Producto: ${dispatch.nombre_producto} Cantidad: ${dispatch.cantidad_producto}</li>
@@ -68,7 +67,7 @@ export class DispatchComponent implements OnInit {
     }
     htmlContent+=`</ul>`;
     Swal.fire({
-      title: 'Detalles despacho',
+      title: 'Detalles Despacho',
       html: htmlContent,
       confirmButtonText: 'OK'
     });
@@ -93,7 +92,7 @@ export class DispatchComponent implements OnInit {
   changePanelMode(){
     this.showDispatchForm = !this.showDispatchForm;
   }
-  cancelSale() {
+  cancelarPedido() {
     // Reset form
     this.instalacionSelected = '';
     this.showDispatchForm = false;
@@ -101,24 +100,38 @@ export class DispatchComponent implements OnInit {
   }
   addProduct() {
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+    const indexProduct = this.products.findIndex((product:any) => product.codigo_producto === this.productSelected);
+    if (parseInt(quantityInput.value,10) > this.products[indexProduct]["cantidad"]) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La cantidad de producto es mayor a la posible.'
+      });
+      return; // Don't proceed further
+    }
     // Find the selected product based on codigo_producto
     const selectedProduct = this.products.find((product: { codigo_producto: any; }) => product.codigo_producto === this.productSelected);
     const val = parseInt(quantityInput.value, 10);
     if (this.productSelected!='' && val > 0 && selectedProduct) {
       this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
+      // Se remueve el producto ya seleccionado de la lista de los productos posibles.
+      this.products = this.products.filter((products:any) => products.codigo_producto !== this.productSelected);
       this.productSelected ='';
       quantityInput.value = '';
     }
   }
-  removeProduct(i: number)
+  async removeProduct(i: number)
   {
-    for (let index = 0; index < this.selectedProducts.length; index++) {
-      var newArray: any[] = [];
-      if(index != i)
-      {
-        newArray.push(this.selectedProducts[index]);
+    this.selectedProducts = this.selectedProducts.splice(i);
+    this.products = await this.service.getProducts(this.instalacionSelected);
+    for (let index = 0; index < this.products.length; index++) {
+      if (this.products[index]["nombre_estado"]!=="DISPONIBLE"){
+        this.products.splice(index);
       }
-      this.selectedProducts = newArray;
+      if (this.products[index]["codigo_producto"]===this.selectedProducts[index]["cod"])
+      {
+        this.products.splice(index);
+      }
     }
   }
   returnFirstPage() {
@@ -165,4 +178,48 @@ export class DispatchComponent implements OnInit {
       this.data = this.products.slice(this.minIndex, this.maxIndex)
     }
   }
+  confirmDispatch() {
+    // Check if selectedProducts array is empty
+    if (this.selectedProducts.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ningún producto.'
+      });
+      return; // Don't proceed further
+    }
+    if (this.instalacionSelected.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No has seleccionado ninguna instalacion.'
+      });
+      return; // Don't proceed further
+    }
+    // Check for invalid quantities in selectedProducts
+    const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);
+    if (invalidProducts.length > 0) {
+      const productNames = invalidProducts.map(product => product.name).join(', ');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Las siguientes productos tienen cantidades no válidas: ${productNames}`
+      });
+      return; // Don't proceed further
+    }
+    // If all checks pass, you can proceed with sending the information
+    this.sendDispatchData();
+  }
+  sendDispatchData() {
+    const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+    // Perform actions to send the sale data
+    // You can send the data to your server or perform other operations here
+    this.service.addDispatch(this.user_id,this.instalation, this.instalacionSelected, this.selectedProducts);
+    // Reset form
+    this.instalacionSelected = '';
+    this.showDispatchForm = false;
+    this.selectedProducts = [];
+    quantityInput.value = ''
+  }
+
 }
