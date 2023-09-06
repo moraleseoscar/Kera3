@@ -160,7 +160,7 @@
         </footer>
     </div>
     <!-- dispatch pannel -->
-    <app-dispatch *ngIf="navcurrent == 'desp'" ></app-dispatch>
+    <app-dispatch [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'desp'" ></app-dispatch>
     <!-- Instalaciones panel -->
     <app-instalaciones *ngIf="navcurrent == 'inst'"></app-instalaciones>
     <!-- clients panel -->

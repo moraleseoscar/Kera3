@@ -128,7 +128,7 @@
         <li *ngFor="let product of selectedProducts; let i = index">
             {{ product.name }}
             <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
-            <button (click)="removeProduct(i)">Remove</button>
+            <button (click)="removeProduct(i)">Eliminar</button>
         </li>
       </ul>
     </div>
