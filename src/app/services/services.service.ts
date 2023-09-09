@@ -107,7 +107,7 @@ export class Kera3Service {
   async logOut(){
     this.supabase.auth.signOut()
   }
-  async getUserData(email:string){
+  async getUserData(email:any){
     let {data: user, error } = await this.supabase.rpc('get_user_extra_data', {mail:email})
     return user || null
   }

@@ -24,12 +24,14 @@ export class LoginComponent implements OnInit {
       if(error) {
         let isSignup = await this.service.signUp(this._email, this._password);
         if(isSignup){
-          this.router.navigate(['/home'], { queryParams: {email: this._email}})
+          await sessionStorage.setItem('datos', this._email)
+          this.router.navigate(['/']);
         }else{
           this.alert(error.message);
         }
       }else{
-        this.router.navigate(['/home'], { queryParams: {email: this._email}})
+        await sessionStorage.setItem('datos', this._email)
+        this.router.navigate(['/']);
       }
     }else{
       if(this._email == ''){
