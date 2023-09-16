@@ -68,14 +68,14 @@
                                 <div class="uk-margin">
                                     <form class="uk-search uk-width-expand uk-search-default">
                                         <span uk-search-icon></span>
-                                        <input class="uk-search-input" type="search" placeholder="Búsqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                                        <input class="uk-search-input" type="search" placeholder="Búsqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onFilterAndSearch()" [ngModelOptions]="{standalone: true}">
                                     </form>
                                 </div>
                             </div>
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Categoría:</label>
-                                    <select class="uk-select" [(ngModel)]="categoriaValue">
+                                    <select class="uk-select" [(ngModel)]="categoriaValue" (ngModelChange)="onFilterAndSearch()">
                                         <option value="all">Todos</option>
                                         <option *ngFor="let categoria of categorias"
                                             [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
@@ -86,7 +86,7 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Estado:</label>
-                                    <select class="uk-select" [(ngModel)]="estadoValue">
+                                    <select class="uk-select" [(ngModel)]="estadoValue" (ngModelChange)="onFilterAndSearch()">
                                         <option value="0">Todos</option>
                                         <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
                                             estado.nombre_estado }}</option>
@@ -96,9 +96,9 @@
                             <div class="uk-width-expand uk-width-1-4">
                                 <div class="display--filters">
                                     <label for="" style="margin-right: 5%;">Instalación:</label>
-                                    <select class="uk-select" [(ngModel)]="instalacionValue">
+                                    <select class="uk-select" [(ngModel)]="instalacionValue" (ngModelChange)="onFilterAndSearch()">
                                         <option value="all">Todos</option>
-                                        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{
+                                        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion" >{{
                                           instalacion.nombre_instalacion }}</option>
                                     </select>
                                 </div>
@@ -121,10 +121,7 @@
                                 </thead>
                                 <tbody>
                                     <ng-container *ngFor="let product of data">
-                                        <tr  (click)="getDetails(product)" *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all')
-                                        && (estadoValue == product.codigo_estado || estadoValue === '0')
-                                        && (product.codigo_instalacion == instalacionValue || instalacionValue == 'all')
-                                        ">
+                                        <tr  (click)="getDetails(product)">
                                           <td>{{ product.codigo_producto }}</td>
                                           <td>{{ product.nombre_producto }}</td>
                                           <td>{{ product.nombre_categoria }}</td>
