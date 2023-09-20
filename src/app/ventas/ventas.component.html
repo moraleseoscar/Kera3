@@ -84,7 +84,8 @@
                                     <td>{{ sale.installation }}</td>
                                     <td>{{ sale.total_amount}}</td>
                                     <td>{{ sale.nombre_estado}}</td>
-
+                                    <td ><img src="../../assets/payment.png" *ngIf="sale.codigo_estado==10">
+                                      <img src="../../assets/payment-history.png"></td>
                                   </tr>
                               </ng-container>
                           </tbody>

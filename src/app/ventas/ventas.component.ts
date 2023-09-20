@@ -209,6 +209,7 @@ export class VentasComponent {
   }
   async fetchSales(){
     this.sales = await this.service.getAllSales();
+    console.log(this.sales)
     this.data = this.sales.slice(this.minIndex, this.maxIndex)
   }
 }
