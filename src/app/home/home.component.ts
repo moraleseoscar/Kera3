@@ -82,16 +82,9 @@ export class HomeComponent implements OnInit{
     this.estados = await this.service.getAllStates()
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
-<<<<<<< Updated upstream
-    let email = '';
-    this.route.queryParams.subscribe(async params => {
-      email = params['email'];
-      let user = await this.service.getUserData(email)
-=======
     let email = await sessionStorage.getItem('datos')
     let user = await this.service.getUserData(email)
       console.log(email);
->>>>>>> Stashed changes
       try{
         if(user !=null){
           this.userData= {user_id:user[0]['user_uid'],user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
