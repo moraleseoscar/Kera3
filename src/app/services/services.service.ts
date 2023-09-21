@@ -336,7 +336,29 @@ export class Kera3Service {
     }
   }
   async getAllSales() {
-    let {data, error} = await this.supabase.rpc('get_sales')
-    return data || null;
+    let {data:sales, error} = await this.supabase.rpc('get_sales')
+    return sales || null;
+  }
+  async getPaymentsDetails(id: string) {
+  let { data: registro_pagos, error } = await this.supabase
+  .from('registro_pagos')
+  .select("*")
+  .eq('codigo_movimiento', id)
+  return registro_pagos || null;
+  }
+  async addPayment(codigo:string, monto:string) {
+    console.log(`Service codigo movimeinto ${codigo}, monto ${monto}`)
+    const saleData =  { codigo_movimiento: codigo ,
+     monto_movimiento: monto }
+    const { data, error } = await this.supabase
+    .from('registro_pagos')
+    .insert([
+      saleData
+    ])
+    .select()
+    if (error) {
+      console.log(error)
+    }
+    return data || error
   }
 }

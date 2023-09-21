@@ -33,6 +33,7 @@ export class VentasComponent {
 
   //real time handlers
   salesAllEventSubscription: any
+  paymentsAllEventSubscription: any
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
@@ -64,8 +65,8 @@ export class VentasComponent {
       });
   }
 
-   // Method to add a product to selectedProducts array
-   addProduct() {
+  // Method to add a product to selectedProducts array
+  addProduct() {
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
     // Find the selected product based on codigo_producto
     const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
@@ -152,6 +153,48 @@ export class VentasComponent {
     this.selectedProducts = [];
   }
 
+  getPayments(salePayments: any[], saleDebt: string){
+    let paymentList = '';
+    salePayments.forEach((salePayment) => {
+      paymentList += `fecha realizado: ${salePayment.fecha_pago} Monto: Q${salePayment.monto_movimiento}`
+    })
+    Swal.fire({
+      title: 'Registro de pagos realizados',
+      html: `
+      <p>Deuda esta venta: Q ${saleDebt}</p>
+      <pre>${paymentList}</pre>
+      `,
+      confirmButtonText: 'OK'
+    })
+  }
+
+  async addPayment(saleCode : string){
+    Swal.fire({
+      title: 'Registrar un pago',
+      confirmButtonText: 'Registrar',
+      showDenyButton: true,
+      denyButtonText: `Cancelar`,
+      input: 'number',
+      inputLabel: 'Monto en Q',
+      preConfirm: (payment) =>{
+        const _payment = parseFloat(payment)
+        if (!payment || _payment <=0 ){
+          Swal.showValidationMessage(
+            'Cantidad no válida'
+          )
+        }
+      }
+    }).then((result) => {
+      if(result.isConfirmed){
+        if (result.value){
+          console.log(`codigo movimeinto ${saleCode}, monto ${result.value}`)
+          let res = this.service.addPayment(saleCode,result.value)
+          console.log(res)
+        }
+      }
+      })
+  }
+
   returnFirstPage() {
     this.currentPage = 1
     this.maxIndex = this.itemsPerPage;
@@ -197,7 +240,7 @@ export class VentasComponent {
     }
   }
   subscribeToChanges(){
-    this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+    this.paymentsAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'registro_inventario' },
@@ -206,10 +249,36 @@ export class VentasComponent {
         }
       )
       .subscribe();
+
+      this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'movimiento_producto' },
+        (payload) => {
+          this.fetchSales();
+        }
+      )
+      .subscribe();
   }
   async fetchSales(){
     this.sales = await this.service.getAllSales();
-    console.log(this.sales)
+    this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
+      let payments = await this.service.getPaymentsDetails(sale.sale_code);
+      if(payments != null){
+        let payment_amount = 0;
+        payments.forEach(payment =>{
+          payment_amount += payment['monto_movimiento'] ;
+        })
+        sale['payments'] = payments;
+        sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
+      }else{
+        sale['payments'] = [];
+        sale['debt'] = 0;
+      }
+
+    }
+    )
     this.data = this.sales.slice(this.minIndex, this.maxIndex)
+    console.log(this.sales)
   }
 }

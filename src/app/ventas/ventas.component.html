@@ -76,16 +76,16 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let sale of data">
-                                  <tr  (click)="getDetails(sale)" >
-                                    <td>{{ sale.sale_code }}</td>
-                                    <td>{{ sale.sale_date }}</td>
-                                    <td>{{ sale.client_name }}</td>
-                                    <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
-                                    <td>{{ sale.installation }}</td>
-                                    <td>{{ sale.total_amount}}</td>
-                                    <td>{{ sale.nombre_estado}}</td>
-                                    <td ><img src="../../assets/payment.png" *ngIf="sale.codigo_estado==10">
-                                      <img src="../../assets/payment-history.png"></td>
+                                  <tr>
+                                    <td  (click)="getDetails(sale)">{{ sale.sale_code }}</td>
+                                    <td  (click)="getDetails(sale)">{{ sale.sale_date }}</td>
+                                    <td  (click)="getDetails(sale)">{{ sale.client_name }}</td>
+                                    <td  (click)="getDetails(sale)">{{sale.employee_name}} {{sale.employee_lastname}}</td>
+                                    <td  (click)="getDetails(sale)">{{ sale.installation }}</td>
+                                    <td  (click)="getDetails(sale)">{{ sale.total_amount}}</td>
+                                    <td  (click)="getDetails(sale)">{{ sale.nombre_estado}}</td>
+                                    <td ><img src="../../assets/payment.png" *ngIf="sale.codigo_estado==10" style="width: 20px; height: 20px;" (click)="addPayment(sale.sale_code)">
+                                      <img src="../../assets/payment-history.png" *ngIf="sale.payments.length>0" style="width: 20px; height: 20px;"(click)="getPayments(sale.payments, sale.debt)"> </td>
                                   </tr>
                               </ng-container>
                           </tbody>
