@@ -8,11 +8,12 @@ import Swal from 'sweetalert2'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VentasComponent {
-
+  //pagination
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
+  //data
   products:any[] = []
   clients:any = []
   sales: any = []
@@ -20,12 +21,16 @@ export class VentasComponent {
   cart:any = []
   states:any = []
   paymentStates:string[]= ['UN SOLO PAGO','A PLAZOS']
+
+  //filters
   searchQuery: string = ''
   estadoValue = '0'
+  //sale
   clienteSelected = ''
   productSelected = ''
   paymentSelected = ''
 
+  //register a sale
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
   @Input() instalation: string = ''
   @Input() user_id: string = ''
@@ -34,22 +39,24 @@ export class VentasComponent {
   //real time handlers
   salesAllEventSubscription: any
   paymentsAllEventSubscription: any
+
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
+    await this.fetchSales();
     this.products = await this.service.getProducts(this.instalation);
-    this.clients = await this.service.getClients();
-    this.states = await this.service.getAllStates();
     // Define an array of names to filter
     const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
-    this.fetchSales();
+    this.clients = await this.service.getClients();
+    this.states = await this.service.getAllStates();
     this.subscribeToChanges();
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
   }
+  //details from the sale
   getDetails(saleData:any){
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
@@ -132,6 +139,15 @@ export class VentasComponent {
     this.sendSaleData();
   }
 
+  // Method to cancel sale
+  cancelSale() {
+    // Reset form
+    this.paymentSelected = '';
+    this.clienteSelected = '';
+    this.showSaleForm = false;
+    this.selectedProducts = [];
+  }
+  //send the sale to database
   sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
@@ -143,16 +159,7 @@ export class VentasComponent {
     this.selectedProducts = [];
   }
 
-
-  // Method to cancel sale
-  cancelSale() {
-    // Reset form
-    this.paymentSelected = '';
-    this.clienteSelected = '';
-    this.showSaleForm = false;
-    this.selectedProducts = [];
-  }
-
+  //payments of the sales
   getPayments(salePayments: any[], saleDebt: string){
     let paymentList = '';
     salePayments.forEach((salePayment) => {
@@ -187,14 +194,12 @@ export class VentasComponent {
     }).then((result) => {
       if(result.isConfirmed){
         if (result.value){
-          console.log(`codigo movimeinto ${saleCode}, monto ${result.value}`)
           let res = this.service.addPayment(saleCode,result.value)
-          console.log(res)
         }
       }
       })
   }
-
+  //pagination
   returnFirstPage() {
     this.currentPage = 1
     this.maxIndex = this.itemsPerPage;
@@ -226,10 +231,10 @@ export class VentasComponent {
   get totalPages(): number {
     return Math.ceil(this.sales.length / this.itemsPerPage);
   }
+  //filters
   onSearch() {
     if (this.searchQuery !== "") {
       let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
       for (let index = 0; index < this.sales.length; index++) {
         if (rgx_search.test( this.sales[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.sales[index]['apellidos'].toLocaleUpperCase())){
           this.data = [...this.data, this.sales[index]]
@@ -260,7 +265,8 @@ export class VentasComponent {
       )
       .subscribe();
   }
-  async fetchSales(){
+  //fetchers and real time
+  async fetchSales() : Promise<void>{
     this.sales = await this.service.getAllSales();
     this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
       let payments = await this.service.getPaymentsDetails(sale.sale_code);
@@ -279,6 +285,5 @@ export class VentasComponent {
     }
     )
     this.data = this.sales.slice(this.minIndex, this.maxIndex)
-    console.log(this.sales)
   }
 }

@@ -161,23 +161,8 @@ export class Kera3Service {
       }
     ])
     .select()
-    if(error){
+  }
 
-    }
-  }
-  async updateEmployee(user: any){
-    while(await this.supabase.from('employees').select('*').eq('email',user.correo)){}
-    const { data:employee, error:update } = await this.supabase
-    .from('empleado')
-    .update([
-      { cui: user.cui, codigo_rol: user.categoria ,
-        codigo_dptm: user.dpt , nombres: user.nombre ,
-        apellidos: user.apellido , telefono:user.telefono
-      },
-    ])
-    .eq('email',user.correo)
-    .select()
-  }
   async addDispatch(user_id:string,instalacion_emitente: string, instalacion_receptora: string,selectedProducts: { name: string, quantity: number, cod: string }[]) {
     const currentTimestamp = new Date();
     const formattedTimestamp = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
@@ -347,7 +332,6 @@ export class Kera3Service {
   return registro_pagos || null;
   }
   async addPayment(codigo:string, monto:string) {
-    console.log(`Service codigo movimeinto ${codigo}, monto ${monto}`)
     const saleData =  { codigo_movimiento: codigo ,
      monto_movimiento: monto }
     const { data, error } = await this.supabase
@@ -357,7 +341,6 @@ export class Kera3Service {
     ])
     .select()
     if (error) {
-      console.log(error)
     }
     return data || error
   }

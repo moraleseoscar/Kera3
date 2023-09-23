@@ -25,7 +25,7 @@
           <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
-          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sales')">Ventas</h5>
+          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Ventas</h5>
           <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
           <h5 class="nav-option {{ navcurrent === 'hr' ? 'active' : '' }}" (click)="setCurrentNav('hr')" *ngIf="userData.rol_interno == 'ADMINISTRADOR'" >Empleados</h5>
@@ -163,7 +163,7 @@
     <!-- clients panel -->
     <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
     <!-- panel de ventas -->
-    <app-ventas [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'sales'"></app-ventas>
+    <app-ventas [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'sale'"></app-ventas>
     <!-- panel de compras -->
     <app-compras [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'buys'"></app-compras>
     <!-- employees panel -->
@@ -179,7 +179,7 @@
           <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
           <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
           <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
-          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sales')">Ventas</h5>
+          <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Ventas</h5>
           <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
           <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
           <h5 class="nav-option {{ navcurrent === 'hr' ? 'active' : '' }}" (click)="setCurrentNav('hr')" *ngIf="userData.rol_interno == 'ADMINISTRADOR'">Empleados</h5>

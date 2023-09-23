@@ -26,7 +26,6 @@ export class DispatchComponent implements OnInit {
   constructor(private service: Kera3Service) { }
   async ngOnInit() {
     this.despachos = await this.service.getDespachos();
-    console.log(this.despachos);
     this.instalaciones = await this.service.getAllInstalaciones();
     this.instalaciones = this.instalaciones.filter((instalacion:any) => instalacion.codigo_instalacion !== this.instalation);
     this.organizeData();
