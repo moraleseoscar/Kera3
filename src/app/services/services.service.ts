@@ -161,23 +161,8 @@ export class Kera3Service {
       }
     ])
     .select()
-    if(error){
+  }
 
-    }
-  }
-  async updateEmployee(user: any){
-    while(await this.supabase.from('employees').select('*').eq('email',user.correo)){}
-    const { data:employee, error:update } = await this.supabase
-    .from('empleado')
-    .update([
-      { cui: user.cui, codigo_rol: user.categoria ,
-        codigo_dptm: user.dpt , nombres: user.nombre ,
-        apellidos: user.apellido , telefono:user.telefono
-      },
-    ])
-    .eq('email',user.correo)
-    .select()
-  }
   async addDispatch(user_id:string,instalacion_emitente: string, instalacion_receptora: string,selectedProducts: { name: string, quantity: number, cod: string }[]) {
     const currentTimestamp = new Date();
     const formattedTimestamp = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
@@ -336,7 +321,27 @@ export class Kera3Service {
     }
   }
   async getAllSales() {
-    let {data, error} = await this.supabase.rpc('get_sales')
-    return data || null;
+    let {data:sales, error} = await this.supabase.rpc('get_sales')
+    return sales || null;
+  }
+  async getPaymentsDetails(id: string) {
+  let { data: registro_pagos, error } = await this.supabase
+  .from('registro_pagos')
+  .select("*")
+  .eq('codigo_movimiento', id)
+  return registro_pagos || null;
+  }
+  async addPayment(codigo:string, monto:string) {
+    const saleData =  { codigo_movimiento: codigo ,
+     monto_movimiento: monto }
+    const { data, error } = await this.supabase
+    .from('registro_pagos')
+    .insert([
+      saleData
+    ])
+    .select()
+    if (error) {
+    }
+    return data || error
   }
 }
