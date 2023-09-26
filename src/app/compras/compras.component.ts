@@ -19,7 +19,7 @@ export class ComprasComponent {
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
-  selectedProducts: { name: string, quantity: number,cod:string }[] = [];
+  selectedProducts: { name: string, quantity: number, monto:number, cod:string }[] = [];
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   data:any = []
@@ -45,7 +45,12 @@ export class ComprasComponent {
     let htmlContent = `Proveedor:${buyData.nombre_proveedor}<ul>`;
     for (let compra of buyList) {
       htmlContent += `
-        <li>Producto: ${compra.nombre_producto} Cantidad: ${compra.cantidad_producto}</li>
+        <li>${compra.nombre_producto}
+          <ul>
+            <li>Cantidad: ${compra.cantidad_producto}</li>
+            <li>Precio: ${compra.monto_total}</li>
+          </ul>
+        </li>
       `;
     }
     htmlContent+=`</ul>`;
@@ -55,37 +60,52 @@ export class ComprasComponent {
       confirmButtonText: 'OK'
     });
   }
-  organizeData(){
+  organizeData() {
     for (let index = 0; index < this.compras.length; index++) {
-      const dataIndex = this.data.findIndex((dat: any) => dat.numero_movimiento === this.compras[index]["numero_movimiento"]);
-      if(dataIndex === -1){
-        this.data.push({
-          nombre_proveedor:this.compras[index]["nombre_proveedor"],
-          numero_movimiento:this.compras[index]["numero_movimiento"],
-          fecha_inicio:this.compras[index]["fecha_inicio"],
-          instalacion_emitente:this.compras[index]["instalacion_emitente"],
-          encargado:this.compras[index]["encargado"],
-          monto_total:this.compras[index]["monto_total"],
-          estado:this.compras[index]["estado"],
-          products:[{
-            nombre_producto:this.compras[index]["nombre_producto"],
-            cantidad_producto:this.compras[index]["cantidad_producto"]
-          }]
-        })
-      }
-      else{
-        this.data[dataIndex].products.push({
-          nombre_producto: this.compras[index]["nombre_producto"],
-          cantidad_producto: this.compras[index]["cantidad_producto"]
-        });
-      }
+        const dataIndex = this.data.findIndex((dat: any) => dat.numero_movimiento === this.compras[index]["numero_movimiento"]);
+        if (dataIndex === -1) {
+            this.data.push({
+                nombre_proveedor: this.compras[index]["nombre_proveedor"],
+                numero_movimiento: this.compras[index]["numero_movimiento"],
+                fecha_inicio: this.compras[index]["fecha_inicio"],
+                instalacion_emitente: this.compras[index]["instalacion_emitente"],
+                encargado: this.compras[index]["encargado"],
+                monto_total: this.compras[index]["monto_total"],
+                estado: this.compras[index]["estado"],
+                products: [{
+                    nombre_producto: this.compras[index]["nombre_producto"],
+                    cantidad_producto: this.compras[index]["cantidad_producto"],
+                    monto_total: this.compras[index]["monto_total"]
+                }]
+            });
+        } else {
+            // Find the existing product index in the products array
+            const productIndex = this.data[dataIndex].products.findIndex((product: any) =>
+                product.nombre_producto === this.compras[index]["nombre_producto"]
+            );
+
+            if (productIndex === -1) {
+                // If the product doesn't exist in the products array, add it
+                this.data[dataIndex].products.push({
+                    nombre_producto: this.compras[index]["nombre_producto"],
+                    cantidad_producto: this.compras[index]["cantidad_producto"],
+                    monto_total: this.compras[index]["monto_total"]
+                });
+                // Adds the amount of the buy
+                this.data[dataIndex].monto_total += this.compras[index]["monto_total"];
+            } else {
+                // If the product already exists, update its quantity or perform any other desired operation
+                this.data[dataIndex].products[productIndex].cantidad_producto = this.compras[index]["cantidad_producto"];
+            }
+        }
     }
     this.compras = this.data;
-    this.totalPages = (Math.ceil(this.compras.length / this.itemsPerPage));
-    if (this.totalPages===0){
-      this.totalPages+=1
+    this.totalPages = Math.ceil(this.compras.length / this.itemsPerPage);
+    if (this.totalPages === 0) {
+        this.totalPages += 1;
     }
-  }
+}
+
   confirmBuy() {
     // Check if clienteSelected is empty
     if (!this.proveedorSelected) {
@@ -157,11 +177,13 @@ export class ComprasComponent {
   // Method to add a product to selectedProducts array
   addProduct() {
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
+    const montoInput = document.getElementById('montoInput') as HTMLInputElement;
     // Find the selected product based on codigo_producto
     const selectedProduct = this.products.find((product: { codigo_producto: any; }) => product.codigo_producto === this.productSelected);
     const val = parseInt(quantityInput.value, 10);
-    if (this.productSelected!='' && val > 0 && selectedProduct) {
-      this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
+    const val2 = parseInt(montoInput.value, 10);
+    if (this.productSelected!='' && val > 0 && val2>0 && selectedProduct) {
+      this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),monto:parseInt(montoInput.value, 10),cod:this.productSelected });
       this.productSelected ='';
       quantityInput.value = '';
     }

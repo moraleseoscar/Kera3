@@ -30,7 +30,9 @@ export class Kera3Service {
       .rpc('get_registro_inventario_place', {
         _codplace: sucursal
       })
+
     return data || null
+
   }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
@@ -52,6 +54,7 @@ export class Kera3Service {
   }
   async getCompras(){
     let { data: compras, error } = await this.supabase.rpc('get_compras')
+    console.log(compras)
     return compras
   }
   async getProveedores(){
@@ -323,7 +326,10 @@ export class Kera3Service {
     return sales || null;
   }
   async getPaymentsDetails(id: string) {
-  let { data: registro_pagos, error } = await this.supabase.from('registro_pagos').select("*").eq('codigo_movimiento', id)
+  let { data: registro_pagos, error } = await this.supabase
+  .from('registro_pagos')
+  .select("*")
+  .eq('codigo_movimiento', id)
   return registro_pagos || null;
   }
   async addPayment(codigo:string, monto:string) {

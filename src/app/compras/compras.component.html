@@ -52,6 +52,7 @@
                       <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                           <thead>
                               <tr>
+                                <th class="uk-table-large">Codigo</th>
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Sucursal</th>
                                   <th class="uk-table-small">Encargado</th>
@@ -62,6 +63,7 @@
                           <tbody>
                               <ng-container *ngFor="let compra of data">
                                   <tr (click)="getDetails(compra)" *ngIf="(instalationValue == compra.instalacion_emitente || instalationValue === '0') && (estadoValue ==='0' || estadoValue === compra.estado)">
+                                    <td>{{ compra.numero_movimiento }}</td>
                                     <td>{{ compra.fecha_inicio }}</td>
                                     <td>{{ compra.instalacion_emitente }}</td>
                                     <td>{{ compra.encargado }}</td>
