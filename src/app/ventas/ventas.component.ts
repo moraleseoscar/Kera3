@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2'
 @Component({

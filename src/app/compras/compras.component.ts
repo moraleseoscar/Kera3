@@ -8,6 +8,12 @@ import Swal from 'sweetalert2';
   styleUrls: ['./compras.component.scss']
 })
 export class ComprasComponent {
+  instalations: any = []
+  instalationValue = '0'
+  filteredData: any =[]
+  pointers: number[] = []
+  validStateNames:string[] = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
+  totalPages = 0
   showBuyForm = false
   minIndex:number = 0
   maxIndex:number = 5
@@ -28,11 +34,11 @@ export class ComprasComponent {
   paymentSelected = ''
   constructor(private service: Kera3Service) {}
   async ngOnInit() {
+    this.instalations = await this.service.getAllInstalaciones();
     this.compras = await this.service.getCompras();
     this.products = await this.service.getAllProducts();
     this.proveedores = await this.service.getProveedores();
     this.organizeData();
-
   }
   getDetails(buyData:any){
     let buyList = buyData.products;
@@ -73,6 +79,11 @@ export class ComprasComponent {
           cantidad_producto: this.compras[index]["cantidad_producto"]
         });
       }
+    }
+    this.compras = this.data;
+    this.totalPages = (Math.ceil(this.compras.length / this.itemsPerPage));
+    if (this.totalPages===0){
+      this.totalPages+=1
     }
   }
   confirmBuy() {
@@ -166,48 +177,110 @@ export class ComprasComponent {
       this.selectedProducts = newArray;
     }
   }
+  //pagination
   returnFirstPage() {
-    this.currentPage = 1
-    this.maxIndex = this.itemsPerPage;
-    this.minIndex = 0;
-    this.data = this.compras.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length === 0){
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.compras.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   returnLastPage() {
-    this.currentPage = this.totalPages
-    this.maxIndex = this.compras.length;
-    this.minIndex = this.compras.length-this.itemsPerPage;
-    this.data = this.compras.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length===0){
+      this.currentPage = this.totalPages
+      this.maxIndex = this.compras.length;
+      if ((this.compras.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.compras.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.compras.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.compras.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = this.totalPages
+      this.maxIndex = this.compras.length;
+      if ((this.filteredData.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.filteredData.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.filteredData.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   nextPage() {
-    if (this.currentPage !== this.totalPages){
+    if (this.currentPage !== this.totalPages && this.searchQuery.length===0){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
       this.data = this.compras.slice(this.minIndex, this.maxIndex)
     }
+    else if (this.currentPage !== this.totalPages){
+      this.currentPage +=1
+      this.maxIndex+=this.itemsPerPage
+      this.minIndex+=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+    }
   }
   prevPage() {
-    if (this.currentPage !== 1) {
+    if (this.currentPage !== 1 && this.searchQuery.length===0) {
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
       this.data = this.compras.slice(this.minIndex, this.maxIndex)
     }
+    else if (this.currentPage !== 1){
+      this.currentPage -=1
+      this.maxIndex-=this.itemsPerPage
+      this.minIndex-=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+    }
   }
-  get totalPages(): number {
-    return Math.ceil(this.compras.length / this.itemsPerPage);
-  }
+  //filters
   onSearch() {
+    const rgxSearch = new RegExp(this.searchQuery, 'i');
     if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
-      for (let index = 0; index < this.compras.length; index++) {
-        if (rgx_search.test( this.compras[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.compras[index]['apellidos'].toLocaleUpperCase())){
-          this.data = [...this.compras, this.compras[index]]
-        }
+      this.filteredData = this.compras.filter((compra: { encargado: string; nombre_proveedor: string; }) => {
+        return (
+          (rgxSearch.test(compra.encargado) || rgxSearch.test(compra.nombre_proveedor) )
+        );
+      });
+      if (this.pointers.length === 0) {
+        this.pointers = [this.currentPage, this.minIndex, this.maxIndex, this.totalPages]
+        this.currentPage = 1;
+        this.totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage)
+        this.minIndex = 0
+        this.maxIndex = this.itemsPerPage
+      }
+      if (this.filteredData.length<=this.itemsPerPage){
+        this.data = this.filteredData
+      }
+      else {
+        this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+        this.currentPage = 1
       }
     } else {
-      this.data = this.compras.slice(this.minIndex, this.maxIndex)
+      this.filteredData = this.compras;
+      this.currentPage = this.pointers[0];
+      this.minIndex = this.pointers[1];
+      this.maxIndex = this.pointers[2];
+      this.totalPages = this.pointers[3];
+      this.data = this.compras.slice(this.minIndex, this.maxIndex);
+      this.pointers = [];
     }
   }
 }
