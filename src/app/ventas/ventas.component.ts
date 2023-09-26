@@ -27,6 +27,7 @@ export class VentasComponent implements OnInit{
   //filters
   searchQuery: string = ''
   estadoValue = '0'
+  instalationValue = '0'
   //sale
   clienteSelected = ''
   productSelected = ''
@@ -37,7 +38,7 @@ export class VentasComponent implements OnInit{
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   showSaleForm: boolean = false;
-
+  instalations: any = []
   //real time handlers
   salesAllEventSubscription: any
   paymentsAllEventSubscription: any
@@ -45,8 +46,9 @@ export class VentasComponent implements OnInit{
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
-    this.sales = await this.service.getAllSales()
-    this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage))
+    this.instalations = await this.service.getAllInstalaciones();
+    this.sales = await this.service.getAllSales();
+    this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
       this.totalPages+=1
     }

@@ -50,10 +50,10 @@
                       </div>
                       <div class="uk-width-expand uk-width-1-4">
                           <div class="display--filters">
-                              <label for="" style="margin-right: 5%;">Otro:</label>
-                              <select title="filtro" class="uk-select" placeholder="Otro filtro">
-                                  <option value="all">Todos</option>
-                                  <option>Opción</option>
+                              <label for="" style="margin-right: 5%;">Instalacion:</label>
+                              <select title="filtro" class="uk-select" placeholder="Instalacion" [(ngModel)]="instalationValue">
+                                  <option value="0">Todos</option>
+                                  <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
                               </select>
                           </div>
                       </div>
@@ -75,7 +75,7 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let sale of data">
-                                  <tr (click)="getDetails(sale)">
+                                  <tr (click)="getDetails(sale)" *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
                                     <td>{{ sale.sale_code }}</td>
                                     <td>{{ sale.sale_date }}</td>
                                     <td>{{ sale.client_name }}</td>

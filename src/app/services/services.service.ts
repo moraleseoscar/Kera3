@@ -30,9 +30,7 @@ export class Kera3Service {
       .rpc('get_registro_inventario_place', {
         _codplace: sucursal
       })
-
     return data || null
-
   }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
