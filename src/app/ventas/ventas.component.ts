@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2'
 @Component({
@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.scss','../home/home.component.scss']
 })
-export class VentasComponent {
+export class VentasComponent implements OnInit{
   //pagination
   minIndex:number = 0
   maxIndex:number = 5
@@ -19,22 +19,26 @@ export class VentasComponent {
   data:any = []
   cart:any = []
   states:any = []
+  filteredData: any =[]
   paymentStates:string[]= ['UN SOLO PAGO','A PLAZOS']
-
+  // Define an array of names to filter
+  validStateNames:string[] = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
+  pointers: number[] = []
   //filters
   searchQuery: string = ''
   estadoValue = '0'
+  instalationValue = '0'
   //sale
   clienteSelected = ''
   productSelected = ''
   paymentSelected = ''
-
+  totalPages = 0
   //register a sale
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   showSaleForm: boolean = false;
-
+  instalations: any = []
   //real time handlers
   salesAllEventSubscription: any
   paymentsAllEventSubscription: any
@@ -42,12 +46,16 @@ export class VentasComponent {
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
-    await this.fetchSales();
+    this.instalations = await this.service.getAllInstalaciones();
+    this.sales = await this.service.getAllSales();
+    this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
+    if (this.totalPages===0){
+      this.totalPages+=1
+    }
+    this.fetchSales();
     this.products = await this.service.getProducts(this.instalation);
-    // Define an array of names to filter
-    const validStateNames = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
     // Filter the states array to include only the valid names
-    this.states = this.states.filter((state: { nombre_estado: string; }) => validStateNames.includes(state.nombre_estado));
+    this.states = this.states.filter((state: { nombre_estado: string; }) => this.validStateNames.includes(state.nombre_estado));
     this.clients = await this.service.getClients();
     this.states = await this.service.getAllStates();
     this.subscribeToChanges();
@@ -83,8 +91,7 @@ export class VentasComponent {
       quantityInput.value = '';
     }
   }
-  removeProduct(i: number)
-  {
+  removeProduct(i: number) {
     for (let index = 0; index < this.selectedProducts.length; index++) {
       var newArray: any[] = [];
       if(index != i)
@@ -200,47 +207,109 @@ export class VentasComponent {
   }
   //pagination
   returnFirstPage() {
-    this.currentPage = 1
-    this.maxIndex = this.itemsPerPage;
-    this.minIndex = 0;
-    this.data = this.sales.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length === 0){
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.sales.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   returnLastPage() {
-    this.currentPage = this.totalPages
-    this.maxIndex = this.sales.length;
-    this.minIndex = this.sales.length-this.itemsPerPage;
-    this.data = this.sales.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length===0){
+      this.currentPage = this.totalPages
+      this.maxIndex = this.sales.length;
+      if ((this.sales.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.sales.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.sales.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.sales.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = this.totalPages
+      this.maxIndex = this.sales.length;
+      if ((this.filteredData.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.filteredData.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.filteredData.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   nextPage() {
-    if (this.currentPage !== this.totalPages){
+    if (this.currentPage !== this.totalPages && this.searchQuery.length===0){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
       this.data = this.sales.slice(this.minIndex, this.maxIndex)
     }
+    else if (this.currentPage !== this.totalPages){
+      this.currentPage +=1
+      this.maxIndex+=this.itemsPerPage
+      this.minIndex+=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+    }
   }
   prevPage() {
-    if (this.currentPage !== 1) {
+    if (this.currentPage !== 1 && this.searchQuery.length===0) {
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
       this.data = this.sales.slice(this.minIndex, this.maxIndex)
     }
-  }
-  get totalPages(): number {
-    return Math.ceil(this.sales.length / this.itemsPerPage);
+    else if (this.currentPage !== 1){
+      this.currentPage -=1
+      this.maxIndex-=this.itemsPerPage
+      this.minIndex-=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+    }
   }
   //filters
   onSearch() {
+    const rgxSearch = new RegExp(this.searchQuery, 'i');
     if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      for (let index = 0; index < this.sales.length; index++) {
-        if (rgx_search.test( this.sales[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.sales[index]['apellidos'].toLocaleUpperCase())){
-          this.data = [...this.data, this.sales[index]]
-        }
+      this.filteredData = this.sales.filter((sale: { client_name: string; employee_lastname: string; employee_name: string; installation: string;}) => {
+        return (
+          (this.estadoValue === '0') &&
+          (rgxSearch.test(sale.client_name) || rgxSearch.test(sale.employee_lastname) || rgxSearch.test(sale.employee_name) || rgxSearch.test(sale.installation) )
+        );
+      });
+      if (this.pointers.length === 0) {
+        this.pointers = [this.currentPage, this.minIndex, this.maxIndex, this.totalPages]
+        this.currentPage = 1;
+        this.totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage)
+        this.minIndex = 0
+        this.maxIndex = this.itemsPerPage
+      }
+      if (this.filteredData.length<=this.itemsPerPage){
+        this.data = this.filteredData
+      }
+      else {
+        this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+        this.currentPage = 1
       }
     } else {
-      this.data = this.sales.slice(this.minIndex, this.maxIndex)
+      this.filteredData = this.sales;
+      this.currentPage = this.pointers[0];
+      this.minIndex = this.pointers[1];
+      this.maxIndex = this.pointers[2];
+      this.totalPages = this.pointers[3];
+      this.data = this.sales.slice(this.minIndex, this.maxIndex);
+      this.pointers = [];
     }
   }
   subscribeToChanges(){
@@ -268,20 +337,20 @@ export class VentasComponent {
   async fetchSales() : Promise<void>{
     this.sales = await this.service.getAllSales();
     this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
-      let payments = await this.service.getPaymentsDetails(sale.sale_code);
-      if(payments != null){
-        let payment_amount = 0;
-        payments.forEach(payment =>{
-          payment_amount += payment['monto_movimiento'] ;
-        })
-        sale['payments'] = payments;
-        sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
-      }else{
-        sale['payments'] = [];
-        sale['debt'] = 0;
+        let payments = await this.service.getPaymentsDetails(sale.sale_code);
+        if(payments != null) {
+          let payment_amount = 0;
+          payments.forEach(payment =>{
+            payment_amount += payment['monto_movimiento'] ;
+          })
+          sale['payments'] = payments;
+          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
+        }
+        else {
+          sale['payments'] = [];
+          sale['debt'] = 0;
+        }
       }
-
-    }
     )
     this.data = this.sales.slice(this.minIndex, this.maxIndex)
   }
