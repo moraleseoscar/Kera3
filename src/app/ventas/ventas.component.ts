@@ -4,8 +4,7 @@ import Swal from 'sweetalert2'
 @Component({
   selector: 'app-ventas',
   templateUrl: './ventas.component.html',
-  styleUrls: ['./ventas.component.scss','../home/home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./ventas.component.scss','../home/home.component.scss']
 })
 export class VentasComponent {
   //pagination
