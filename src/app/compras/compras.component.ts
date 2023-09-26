@@ -47,8 +47,8 @@ export class ComprasComponent {
       htmlContent += `
         <li>${compra.nombre_producto}
           <ul>
-            <li>Cantidad: ${compra.cantidad_producto}</li>
-            <li>Precio: ${compra.monto_total}</li>
+            <li>Cantidad comprada: ${compra.cantidad_producto}</li>
+            <li>Comprado por: Q.${compra.monto_total}</li>
           </ul>
         </li>
       `;
@@ -104,6 +104,7 @@ export class ComprasComponent {
     if (this.totalPages === 0) {
         this.totalPages += 1;
     }
+    this.data = this.compras.slice(this.minIndex, this.maxIndex);
 }
 
   confirmBuy() {
@@ -115,11 +116,6 @@ export class ComprasComponent {
         text: 'Debes seleccionar un proveedor.'
       });
       return; // Don't proceed further
-    }
-    const quantityInput = document.getElementById('montoInput') as HTMLInputElement;
-    if (quantityInput.value.length===0){
-      Swal.fire({icon:'warning',title:"Advertencia",text:`Ingresa el valor del pago.`});
-      return;
     }
     // Check if selectedProducts array is empty
     if (this.selectedProducts.length === 0) {
@@ -153,16 +149,14 @@ export class ComprasComponent {
     this.sendBuyData();
   }
   sendBuyData() {
-    const quantityInput = document.getElementById('montoInput') as HTMLInputElement;
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
-    this.service.addCompra(this.user_id,this.instalation, this.proveedorSelected , this.paymentSelected, this.selectedProducts, parseFloat(quantityInput.value));
+    this.service.addCompra(this.user_id,this.instalation, this.proveedorSelected , this.paymentSelected, this.selectedProducts);
     // Reset form
     this.paymentSelected = '';
     this.proveedorSelected = '';
     this.showBuyForm = false;
     this.selectedProducts = [];
-    quantityInput.value = ''
   }
   cancelSale() {
     // Reset form
@@ -186,6 +180,7 @@ export class ComprasComponent {
       this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),monto:parseInt(montoInput.value, 10),cod:this.productSelected });
       this.productSelected ='';
       quantityInput.value = '';
+      montoInput.value = '';
     }
   }
   removeProduct(i: number)

@@ -54,7 +54,6 @@ export class Kera3Service {
   }
   async getCompras(){
     let { data: compras, error } = await this.supabase.rpc('get_compras')
-    console.log(compras)
     return compras
   }
   async getProveedores(){
@@ -209,7 +208,7 @@ export class Kera3Service {
       }
     }
   }
-  async addCompra(user_id:string,instalation: string, proveedorSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[],  montoProducto: number) {
+  async addCompra(user_id:string,instalation: string, proveedorSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, monto: number, cod: string }[]) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
     const currentTimestamp = new Date();
@@ -223,7 +222,6 @@ export class Kera3Service {
       user_id_empleado_encargado: user_id,
       fecha_emision: formattedTimestamp
     };
-
     // Insert the sale record into the movimiento_producto table
     const { data:values, error } = await this.supabase
       .from('movimiento_producto')
@@ -243,27 +241,17 @@ export class Kera3Service {
           const saleDetailData = {
             codigo_movimiento: codigo_movimiento,
             codigo_producto: product.cod,
-            cantidad_producto: product.quantity
-
+            cantidad_producto: product.quantity,
+            monto:product.monto
           };
 
           // Insert the sale detail record into detalle_movimiento
           const { error: detailError } = await this.supabase
             .from('detalle_movimiento')
             .upsert([saleDetailData]);
-            const cv = {
-              codigo_movimiento: codigo_movimiento,
-              monto: montoProducto
-            };
           if (detailError) {
             // Handle the detail error appropriately, e.g., show a message
             console.error('Error adding sale detail:', detailError);
-          }
-
-          const { error:detalle_cv_error } = await this.supabase.from("detalle_compra_venta").upsert([cv]);
-          if (detalle_cv_error)
-          {
-            console.error('Error adding buy detail:', detalle_cv_error);
           }
         }
       }
