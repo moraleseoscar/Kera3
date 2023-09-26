@@ -8,6 +8,12 @@ import Swal from 'sweetalert2';
   styleUrls: ['./dispatch.component.css','../home/home.component.scss']
 })
 export class DispatchComponent implements OnInit {
+  totalPages:number = 0
+  instalations: any = []
+  instalationValue = '0'
+  instalationValue2 = '0'
+  filteredData: any =[]
+  pointers: number[] = []
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   minIndex:number = 0
@@ -26,8 +32,7 @@ export class DispatchComponent implements OnInit {
   constructor(private service: Kera3Service) { }
   async ngOnInit() {
     this.despachos = await this.service.getDespachos();
-    this.instalaciones = await this.service.getAllInstalaciones();
-    this.instalaciones = this.instalaciones.filter((instalacion:any) => instalacion.codigo_instalacion !== this.instalation);
+    this.instalations = await this.service.getAllInstalaciones();
     this.organizeData();
   }
   organizeData(){
@@ -54,6 +59,11 @@ export class DispatchComponent implements OnInit {
           cantidad_producto: this.despachos[index]["cantidad_producto"]
         });
       }
+    }
+    this.despachos = this.data;
+    this.totalPages = Math.ceil(this.despachos.length / this.itemsPerPage);
+    if (this.totalPages === 0) {
+        this.totalPages += 1;
     }
   }
   getDetails(dispatchData:any){
@@ -132,49 +142,111 @@ export class DispatchComponent implements OnInit {
         this.products.splice(index);
       }
     }
-  }
+  }//pagination
   returnFirstPage() {
-    this.currentPage = 1
-    this.maxIndex = this.itemsPerPage;
-    this.minIndex = 0;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length === 0){
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.despachos.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = 1
+      this.maxIndex = this.itemsPerPage;
+      this.minIndex = 0;
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   returnLastPage() {
-    this.currentPage = this.totalPages
-    this.maxIndex = this.products.length;
-    this.minIndex = this.products.length-this.itemsPerPage;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    if (this.searchQuery.length===0){
+      this.currentPage = this.totalPages
+      this.maxIndex = this.despachos.length;
+      if ((this.despachos.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.despachos.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.despachos.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.despachos.slice(this.minIndex,this.maxIndex)
+    }
+    else {
+      this.currentPage = this.totalPages
+      this.maxIndex = this.despachos.length;
+      if ((this.filteredData.length-this.itemsPerPage)%this.itemsPerPage===0){
+        this.minIndex = this.filteredData.length-this.itemsPerPage;
+      }
+      else {
+        this.minIndex = this.filteredData.length-1;
+        while (this.minIndex%this.itemsPerPage) {
+          this.minIndex -=1
+        }
+      }
+      this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
+    }
   }
   nextPage() {
-    if (this.currentPage !== this.totalPages){
+    if (this.currentPage !== this.totalPages && this.searchQuery.length===0){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.despachos.slice(this.minIndex, this.maxIndex)
+    }
+    else if (this.currentPage !== this.totalPages){
+      this.currentPage +=1
+      this.maxIndex+=this.itemsPerPage
+      this.minIndex+=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
     }
   }
   prevPage() {
-    if (this.currentPage !== 1) {
+    if (this.currentPage !== 1 && this.searchQuery.length===0) {
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.despachos.slice(this.minIndex, this.maxIndex)
+    }
+    else if (this.currentPage !== 1){
+      this.currentPage -=1
+      this.maxIndex-=this.itemsPerPage
+      this.minIndex-=this.itemsPerPage
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
     }
   }
-  get totalPages(): number {
-    return Math.ceil(this.products.length / this.itemsPerPage);
-  }
+
+  //filters
   onSearch() {
+    const rgxSearch = new RegExp(this.searchQuery, 'i');
     if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
-      for (let index = 0; index < this.products.length; index++) {
-        if (rgx_search.test(this.products[index]['nombre_producto'].toLocaleUpperCase())){
-          this.data = [...this.data, this.products[index]]
-        }
+      this.filteredData = this.despachos.filter((despacho: { encargado: string;}) => {
+        return (
+          (rgxSearch.test(despacho.encargado) )
+        );
+      });
+      if (this.pointers.length === 0) {
+        this.pointers = [this.currentPage, this.minIndex, this.maxIndex, this.totalPages]
+        this.currentPage = 1;
+        this.despachos = Math.ceil(this.filteredData.length / this.itemsPerPage)
+        this.minIndex = 0
+        this.maxIndex = this.itemsPerPage
+      }
+      if (this.filteredData.length<=this.itemsPerPage){
+        this.data = this.filteredData
+      }
+      else {
+        this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+        this.currentPage = 1
       }
     } else {
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.filteredData = this.despachos;
+      this.currentPage = this.pointers[0];
+      this.minIndex = this.pointers[1];
+      this.maxIndex = this.pointers[2];
+      this.totalPages = this.pointers[3];
+      this.data = this.despachos.slice(this.minIndex, this.maxIndex);
+      this.pointers = [];
     }
   }
   confirmDispatch() {

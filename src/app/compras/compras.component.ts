@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2';
 
@@ -7,13 +7,13 @@ import Swal from 'sweetalert2';
   templateUrl: './compras.component.html',
   styleUrls: ['./compras.component.scss']
 })
-export class ComprasComponent {
+export class ComprasComponent implements OnInit{
   instalations: any = []
   instalationValue = '0'
   filteredData: any =[]
   pointers: number[] = []
   validStateNames:string[] = ['CANCELADO', 'PENDIENTE DE PAGO', 'FINALIZADO'];
-  totalPages = 0
+  totalPages:number = 0
   showBuyForm = false
   minIndex:number = 0
   maxIndex:number = 5

@@ -30,10 +30,19 @@
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
-                                  <label for="" style="margin-right: 5%;">Otro:</label>
-                                  <select class="uk-select" placeholder="Otro filtro">
+                                  <label for="" style="margin-right: 5%;">Sucursal Emitente:</label>
+                                  <select class="uk-select" placeholder="Sucursal" [(ngModel)]="instalationValue">
                                       <option value="all">Todos</option>
-                                      <option>Opción</option>
+                                      <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="uk-width-expand uk-width-1-4">
+                              <div class="display--filters">
+                                  <label for="" style="margin-right: 5%;">Sucursal Receptora:</label>
+                                  <select class="uk-select" placeholder="Sucursal" [(ngModel)]="instalationValue2">
+                                      <option value="all">Todos</option>
+                                      <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
                                   </select>
                               </div>
                           </div>
@@ -46,8 +55,8 @@
                                   <tr>
                                     <th class="uk-table-small">Fecha Inicio</th>
                                     <th class="uk-table-small">Fecha Final</th>
-                                    <th class="uk-table-expand">Instalacion Emitente</th>
-                                    <th class="uk-table-expand">Instalacion Receptora</th>
+                                    <th class="uk-table-expand">Sucursal Emitente</th>
+                                    <th class="uk-table-expand">Sucursal Receptora</th>
                                     <th class="uk-table-expand">Encargado</th>
                                     <th class="uk-table-expand">Estado</th>
                                   </tr>
@@ -55,7 +64,8 @@
                               <tbody>
                                   <ng-container *ngFor="let despacho of data">
                                       <!-- <tr  *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')"> -->
-                                      <tr (click)="getDetails(despacho)">
+                                      <tr (click)="getDetails(despacho)"
+                                      *ngIf="(instalationValue == despacho.instalacion_emitente || instalationValue === '0')&&(instalationValue2 == despacho.instalacion_receptora || instalationValue2 === '0')">
                                         <td>{{ despacho.fecha_inicio }}</td>
                                         <td>{{ despacho.fecha_final }}</td>
                                         <td>{{ despacho.instalacion_emitente }}</td>
