@@ -23,40 +23,28 @@
                           <div class="uk-margin">
                               <form class="uk-search uk-width-expand uk-search-default">
                                   <span uk-search-icon></span>
-                                  <!-- <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}"> -->
+                                  <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                               </form>
                           </div>
                       </div>
                       <div class="uk-width-expand uk-width-1-4">
-                          <div class="display--filters">
-                              <!-- <label for="" style="margin-right: 5%;">Categoría:</label>
-                              <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
-                                  <option value="all">Todos</option>
-                                  <option *ngFor="let categoria of categorias"
-                                      [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
-                                  </option>
-                              </select> -->
-                          </div>
-                      </div>
-                      <div class="uk-width-expand uk-width-1-4">
-                          <div class="display--filters">
-                              <!-- <label for="" style="margin-right: 5%;">Estado:</label>
-                              <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
-                                  <option value="0">Todos</option>
-                                  <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
-                                      estado.nombre_estado }}</option>
-                              </select> -->
-                          </div>
-                      </div>
-                      <div class="uk-width-expand uk-width-1-4">
-                          <div class="display--filters">
-                              <label for="" style="margin-right: 5%;">Otro:</label>
-                              <select title="thing" class="uk-select" placeholder="Otro filtro">
-                                  <option value="all">Todos</option>
-                                  <option>Opción</option>
-                              </select>
-                          </div>
-                      </div>
+                        <div class="display--filters">
+                            <label for="" style="margin-right: 5%;">Estado:</label>
+                            <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let estado of validStateNames" [value]="estado">{{estado}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="uk-width-expand uk-width-1-4">
+                        <div class="display--filters">
+                            <label for="" style="margin-right: 5%;">Instalacion:</label>
+                            <select title="filtro" class="uk-select" placeholder="Instalacion" [(ngModel)]="instalationValue">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
+                            </select>
+                        </div>
+                    </div>
                   </div>
               </div>
               <div class="uk-card-body">
@@ -64,6 +52,7 @@
                       <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                           <thead>
                               <tr>
+                                <th class="uk-table-large">Codigo</th>
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Sucursal</th>
                                   <th class="uk-table-small">Encargado</th>
@@ -73,7 +62,8 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let compra of data">
-                                  <tr (click)="getDetails(compra)">
+                                  <tr (click)="getDetails(compra)" *ngIf="(instalationValue == compra.instalacion_emitente || instalationValue === '0') && (estadoValue ==='0' || estadoValue === compra.estado)">
+                                    <td>{{ compra.numero_movimiento }}</td>
                                     <td>{{ compra.fecha_inicio }}</td>
                                     <td>{{ compra.instalacion_emitente }}</td>
                                     <td>{{ compra.encargado }}</td>
@@ -126,8 +116,9 @@
     <div>
       <ul>
         <li *ngFor="let product of selectedProducts; let i = index">
-            {{ product.name }}
-            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            Nombre: {{ product.name }}
+            Cantidad: <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            Monto total del producto: <input type="number" [(ngModel)]="product.monto" placeholder="Monto">
             <button (click)="removeProduct(i)">Eliminar</button>
         </li>
       </ul>

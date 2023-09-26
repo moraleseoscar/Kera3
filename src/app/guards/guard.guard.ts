@@ -10,8 +10,7 @@ export class GuardGuard implements CanActivate {
   }
 
   async canActivate() {
-    const datosUsuario = await sessionStorage.getItem('datos')
-    console.log(datosUsuario);
+    const datosUsuario = await sessionStorage.getItem('datos');
     if ( datosUsuario ) {
       return true;
     }else{

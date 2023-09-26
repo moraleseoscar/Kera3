@@ -75,11 +75,13 @@ export class HomeComponent implements OnInit{
     this.subscribeToInvChanges()
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
+    this.estados = this.estados.filter((estado: { codigo_estado: number; }) => estado.codigo_estado >= 7 && estado.codigo_estado <= 9); //fiter only the correct states
+
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
-    let email = await sessionStorage.getItem('datos')
-    let user = await this.service.getUserData(email)
-      console.log(email);
+    this.instalaciones = this.instalaciones.filter((i: { codigo_instalacion: string; }) => i.codigo_instalacion != 'TMP');
+    let email = await sessionStorage.getItem('datos');
+    let user = await this.service.getUserData(email);
       try{
         if(user !=null){
           this.userData= {user_id:user[0]['user_uid'],user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
