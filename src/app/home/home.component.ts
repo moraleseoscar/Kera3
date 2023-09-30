@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
 import { ActivatedRoute , Router } from '@angular/router';
@@ -11,58 +11,55 @@ export class HomeComponent implements OnInit{
   categorias: any = []
   estados: any = []
   instalaciones:any = []
-  registro:any = []
   products: any = []
   dimens: any = []
   categoriaValue = 'all'
   instalacionValue = 'all'
   estadoValue = '0'
   data:any = []
+  fileterd:any = []
   searchQuery: string = ''
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
   navcurrent: string = 'inv' //variable de navegacion
-  userData : {user_nombres : string ;
+  userData : {user_id:string,user_nombres : string ;
                 user_apellidos: string;
                 codigo_instalacion: string;
                 rol_interno: string;
                 email: string}
-              = {user_nombres :'username' , user_apellidos : 'last names',
+              = {user_id:'0000',user_nombres :'username' , user_apellidos : 'last names',
               codigo_instalacion: '',
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
+    //realtime handlers
+    invUpdateSubscription:any;
+    invInsertSubscription:any;
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){
 
-  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router){}
+   }
   get totalPages(): number {
-    return Math.ceil(this.products.length / this.itemsPerPage);
-  }
-  get paginatedData(): any[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.data = this.products.slice(startIndex, endIndex);
-    console.log(this.products)
-    return this.products.slice(startIndex, endIndex);
+    return Math.ceil(this.fileterd.length / this.itemsPerPage);
   }
   returnFirstPage() {
     this.currentPage = 1
     this.maxIndex = this.itemsPerPage;
     this.minIndex = 0;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
   }
   returnLastPage() {
     this.currentPage = this.totalPages
     this.maxIndex = this.products.length;
     this.minIndex = this.products.length-this.itemsPerPage;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
   }
   nextPage() {
     if (this.currentPage !== this.totalPages){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
     }
   }
   prevPage() {
@@ -70,33 +67,43 @@ export class HomeComponent implements OnInit{
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
     }
   }
   async ngOnInit(){
-    this.products = await this.service.getAllProducts()
-    this.data = await this.products.slice(this.minIndex, this.maxIndex)
+    this.fetchInventory()
+    this.subscribeToInvChanges()
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
+    this.estados = this.estados.filter((estado: { codigo_estado: number; }) => estado.codigo_estado >= 7 && estado.codigo_estado <= 9); //fiter only the correct states
+
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
-    this.registro = await this.service.getRegistro()
-    let email = '';
-    this.route.queryParams.subscribe(async params => {
-      email = params['email'];
-      console.log(Object.entries(params))
-      let user = await this.service.getUserData(email)
-      console.log(email);
+    this.instalaciones = this.instalaciones.filter((i: { codigo_instalacion: string; }) => i.codigo_instalacion != 'TMP');
+    let email = await sessionStorage.getItem('datos');
+    let user = await this.service.getUserData(email);
       try{
-        this.userData= {user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
-        codigo_instalacion: user[0]['user_apeelidos'],
-        rol_interno: user[0]['rol_interno'],
-        email: user[0]['email']}
-        this.instalacionValue = user[0]['codigo_instalacion']
+        if(user !=null){
+          this.userData= {user_id:user[0]['user_uid'],user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
+          codigo_instalacion: user[0]['codigo_instalacion'],
+          rol_interno: user[0]['rol_interno'],
+          email: user[0]['email']}
+          this.instalacionValue = user[0]['codigo_instalacion']
+        }
       }catch (error){
       }
-    });
 
+
+  }
+  //make the realtime data available
+  async fetchInventory(): Promise<void> {
+    try {
+      this.products = await this.service.getAllProducts()
+      this.fileterd = this.products
+      this.data =  this.fileterd.slice(this.minIndex, this.maxIndex)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({
@@ -115,11 +122,17 @@ export class HomeComponent implements OnInit{
    async insertingProduct () {
     var cat = `<option value="" disabled selected>Categoria</option>`
     var dime = `<option value="" disabled selected>Dimensional</option>`
+    var place = `<option value="" disabled selected>Sucursal</option>`
+    var indexDime = ""
+    var indexCat = ""
     for (let index = 0; index < this.dimens.length; index++) {
       dime = dime+`<option value="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
     }
     for (let index = 0; index < this.categorias.length; index++) {
       cat = cat+`<option value="${this.categorias[index].codigo_categoria}">${this.categorias[index].nombre_categoria}</option>`
+    }
+    for (let index = 0; index < this.instalaciones.length; index++) {
+      place = place+`<option value="${this.instalaciones[index].codigo_instalacion}">${this.instalaciones[index].nombre_instalacion}</option>`
     }
     Swal.fire({
       title: 'Agregar producto',
@@ -128,12 +141,17 @@ export class HomeComponent implements OnInit{
         <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
         <input type="number" step=".01" id="precio" class="swal2-input" placeholder="Precio">
         <input type="text" id="descripcion" class="swal2-input" placeholder="Descripcion">
+        <input type="text" id="cantidad" class="swal2-input" placeholder="0">
         <select class="uk-select" id="categoria" placeholder="Categoria">
           ${cat}
         </select>
         <select class="uk-select" id="unidad" placeholder="Unidad">
           ${dime}
         </select>
+        <select class="uk-select" id="ubicacion" placeholder="Unidad">
+          ${place}
+        </select>
+
       `,
       confirmButtonText: 'Ingrese nuevo producto',
       focusConfirm: false,
@@ -144,13 +162,17 @@ export class HomeComponent implements OnInit{
         const descripcion = (<HTMLSelectElement>document.getElementById('descripcion')).value;
         const indexCat = (<HTMLSelectElement>document.getElementById('categoria')).value;
         const indexDime = (<HTMLSelectElement>document.getElementById('unidad')).value;
+        const indexLocacion = (<HTMLSelectElement>document.getElementById('ubicacion')).value;
+        const cantidadN = (<HTMLSelectElement>document.getElementById('cantidad')).value;
         return {
           codigo: codigo,
           nombre: nombre,
           categoria: indexCat,
           unidad: indexDime,
           precio: precio,
-          descripcion: descripcion
+          descripcion: descripcion,
+          cod_instalacion: indexLocacion,
+          cantidad:cantidadN
         };
       }
     }).then( async (result) => {
@@ -160,29 +182,90 @@ export class HomeComponent implements OnInit{
           this.service.addProductCategory(result.value)
           this.service.addInventoryRegister(result.value)
         }, 1000)
-        this.products = await this.service.getAllProducts()
-        this.data = this.products
       }
+      this.products = await this.service.getAllProducts()
+      this.fileterd = await this.products
+      this.data = await this.fileterd.slice(this.minIndex, this.maxIndex)
+      this.changeDetectorRef.markForCheck();
     });
   }
-  onSearch() {
-    if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
-      for (let index = 0; index < this.products.length; index++) {
-        if (rgx_search.test(this.products[index]['nombre_producto'].toLocaleUpperCase()) || rgx_search.test(this.products[index]['codigo_producto'].toLocaleUpperCase())){
-          this.data = [...this.data, this.products[index]]
-        }
-      }
-    } else {
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+  onFilterAndSearch() {
+    if (this.searchQuery != ""){
+
+    this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
+      // Apply search filter
+      const rgxSearch = new RegExp(this.searchQuery, 'i');
+      const isMatchingSearch = rgxSearch.test(product.nombre_producto.toUpperCase()) ||
+                               rgxSearch.test(product.codigo_producto.toUpperCase());
+
+      // Apply ngIf-like conditions
+      const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
+      const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
+      const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+
+      // Combine all conditions with logical AND
+      return isMatchingSearch && isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
+    });
+
+    // Apply pagination or any other post-filtering logic
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex);}
+    else{
+      this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
+        // Apply ngIf-like conditions
+        const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
+        const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
+        const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+
+        // Combine all conditions with logical AND
+        return isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
+      });
+       // Apply pagination or any other post-filtering logic
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex);
     }
   }
+
   setCurrentNav(panel :string){
     this.navcurrent = panel
   }
   logOut(){
     this.service.logOut();
+    sessionStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  //realtime handlers
+
+  subscribeToInvChanges() {
+    this.invInsertSubscription = this.service.getSupabase().channel('custom-insert-channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchInventory() // llamar los datos de nuevo
+        }
+      )
+      .subscribe();
+
+    this.invUpdateSubscription = this.service.getSupabase().channel('custom-update-channel')
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'registro_inventario' },
+      (payload) => {
+        this.products?.forEach((element: { codigo_registro: any; cantidad: any; }) => {
+          if(element.codigo_registro == payload.new['codigo_registro']) {
+            element.cantidad = payload.new['cantidad'];
+      }});
+        this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
+      }
+    )
+    .subscribe()
+  }
+  unsubscribeToInvChanges() {
+    if (this.invInsertSubscription) {
+      this.invInsertSubscription.unsubscribe();
+    }
+    if (this.invUpdateSubscription) {
+      this.invUpdateSubscription.unsubscribe();
+    }
   }
 }

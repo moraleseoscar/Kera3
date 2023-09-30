@@ -1,48 +1,124 @@
 import { Component, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
-
+import Swal from 'sweetalert2'
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
   styleUrls: ['./clients.component.css','../home/home.component.scss']
 })
 export class ClientsComponent implements OnInit {
+
   minIndex:number = 0
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
   clients: any = []
+  filteredData: any =[]
   data:any = []
   searchQuery: string = ''
   types: any = []
   estadoValue = '0'
+  saldoClientes: any = [];
   constructor(private service: Kera3Service) { }
 
+  //realtime handlers
+  registroPagos: any
+  salesAllEventSubscription: any
   async ngOnInit() {
-    this.clients = await this.service.getClients()
-    this.data = this.clients.slice(this.minIndex, this.maxIndex)
-    this.types = await this.service.getClientsTypes()
-    console.log(this.types)
+    this.fetchData()
+    this.subscribeToRealtimeEvents()
   }
+  async fetchData(){
+    this.clients = await this.convertData()
+    this.data = this.clients.slice(this.minIndex, this.maxIndex)
+    this.filteredData = this.clients;
+    this.types = await this.service.getClientsTypes()
+  }
+  applyFilter() {
+      const rgxSearch = new RegExp(this.searchQuery, 'i');
+      if (this.searchQuery !== "") {
+      this.filteredData = this.data.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
+      return (
+        (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
+        (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
+      );
+    });
+    this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+    this.currentPage = 1
+    } else{
+      this.filteredData = this.clients.filter((client: { tipo: string; }) => {
+        return this.estadoValue === '0' || this.estadoValue === client.tipo;
+      });
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+      this.currentPage = 1
+    }
+  }
+  async convertData(){
+    let _clients = await this.service.getClients() //temporal hold of clients
+    let _saldos =  await this.service.getSaldoClientes();
+    _clients?.map(client => {
+      //verificar si tiene pendientes de pago
+      const deudas = _saldos?.filter(item => item['codigo_cliente'] == client['codigo_cliente'])
+      const saldo_total = deudas?.reduce((sum, item) => sum + item['saldo_cliente'], 0.00);
+      client['saldo_total'] = saldo_total;
+      client['deudas'] = deudas
+    });
+    return _clients
+    }
 
+  displayDetails(clientData : any){
+    if (clientData.deudas.length > 0) {
+      // Client has debts, create a scrollable list
+      let debtList = '';
+      clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_cliente: any; }) => {
+        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_cliente}\n`;
+      });
+
+      Swal.fire({
+        title: `${clientData.nombres} ${clientData.apellidos}`,
+        html: `
+        <p>Direccion:
+        ${clientData.direccion}</p>
+        <p>Telefono:
+          ${clientData.telefono}</p>
+        <p>Deudas:</p>
+        <pre>${debtList}</pre>
+        `,
+        confirmButtonText: 'OK'
+      });
+    } else {
+      // Client doesn't have debts, display without the debt list
+      Swal.fire({
+        title: `${clientData.nombres} ${clientData.apellidos}`,
+        html: `
+          <p>Direccion:
+          ${clientData.direccion}</p>
+          <p>Telefono:
+          ${clientData.telefono}</p>
+          <p> No tiene deudas <p>
+        `,
+        confirmButtonText: 'OK'
+      });
+    }
+  }
   returnFirstPage() {
     this.currentPage = 1
     this.maxIndex = this.itemsPerPage;
     this.minIndex = 0;
-    this.data = this.clients.slice(this.minIndex,this.maxIndex)
+    this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
   }
   returnLastPage() {
     this.currentPage = this.totalPages
     this.maxIndex = this.clients.length;
     this.minIndex = this.clients.length-this.itemsPerPage;
-    this.data = this.clients.slice(this.minIndex,this.maxIndex)
+    this.data = this.filteredData.slice(this.minIndex,this.maxIndex)
   }
   nextPage() {
     if (this.currentPage !== this.totalPages){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
-      this.data = this.clients.slice(this.minIndex, this.maxIndex)
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
     }
   }
   prevPage() {
@@ -50,23 +126,30 @@ export class ClientsComponent implements OnInit {
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
-      this.data = this.clients.slice(this.minIndex, this.maxIndex)
+      this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
     }
   }
   get totalPages(): number {
-    return Math.ceil(this.clients.length / this.itemsPerPage);
+    return Math.ceil(this.filteredData.length / this.itemsPerPage);
   }
-  onSearch() {
-    if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
-      for (let index = 0; index < this.clients.length; index++) {
-        if (rgx_search.test( this.clients[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.clients[index]['apellidos'].toLocaleUpperCase())){
-          this.data = [...this.data, this.clients[index]]
-        }
+  subscribeToRealtimeEvents(){
+    this.registroPagos = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_pagos' },
+      (payload) => {
+        this.fetchData();
       }
-    } else {
-      this.data = this.clients.slice(this.minIndex, this.maxIndex)
-    }
+    )
+    .subscribe()
+    this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchData();
+        }
+      )
+      .subscribe();
   }
 }

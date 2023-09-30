@@ -24,7 +24,7 @@
                               <div class="uk-margin">
                                   <form class="uk-search uk-width-expand uk-search-default">
                                       <span uk-search-icon></span>
-                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="applyFilter()" [ngModelOptions]="{standalone: true}">
                                   </form>
                               </div>
                           </div>
@@ -52,10 +52,9 @@
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
                                   <label for="" style="margin-right: 5%;">Tipo de cliente:</label>
-                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
-                                      <option value="0">Todos</option>
-                                      <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{
-                                        estado.tipo_cliente }}</option>
+                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue" (ngModelChange)="applyFilter()">
+                                    <option value="0">Todos</option>
+                                    <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{ estado.tipo_cliente }}</option>
                                   </select>
                               </div>
                           </div>
@@ -70,17 +69,17 @@
                                       <th class="uk-table-expand">Apellidos</th>
                                       <th class="uk-table-small">Tipo</th>
                                       <th class="uk-table-small">Telefono</th>
-                                      <th class="uk-table-expand">Direccion</th>
+                                      <th class="uk-table-expand">Saldo</th>
                                   </tr>
                               </thead>
                               <tbody>
                                   <ng-container *ngFor="let client of data">
-                                      <tr *ngIf ="(estadoValue == '0' || estadoValue == client.tipo)">
+                                      <tr (click)="displayDetails(client)">
                                         <td>{{ client.nombres }}</td>
                                         <td>{{ client.apellidos }}</td>
                                         <td>{{ client.tipo }}</td>
                                         <td>{{ client.telefono}}</td>
-                                        <td>{{ client.direccion }}</td>
+                                        <td>{{ client.saldo_total }}</td>
                                       </tr>
                                   </ng-container>
                               </tbody>

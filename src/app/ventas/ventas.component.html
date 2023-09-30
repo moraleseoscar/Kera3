@@ -1,0 +1,150 @@
+<div class="uk-container uk-container-expand">
+  <div class="uk-grid-divider uk-grid-medium uk-child-width-1-1 uk-child-width-1-2@s" data-uk-grid>
+      <div>
+          <div class="uk-child-width-1-2" uk-grid>
+              <div>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Ventas</h1>
+              </div>
+          </div>
+      </div>
+      <div>
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
+      </div>
+  </div>
+  <hr>
+  <!-- main panel  -->
+  <div *ngIf="!showSaleForm" class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+
+      <!-- panel -->
+      <div class="uk-width-1-1">
+          <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+              <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small ">
+                      <div class="uk-width-expand uk-width-1-4">
+                          <div class="uk-margin">
+                              <form class="uk-search uk-width-expand uk-search-default">
+                                  <span uk-search-icon></span>
+                                  <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
+                              </form>
+                          </div>
+                      </div>
+                      <div class="uk-width-expand uk-width-1-4">
+                          <div class="display--filters">
+                              <!-- <label for="" style="margin-right: 5%;">Categoría:</label>
+                              <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
+                                  <option value="all">Todos</option>
+                                  <option *ngFor="let categoria of categorias"
+                                      [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
+                                  </option>
+                              </select> -->
+                          </div>
+                      </div>
+                      <div class="uk-width-expand uk-width-1-4">
+                          <div class="display--filters">
+                              <label for="" style="margin-right: 5%;">Estado:</label>
+                              <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                  <option value="0">Todos</option>
+                                  <option *ngFor="let estado of validStateNames" [value]="estado">{{estado}}</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="uk-width-expand uk-width-1-4">
+                          <div class="display--filters">
+                              <label for="" style="margin-right: 5%;">Instalacion:</label>
+                              <select title="filtro" class="uk-select" placeholder="Instalacion" [(ngModel)]="instalationValue">
+                                  <option value="0">Todos</option>
+                                  <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="uk-card-body">
+                  <div class="chart-container uk-overflow-auto">
+                      <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+                          <thead>
+                              <tr>
+                                  <th class="uk-table-small">Codigo</th>
+                                  <th class="uk-table-large">Fecha</th>
+                                  <th class="uk-table-expand">Cliente</th>
+                                  <th class="uk-table-expand">Cajero</th>
+                                  <th class="uk-table-small">Sucursal</th>
+                                  <th class="uk-table-small">Total</th>
+                                  <th class="uk-table-expand">Estado</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <ng-container *ngFor="let sale of data">
+                                  <tr (click)="getDetails(sale)" *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
+                                    <td>{{ sale.sale_code }}</td>
+                                    <td>{{ sale.sale_date }}</td>
+                                    <td>{{ sale.client_name }}</td>
+                                    <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
+                                    <td>{{ sale.installation }}</td>
+                                    <td>{{ sale.total_amount}}</td>
+                                    <td>{{ sale.nombre_estado}}</td>
+                                    <td >
+                                      <img alt="" src="../../assets/payment.png" *ngIf="sale.codigo_estado==10" style="width: 20px; height: 20px;" (click)="addPayment(sale.sale_code)"/>
+                                      <img alt="" src="../../assets/payment-history.png" *ngIf="sale.payments.length>0" style="width: 20px; height: 20px;"(click)="getPayments(sale.payments, sale.debt)"> </td>
+                                  </tr>
+                              </ng-container>
+                          </tbody>
+                      </table>
+                      <ng-template #empty>
+                          <h3>Datos no encontrados, por favor verifica tus filtros.</h3>
+                      </ng-template>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- /panel -->
+  </div>
+  <ul *ngIf="!showSaleForm" class="uk-pagination pagination--position center-flex" uk-margin>
+    <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+    <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+    <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+  </ul>
+  <!-- Register new sale form -->
+<section *ngIf="showSaleForm">
+  <h2>Registrar una venta</h2>
+  <div>
+    <div>
+      <label for="clientDropdown">Cliente:</label>
+      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
+        <option value="" disabled selected>Cliente</option>
+        <option *ngFor="let client of clients" [value]="client.codigo_cliente">{{ client.nombres }} {{ client.apellidos }}</option>
+      </select>
+      <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <option value="" disabled selected>Tipo de pago</option>
+        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <input id="quantityInput" type="number" placeholder="Cantidad">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{ product.name }}
+            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            <button (click)="removeProduct(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div>
+  <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
+  <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+  <footer class="uk-section uk-section-small uk-text-center">
+      <hr>
+      <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
+              href="https://www.facebook.com/profile.php?id=100054286971522">Kera3</a> | Proyecto Ingenieria de
+          Software</span>
+  </footer>
+</div>
