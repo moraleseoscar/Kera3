@@ -75,17 +75,21 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let sale of data">
-                                  <tr (click)="getDetails(sale)" *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
-                                    <td>{{ sale.sale_code }}</td>
-                                    <td>{{ sale.sale_date }}</td>
+                                  <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
+                                    <td (click)="getDetails(sale)">{{ sale.sale_code }}</td>
+                                    <td >{{ sale.sale_date }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
                                     <td>{{ sale.installation }}</td>
                                     <td>{{ sale.total_amount}}</td>
                                     <td>{{ sale.nombre_estado}}</td>
                                     <td >
-                                      <img alt="" src="../../assets/payment.png" *ngIf="sale.codigo_estado==10" style="width: 20px; height: 20px;" (click)="addPayment(sale.sale_code)"/>
-                                      <img alt="" src="../../assets/payment-history.png" *ngIf="sale.payments.length>0" style="width: 20px; height: 20px;"(click)="getPayments(sale.payments, sale.debt)"> </td>
+                                      <span *ngIf="sale.codigo_estado==10" style="margin-right: 10px;" >
+                                        <img alt="" src="../../assets/payment.png"  (click)="addPayment(sale.sale_code)"class="action-button"/>
+                                      </span>
+                                      <span *ngIf="sale.payments.length>0">
+                                        <img alt="" src="../../assets/payment-history.png"  (click)="getPayments(sale.payments, sale.debt)" class="action-button">
+                                      </span>
                                   </tr>
                               </ng-container>
                           </tbody>
