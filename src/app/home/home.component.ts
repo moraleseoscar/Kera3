@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit{
   instalacionValue = 'all'
   estadoValue = '0'
   data:any = []
+  fileterd:any = []
   searchQuery: string = ''
   minIndex:number = 0
   maxIndex:number = 5
@@ -39,32 +40,26 @@ export class HomeComponent implements OnInit{
 
    }
   get totalPages(): number {
-    return Math.ceil(this.products.length / this.itemsPerPage);
-  }
-  get paginatedData(): any[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.data = this.products.slice(startIndex, endIndex);
-    return this.products.slice(startIndex, endIndex);
+    return Math.ceil(this.fileterd.length / this.itemsPerPage);
   }
   returnFirstPage() {
     this.currentPage = 1
     this.maxIndex = this.itemsPerPage;
     this.minIndex = 0;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
   }
   returnLastPage() {
     this.currentPage = this.totalPages
     this.maxIndex = this.products.length;
     this.minIndex = this.products.length-this.itemsPerPage;
-    this.data = this.products.slice(this.minIndex,this.maxIndex)
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
   }
   nextPage() {
     if (this.currentPage !== this.totalPages){
       this.currentPage +=1
       this.maxIndex+=this.itemsPerPage
       this.minIndex+=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
     }
   }
   prevPage() {
@@ -72,7 +67,7 @@ export class HomeComponent implements OnInit{
       this.currentPage -=1
       this.maxIndex-=this.itemsPerPage
       this.minIndex-=this.itemsPerPage
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
     }
   }
   async ngOnInit(){
@@ -80,12 +75,13 @@ export class HomeComponent implements OnInit{
     this.subscribeToInvChanges()
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
+    this.estados = this.estados.filter((estado: { codigo_estado: number; }) => estado.codigo_estado >= 7 && estado.codigo_estado <= 9); //fiter only the correct states
+
     this.dimens = await this.service.getAllDimens()
     this.instalaciones = await this.service.getInstalaciones()
-    let email = '';
-    this.route.queryParams.subscribe(async params => {
-      email = params['email'];
-      let user = await this.service.getUserData(email)
+    this.instalaciones = this.instalaciones.filter((i: { codigo_instalacion: string; }) => i.codigo_instalacion != 'TMP');
+    let email = await sessionStorage.getItem('datos');
+    let user = await this.service.getUserData(email);
       try{
         if(user !=null){
           this.userData= {user_id:user[0]['user_uid'],user_nombres :user[0]['user_nombres'] , user_apellidos : user[0]['user_apellidos'],
@@ -96,7 +92,6 @@ export class HomeComponent implements OnInit{
         }
       }catch (error){
       }
-    });
 
 
   }
@@ -104,7 +99,8 @@ export class HomeComponent implements OnInit{
   async fetchInventory(): Promise<void> {
     try {
       this.products = await this.service.getAllProducts()
-      this.data = await this.products.slice(this.minIndex, this.maxIndex)
+      this.fileterd = this.products
+      this.data =  this.fileterd.slice(this.minIndex, this.maxIndex)
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -188,28 +184,52 @@ export class HomeComponent implements OnInit{
         }, 1000)
       }
       this.products = await this.service.getAllProducts()
-      this.data = await this.products.slice(this.minIndex, this.maxIndex)
+      this.fileterd = await this.products
+      this.data = await this.fileterd.slice(this.minIndex, this.maxIndex)
       this.changeDetectorRef.markForCheck();
     });
   }
-  onSearch() {
-    if (this.searchQuery !== "") {
-      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
-      this.data = []
-      for (let index = 0; index < this.products.length; index++) {
-        if (rgx_search.test(this.products[index]['nombre_producto'].toLocaleUpperCase()) || rgx_search.test(this.products[index]['codigo_producto'].toLocaleUpperCase())){
-          this.data = [...this.data, this.products[index]]
-        }
-      }
-    } else {
-      this.data = this.products.slice(this.minIndex, this.maxIndex)
+  onFilterAndSearch() {
+    if (this.searchQuery != ""){
+
+    this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
+      // Apply search filter
+      const rgxSearch = new RegExp(this.searchQuery, 'i');
+      const isMatchingSearch = rgxSearch.test(product.nombre_producto.toUpperCase()) ||
+                               rgxSearch.test(product.codigo_producto.toUpperCase());
+
+      // Apply ngIf-like conditions
+      const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
+      const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
+      const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+
+      // Combine all conditions with logical AND
+      return isMatchingSearch && isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
+    });
+
+    // Apply pagination or any other post-filtering logic
+    this.data = this.fileterd.slice(this.minIndex, this.maxIndex);}
+    else{
+      this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
+        // Apply ngIf-like conditions
+        const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
+        const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
+        const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+
+        // Combine all conditions with logical AND
+        return isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
+      });
+       // Apply pagination or any other post-filtering logic
+      this.data = this.fileterd.slice(this.minIndex, this.maxIndex);
     }
   }
+
   setCurrentNav(panel :string){
     this.navcurrent = panel
   }
   logOut(){
     this.service.logOut();
+    sessionStorage.clear();
     this.router.navigate(['/login']);
   }
 
@@ -235,7 +255,7 @@ export class HomeComponent implements OnInit{
           if(element.codigo_registro == payload.new['codigo_registro']) {
             element.cantidad = payload.new['cantidad'];
       }});
-        this.data = this.products.slice(this.minIndex, this.maxIndex)
+        this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
       }
     )
     .subscribe()

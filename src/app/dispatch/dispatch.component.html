@@ -9,11 +9,11 @@
               </div>
           </div>
           <div>
-              <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Despacho</button>
+              <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Despacho</button>
           </div>
       </div>
       <hr>
-      <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+      <div *ngIf="!showDispatchForm" class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
 
           <!-- panel -->
           <div class="uk-width-1-1">
@@ -30,21 +30,19 @@
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
-                                  <!-- <label for="" style="margin-right: 5%;">Categoría:</label>
-                                  <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
+                                  <label for="" style="margin-right: 5%;">Sucursal Emitente:</label>
+                                  <select class="uk-select" placeholder="Sucursal" [(ngModel)]="instalationValue">
                                       <option value="all">Todos</option>
-                                      <option *ngFor="let categoria of categorias"
-                                          [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
-                                      </option>
-                                  </select> -->
+                                      <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
+                                  </select>
                               </div>
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
-                                  <label for="" style="margin-right: 5%;">Otro:</label>
-                                  <select class="uk-select" placeholder="Otro filtro">
+                                  <label for="" style="margin-right: 5%;">Sucursal Receptora:</label>
+                                  <select class="uk-select" placeholder="Sucursal" [(ngModel)]="instalationValue2">
                                       <option value="all">Todos</option>
-                                      <option>Opción</option>
+                                      <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
                                   </select>
                               </div>
                           </div>
@@ -55,27 +53,24 @@
                           <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
                               <thead>
                                   <tr>
-                                    <th class="uk-table-small">Fecha inicial</th>
-                                    <th class="uk-table-small">Fecha final</th>
-                                    <th class="uk-table-large">Encargado</th>
-                                    <th class="uk-table-expand">Instalacion Emitente</th>
-                                    <th class="uk-table-small">Instalacion Receptora</th>
-                                    <th class="uk-table-small">Producto</th>
-                                    <th class="uk-table-expand">Cantidad</th>
+                                    <th class="uk-table-small">Fecha Inicio</th>
+                                    <th class="uk-table-small">Fecha Final</th>
+                                    <th class="uk-table-expand">Sucursal Emitente</th>
+                                    <th class="uk-table-expand">Sucursal Receptora</th>
+                                    <th class="uk-table-expand">Encargado</th>
                                     <th class="uk-table-expand">Estado</th>
                                   </tr>
                               </thead>
                               <tbody>
                                   <ng-container *ngFor="let despacho of data">
                                       <!-- <tr  *ngIf="(categoriaValue === product.codigo_categoria || categoriaValue === 'all') && (estadoValue == product.codigo_estado || estadoValue === '0')"> -->
-                                      <tr>
+                                      <tr (click)="getDetails(despacho)"
+                                      *ngIf="(instalationValue == despacho.instalacion_emitente || instalationValue === '0')&&(instalationValue2 == despacho.instalacion_receptora || instalationValue2 === '0')">
                                         <td>{{ despacho.fecha_inicio }}</td>
                                         <td>{{ despacho.fecha_final }}</td>
-                                        <td>{{ despacho.encargado }}</td>
                                         <td>{{ despacho.instalacion_emitente }}</td>
                                         <td>{{ despacho.instalacion_receptora }}</td>
-                                        <td>{{ despacho.nombre_producto }}</td>
-                                        <td>{{ despacho.cantidad_producto }}</td>
+                                        <td>{{ despacho.encargado }}</td>
                                         <td>{{ despacho.estado }}</td>
                                       </tr>
                                   </ng-container>
@@ -88,15 +83,49 @@
                   </div>
               </div>
           </div>
+          <div class="uk-pagination pagination--position center-flex" uk-margin>
+            <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+            <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+            <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
+            <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
+            <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+          </div>
           <!-- /panel -->
       </div>
-      <ul class="uk-pagination pagination--position center-flex" uk-margin>
-        <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
-        <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
-        <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
-        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
-        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+
+       <!-- Register new sale form -->
+<section *ngIf="showDispatchForm">
+  <h2>Registrar un pedido</h2>
+  <div>
+    <div>
+      <label for="instalacionDropdown">Instalacion:</label>
+      <select id="instalacionDropdown" class="form-control" [(ngModel)]="instalacionSelected" (change)="whenSelectedInstalation()">
+        <option value="" disabled selected>Instalacion</option>
+        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{ instalacion.nombre_instalacion }}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select disabled id="productDropdown" class="form-control" [(ngModel)]="productSelected">
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">Producto:{{ product.nombre_producto }}</option>
+      </select>
+      <label for="quantityInput">Cantidad:</label>
+      <input id="quantityInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Cantidad">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            {{ product.name }}
+            <input type="number" [(ngModel)]="product.quantity" placeholder="Quantity">
+            <button (click)="removeProduct(i)">Eliminar</button>
+        </li>
       </ul>
+    </div>
+  </div>
+    <button (click)="confirmDispatch()" class="uk-align-left uk-button-primary confirmSale">Confirmar</button>
+    <button (click)="cancelarPedido()" class="uk-align-left uk-button-primary cancelSale" >Cancelar</button>
+  <div>
+
       <footer class="uk-section uk-section-small uk-text-center">
           <hr>
           <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"

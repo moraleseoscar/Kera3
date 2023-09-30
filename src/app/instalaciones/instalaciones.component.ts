@@ -20,9 +20,11 @@ export class InstalacionesComponent implements OnInit {
   constructor(private service: Kera3Service) { }
 
   async ngOnInit() {
-    this.instalaciones = await this.service.getInstalaciones()
+    this.instalaciones = await this.service.getInstalaciones();
+    this.instalaciones = this.instalaciones.filter((i: { codigo_tipo_instalacion: string; }) => i.codigo_tipo_instalacion != 'TMP')
     this.data = this.instalaciones.slice(this.minIndex, this.maxIndex)
     this.types = await this.service.getInstalacionesTipos()
+    this.types = this.types.filter((type: { codigo_tipo_instalacion: string; }) => type.codigo_tipo_instalacion != 'TMP')
   }
 
   returnFirstPage() {
@@ -56,6 +58,7 @@ export class InstalacionesComponent implements OnInit {
   get totalPages(): number {
     return Math.ceil(this.instalaciones.length / this.itemsPerPage);
   }
+
   onSearch() {
     if (this.searchQuery !== "") {
       let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
