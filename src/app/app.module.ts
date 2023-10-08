@@ -16,10 +16,11 @@ import { EmployeesComponent } from './employees/employees.component';
 import { VentasComponent } from './ventas/ventas.component';
 import { ComprasComponent } from './compras/compras.component';
 import { InventoryComponent } from './inventory/inventory.component';
+import { AbonosComponent } from './abonos/abonos.component';
 
 
 @NgModule({
-  declarations: [	
+  declarations: [		
     AppComponent,
     SettingsComponent,
     NotFoundComponent,
@@ -31,7 +32,8 @@ import { InventoryComponent } from './inventory/inventory.component';
     EmployeesComponent,
     VentasComponent,
     ComprasComponent,
-      InventoryComponent
+      InventoryComponent,
+      AbonosComponent
    ],
   imports: [
     BrowserModule,
