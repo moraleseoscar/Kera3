@@ -62,10 +62,15 @@ export class Kera3Service {
   }
    async getAllProducts(){
     let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
+    if (error){
+      console.log(error)
+    }else{
+      console.log(inventario)
+    }
     return inventario
   }
   async addProduct(values: any){
-    const { data, error } = await this.supabase.from('producto').insert([  { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio },])
+    const { data, error } = await this.supabase.from('producto').insert([  { codigo_producto: values.codigo, nombre_producto: values.nombre, descripcion_producto: values.descripcion, codigo_dimensional: values.unidad, precio_producto: values.precio ,linea_producto:values.brand},])
   }
   async addInstallation(values: any){
     const { data, error } = await this.supabase.from('instalacion').insert([  { codigo_instalacion: values.codigo, nombre_instalacion: values.nombre, descripcion_instalacion: values.descripcion, codigo_tipo_instalacion: values.tipo, direccion: values.direccion },])
@@ -257,7 +262,6 @@ export class Kera3Service {
       }
     }
   }
-
   async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[]) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
@@ -332,5 +336,11 @@ export class Kera3Service {
     if (error) {
     }
     return data || error
+  }
+  async getBrands(){
+    let { data: lineas_productos, error } = await this.supabase
+    .from('lineas_productos')
+    .select('*')
+    return lineas_productos || null
   }
 }

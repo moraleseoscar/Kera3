@@ -3,7 +3,7 @@
       <div>
           <div class="uk-child-width-1-2" uk-grid>
               <div>
-                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Ventas</h1>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Enviós</h1>
               </div>
           </div>
       </div>
@@ -48,15 +48,6 @@
                               </select>
                           </div>
                       </div>
-                      <div class="uk-width-expand uk-width-1-4">
-                          <div class="display--filters">
-                              <label for="" style="margin-right: 5%;">Instalacion:</label>
-                              <select title="filtro" class="uk-select" placeholder="Instalacion" [(ngModel)]="instalationValue">
-                                  <option value="0">Todos</option>
-                                  <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
-                              </select>
-                          </div>
-                      </div>
                   </div>
               </div>
               <div class="uk-card-body">
@@ -68,7 +59,7 @@
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Cliente</th>
                                   <th class="uk-table-expand">Cajero</th>
-                                  <th class="uk-table-small">Sucursal</th>
+                                  <th class="uk-table-small">Crédito</th>
                                   <th class="uk-table-small">Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
