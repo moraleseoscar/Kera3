@@ -324,6 +324,12 @@ export class Kera3Service {
   .eq('codigo_movimiento', id)
   return registro_pagos || null;
   }
+  async getPayments() {
+    let { data: registro_pagos, error } = await this.supabase
+    .from('registro_pagos')
+    .select("*")
+    return registro_pagos || null;
+    }
   async addPayment(codigo:string, monto:string) {
     const saleData =  { codigo_movimiento: codigo ,
      monto_movimiento: monto }

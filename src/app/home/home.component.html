@@ -24,7 +24,7 @@
       <div class="left-content-box uk-margin-top">
         <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
         <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
-        <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
+        <h5 class="nav-option {{ navcurrent === 'pay' ? 'active' : '' }}" (click)="setCurrentNav('pay')">Recibos</h5>
         <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Ventas</h5>
         <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
         <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
@@ -47,7 +47,7 @@
   <!-- dispatch pannel -->
   <app-dispatch [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'desp'" ></app-dispatch>
   <!-- Instalaciones panel -->
-  <app-instalaciones *ngIf="navcurrent == 'inst'"></app-instalaciones>
+  <app-abonos *ngIf="navcurrent == 'pay'"></app-abonos>
   <!-- clients panel -->
   <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
   <!-- panel de ventas -->
@@ -66,7 +66,7 @@
       <ul class="uk-nav uk-nav-default uk-position-center">
         <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
         <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
-        <h5 class="nav-option {{ navcurrent === 'inst' ? 'active' : '' }}" (click)="setCurrentNav('inst')">Instalaciones</h5>
+        <h5 class="nav-option {{ navcurrent === 'pay' ? 'active' : '' }}" (click)="setCurrentNav('pay')">Abonos</h5>
         <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Ventas</h5>
         <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
         <h5 class="nav-option {{ navcurrent === 'cli' ? 'active' : '' }}" (click)="setCurrentNav('cli')">Clientes</h5>
