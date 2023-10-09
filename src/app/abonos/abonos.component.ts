@@ -14,12 +14,16 @@ export class AbonosComponent implements OnInit {
   itemsPerPage: number = 5
 
   clients: any = []
+  filterClients: any = []
+  dataCli: any = []
   estadoValue = '0'
   types: any = []
 
   payments: any = []
   filteredData: any =[]
   data:any = []
+
+  saldos :any = []
 
   searchQuery=""
 
@@ -32,15 +36,37 @@ export class AbonosComponent implements OnInit {
       return 0
     }
   }
+  get totalPagesCli(){
+    try {
+      return Math.ceil(this.filterClients.length / this.itemsPerPage);
+      }catch(error){
+        return 0
+      }
+  }
   async ngOnInit() {
     this.payments = await this.service.getPayments();
-    this.filteredData = this.payments
-    this.data = this.filteredData
+    this.data = this.payments.slice(this.minIndex,this.maxIndex)
     this.clients = await this.service.getClients();
+    this.dataCli = this.clients.slice(this.minIndex,this.maxIndex)
+    this.filterClients = this.clients
+    this.filteredData = this.payments
     this.types = await this.service.getClientsTypes()
+    this.saldos = await this.service.getSaldoClientes();
   }
-  registerPayment() {
-    this.panel = "cli"
+  SwitchPanel() {
+    this.minIndex = 0
+    this.maxIndex = 5
+    this.currentPage = 1
+    switch (this.panel){
+      case "sum":{
+        this.panel = "cli"
+        break;
+      }
+      case "cli":{
+        this.panel = "sum"
+        break;
+      }
+    }
   }
   async setPayment(client_code:string,client_name: string){
     const {value} = await Swal.fire({
@@ -71,48 +97,103 @@ export class AbonosComponent implements OnInit {
   applyFilter() {
     const rgxSearch = new RegExp(this.searchQuery, 'i');
     if (this.searchQuery !== "") {
-    this.filteredData = this.data.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
+    this.filterClients = this.clients.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
     return (
       (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
       (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
     );
   });
-  this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+  this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex);
   this.currentPage = 1
   } else{
-    this.filteredData = this.clients.filter((client: { tipo: string; }) => {
+    this.filterClients = this.clients.filter((client: { tipo: string; }) => {
       return this.estadoValue === '0' || this.estadoValue === client.tipo;
     });
-    this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
+
+    this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex);
     this.currentPage = 1
   }
 }
   returnFirstPage() {
-    this.currentPage = 1
-    this.maxIndex = this.itemsPerPage;
-    this.minIndex = 0;
-    this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+    switch (this.panel) {
+      case 'sum' :{
+        this.currentPage = 1
+        this.maxIndex = this.itemsPerPage;
+        this.minIndex = 0;
+        this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+        break;
+      }
+      case 'cli':{
+        this.currentPage = 1
+        this.maxIndex = this.itemsPerPage;
+        this.minIndex = 0;
+        this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex)
+        break;
+      }
+    }
+
   }
   returnLastPage() {
-    this.currentPage = this.totalPages
-    this.maxIndex = this.payments.length;
-    this.minIndex = this.payments.length-this.itemsPerPage;
-    this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+    switch (this.panel) {
+      case 'sum' :{
+        this.currentPage = this.totalPages
+        this.maxIndex = this.payments.length;
+        this.minIndex = this.payments.length-this.itemsPerPage;
+        this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+        break;
+      }
+      case 'cli':{
+        this.currentPage = this.totalPagesCli
+        this.maxIndex = this.clients.length;
+        this.minIndex = this.clients.length-this.itemsPerPage;
+        this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex)
+        break;
+      }
+    }
   }
   nextPage() {
-    if (this.currentPage !== this.totalPages){
-      this.currentPage +=1
-      this.maxIndex+=this.itemsPerPage
-      this.minIndex+=this.itemsPerPage
-      this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+    switch (this.panel) {
+      case 'sum' :{
+        if (this.currentPage !== this.totalPages){
+          this.currentPage +=1
+          this.maxIndex+=this.itemsPerPage
+          this.minIndex+=this.itemsPerPage
+          this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+        }
+        break;
+      }
+      case 'cli':{
+        if (this.currentPage !== this.totalPagesCli){
+          this.currentPage +=1
+          this.maxIndex+=this.itemsPerPage
+          this.minIndex+=this.itemsPerPage
+          this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex)
+        }
+        break;
+      }
     }
   }
   prevPage() {
-    if (this.currentPage !== 1) {
-      this.currentPage -=1
-      this.maxIndex-=this.itemsPerPage
-      this.minIndex-=this.itemsPerPage
-      this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+    switch (this.panel) {
+      case 'sum' :{
+        if (this.currentPage !== 1) {
+          this.currentPage -=1
+          this.maxIndex-=this.itemsPerPage
+          this.minIndex-=this.itemsPerPage
+          this.data = this.filteredData.slice(this.minIndex, this.maxIndex)
+        }
+        break;
+      }
+      case 'cli':{
+        if (this.currentPage !== 1) {
+          this.currentPage -=1
+          this.maxIndex-=this.itemsPerPage
+          this.minIndex-=this.itemsPerPage
+          this.dataCli = this.filterClients.slice(this.minIndex, this.maxIndex)
+        }
+        break;
+      }
     }
   }
+
 }

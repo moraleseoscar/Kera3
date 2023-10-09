@@ -9,7 +9,7 @@
           </div>
       </div>
       <div>
-          <button class="add-product uk-button uk-align-left uk-button-primary" (click)="registerPayment()"><span uk-icon="icon: plus"></span> Registrar Recibo</button>
+          <button class="add-product uk-button uk-align-left uk-button-primary" (click)="SwitchPanel()"><span uk-icon="icon: plus"></span> Registrar Recibo</button>
       </div>
   </div>
   <hr>
@@ -85,7 +85,7 @@
           </div>
       </div>
       <div>
-          <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Regresar</button>
+          <button class="add-product uk-button uk-align-left uk-button-primary" (click)="SwitchPanel()"><span uk-icon="icon: chevron-double-left"></span> Regresar</button>
       </div>
   </div>
   <hr>
@@ -124,17 +124,15 @@
                                   <th class="uk-table-expand">Apellidos</th>
                                   <th class="uk-table-small">Tipo</th>
                                   <th class="uk-table-small">Telefono</th>
-                                  <th class="uk-table-expand">Saldo</th>
                               </tr>
                           </thead>
                           <tbody>
-                              <ng-container *ngFor="let client of data">
+                              <ng-container *ngFor="let client of dataCli">
                                   <tr (click)="setPayment(client.codigo_cliente,client.nombres+' '+client.apellidos)">
                                     <td>{{ client.nombres }}</td>
                                     <td>{{ client.apellidos }}</td>
                                     <td>{{ client.tipo }}</td>
                                     <td>{{ client.telefono}}</td>
-                                    <td>{{ client.saldo_total }}</td>
                                   </tr>
                               </ng-container>
                           </tbody>
@@ -148,6 +146,13 @@
       </div>
       <!-- /panel -->
   </div>
+  <ul class="uk-pagination pagination--position center-flex" uk-margin>
+    <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+    <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+    <span class="pagination-indicator">{{ currentPage }} / {{ totalPagesCli }}</span>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPagesCli" (click)="nextPage()">Siguiente</button>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPagesCli" (click)="returnLastPage()">Final</button>
+  </ul>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
