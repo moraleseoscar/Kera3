@@ -18,9 +18,8 @@ import { ComprasComponent } from './compras/compras.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { AbonosComponent } from './abonos/abonos.component';
 
-
 @NgModule({
-  declarations: [		
+  declarations: [
     AppComponent,
     SettingsComponent,
     NotFoundComponent,
@@ -32,8 +31,8 @@ import { AbonosComponent } from './abonos/abonos.component';
     EmployeesComponent,
     VentasComponent,
     ComprasComponent,
-      InventoryComponent,
-      AbonosComponent
+    InventoryComponent,
+    AbonosComponent
    ],
   imports: [
     BrowserModule,
