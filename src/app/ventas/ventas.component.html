@@ -115,10 +115,14 @@
         <option value="" disabled selected>Tipo de pago</option>
         <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
       </select>
+      <label for="creditDate" *ngIf="paymentSelected=='A PLAZOS'">Fecha de vencimiento del crédito:</label>
+      <form class="uk-form" id="creditDate" *ngIf="paymentSelected=='A PLAZOS'">
+        <input type="date" [(ngModel)]="dateSelected" data-uk-datepicker="{format:'DD.MM.YYYY'}">
+      </form>
       <label for="productDropdown">Producto:</label>
       <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
         <option value="" disabled selected>Selecciona un producto</option>
-        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{product.linea_nombre}}:{{product.nombre_producto}} "{{product.descripcion_producto}}"</option>
       </select>
       <input id="quantityInput" type="number" placeholder="Cantidad">
       <button (click)="addProduct()">Agregar Producto</button>

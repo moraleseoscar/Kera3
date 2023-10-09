@@ -47,7 +47,7 @@
   <!-- dispatch pannel -->
   <app-dispatch [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'desp'" ></app-dispatch>
   <!-- Instalaciones panel -->
-  <app-abonos *ngIf="navcurrent == 'pay'"></app-abonos>
+  <app-abonos *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion"></app-abonos>
   <!-- clients panel -->
   <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
   <!-- panel de ventas -->

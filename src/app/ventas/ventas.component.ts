@@ -32,13 +32,13 @@ export class VentasComponent implements OnInit{
   clienteSelected = ''
   productSelected = ''
   paymentSelected = ''
+  dateSelected = ''
   totalPages = 0
   //register a sale
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   showSaleForm: boolean = false;
-  instalations: any = []
   //real time handlers
   salesAllEventSubscription: any
   paymentsAllEventSubscription: any
@@ -46,14 +46,20 @@ export class VentasComponent implements OnInit{
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
-    this.instalations = await this.service.getAllInstalaciones();
     this.sales = await this.service.getAllSales();
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
       this.totalPages+=1
     }
     this.fetchSales();
-    this.products = await this.service.getProducts(this.instalation);
+    this.products = await this.service.getAllProducts();
+    console.log(this.products)
+    console.log(this.instalation)
+    this.products = this.products.filter(product =>{
+      return product['codigo_instalacion'] ==this.instalation
+    })
+    console.log(this.products)
+
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => this.validStateNames.includes(state.nombre_estado));
     this.clients = await this.service.getClients();
@@ -285,7 +291,7 @@ export class VentasComponent implements OnInit{
       this.filteredData = this.sales.filter((sale: { client_name: string; employee_lastname: string; employee_name: string; installation: string;}) => {
         return (
           (this.estadoValue === '0') &&
-          (rgxSearch.test(sale.client_name) || rgxSearch.test(sale.employee_lastname) || rgxSearch.test(sale.employee_name) || rgxSearch.test(sale.installation) )
+          (rgxSearch.test(sale.client_name) || rgxSearch.test(sale.employee_lastname) || rgxSearch.test(sale.employee_name) )
         );
       });
       if (this.pointers.length === 0) {
@@ -337,6 +343,7 @@ export class VentasComponent implements OnInit{
   async fetchSales() : Promise<void>{
     this.sales = await this.service.getAllSales();
     this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
+      if (sale['installation_code'] == this.instalation ){
         let payments = await this.service.getPaymentsDetails(sale.sale_code);
         if(payments != null) {
           let payment_amount = 0;
@@ -350,6 +357,7 @@ export class VentasComponent implements OnInit{
           sale['payments'] = [];
           sale['debt'] = 0;
         }
+      }
       }
     )
     this.data = this.sales.slice(this.minIndex, this.maxIndex)
