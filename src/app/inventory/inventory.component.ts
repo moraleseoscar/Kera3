@@ -14,7 +14,6 @@ export class InventoryComponent implements OnInit {
   products: any = []
   dimens: any = []
   categoriaValue = 'all'
-  instalacionValue = 'all'
   estadoValue = '0'
   data:any = []
   fileterd:any = []
@@ -191,7 +190,7 @@ export class InventoryComponent implements OnInit {
       // Apply ngIf-like conditions
       const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
       const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
-      const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+      const isMatchingInstalacion = product.codigo_instalacion == this.instalation
 
       // Combine all conditions with logical AND
       return isMatchingSearch && isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
@@ -204,7 +203,7 @@ export class InventoryComponent implements OnInit {
         // Apply ngIf-like conditions
         const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
         const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
-        const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
+        const isMatchingInstalacion = product.codigo_instalacion == this.instalation;
 
         // Combine all conditions with logical AND
         return isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
