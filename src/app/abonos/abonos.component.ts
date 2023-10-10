@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2';
+import { PostgrestError } from '@supabase/supabase-js';
+import { async } from 'rxjs';
 
 @Component({
   selector: 'app-abonos',
@@ -13,7 +15,7 @@ export class AbonosComponent implements OnInit {
   currentPage: number = 1
   itemsPerPage: number = 5
 
-  clients: any = []
+
   filterClients: any = []
   dataCli: any = []
   estadoValue = '0'
@@ -23,13 +25,15 @@ export class AbonosComponent implements OnInit {
   filteredData: any =[]
   data:any = []
 
-  saldos :any = []
-
   searchQuery=""
 
   panel = "sum"
 
   @Input() instalation: string = ''
+  @Input() clients: any = []
+  @Input() sales: any = []
+  client_SALES : any = []
+
   constructor(private service: Kera3Service) { }
   get totalPages(): number {
     try {
@@ -46,14 +50,14 @@ export class AbonosComponent implements OnInit {
       }
   }
   async ngOnInit() {
-    this.payments = await this.service.getPayments();
+    this.payments = await this.service.getAbonos();
     this.data = this.payments.slice(this.minIndex,this.maxIndex)
-    this.clients = await this.fetchCliData();
+    this.filterClientData()
+
     this.dataCli = this.clients.slice(this.minIndex,this.maxIndex)
     this.filterClients = this.clients
     this.filteredData = this.payments
     this.types = await this.service.getClientsTypes()
-    this.saldos = await this.service.getSaldoClientes();
   }
   SwitchPanel() {
     this.minIndex = 0
@@ -70,7 +74,7 @@ export class AbonosComponent implements OnInit {
       }
     }
   }
-  async setPayment(client_code:string,client_name: string){
+  async setPayment(client_code:string,client_name: string,client_debt:number){
     const {value:Recipt} = await Swal.fire({
       title: `Registrar un recibo para ${client_name}`,
       html:
@@ -85,26 +89,34 @@ export class AbonosComponent implements OnInit {
       if (!cant || cant == '' || Number(cant) < 0){
         Swal.showValidationMessage('Cantidad no valida')
       }
+      if (Number(cant) > client_debt){
+        Swal.showValidationMessage('El abono excede la deuda total del cliente')
+      }
     return {number: num,amount: cant}
   }})
+  if (Recipt){
+    this.sendPaymen(client_code, Recipt)
+  }
 }
-  async sendPaymen(client_code:string,payment_amount:number){
-    let sales = await this.fetchSalesDebt(client_code);
+  async sendPaymen(client_code:string,Recipt:{number:string,amount:string}) {
     //pagar el más viejo
-    let remainingPayment = payment_amount;
-    if (Array.isArray(sales)){
-    for (const sale of sales) {
+    await this.fetchSalesDebt(client_code)
+    let remainingPayment = Number(Recipt.amount);
+    for (var i = 0; i < this.client_SALES.length; i++) {
         if (remainingPayment <= 0) {
             // No remaining payment, break out of loop
             break;
         }
-
-        const saleDebt = parseFloat(sale.debt);
+        const saleDebt = Number(this.client_SALES[i]['debt']);
         const paymentAmount = Math.min(remainingPayment, saleDebt);
 
         try {
             // Attempt to register the payment
-            await this.service.addPayment(sale.sale_code, String(paymentAmount));
+            console.log(paymentAmount);
+            var res = await this.service.addPayment(this.client_SALES[i].sale_code, String(paymentAmount));
+            if ('message' in res && 'details' in res) {
+              Swal.fire('Error registrando pagos',`${res.message}`,'error');
+            }
             remainingPayment -= paymentAmount;
         } catch (error) {
             // Handle Postgres error here, you can log it or handle it as needed
@@ -118,28 +130,24 @@ export class AbonosComponent implements OnInit {
         // Handle case where there is remaining payment that could not be applied
         console.log("Remaining payment could not be applied:", remainingPayment);
         // You might want to handle this situation, such as displaying a message to the user
+    }else{
+      var res = await this.service.addAbono(client_code, Recipt.number, Recipt.amount)
+      if ('message' in res && 'details' in res) {
+        Swal.fire('Error registrando abono',`${res.message}`,'error');
+      } else{
+        Swal.fire('Fianlizado','Recibo realizado','success');
+      }
     }
-  }
   }
   //for payments
   onSearch(){
 
   }
-  async fetchCliData(){ //solo obtener los que tienen deudas para poderle abonar
-    let _clients = await this.service.getClients() //temporal hold of clients
-    let _saldos =  await this.service.getSaldoClientes();
-    _clients?.map(client => {
-      //verificar si tiene pendientes de pago
-      const deudas = _saldos?.filter(item => item['codigo_cliente'] == client['codigo_cliente'])
-      const saldo_total = deudas?.reduce((sum, item) => sum + item['saldo_cliente'], 0.00);
-      client['saldo_total'] = saldo_total;
-      client['deudas'] = deudas
-    });
-    let _clients_ = _clients?.filter((client) =>{
+  async filterClientData(){ //solo obtener los que tienen deudas para poderle abona
+    this.clients = this.clients?.filter((client: { [x: string]: number; }) =>{
       return client['saldo_total'] > 0
     }
     )
-    return _clients_
     }
   //for clients
   applyFilter() {
@@ -243,29 +251,11 @@ export class AbonosComponent implements OnInit {
       }
     }
   }
-  async fetchSalesDebt(client_code:string) : Promise<void>{
-    let sales = await this.service.getAllSales();
-    sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
-      if (sale['installation_code'] == this.instalation && sale['client_id'] == client_code){
-        let payments = await this.service.getPaymentsDetails(sale.sale_code);
-        if(payments != null) {
-          let payment_amount = 0;
-          payments.forEach(payment =>{
-            payment_amount += payment['monto_movimiento'] ;
-          })
-          sale['payments'] = payments;
-          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
-        }
-        else {
-          sale['payments'] = [];
-          sale['debt'] = 0;
-        }
-      }
-      }
-    )
-    sales = sales?.filter((sale: { [x: string]: number; }) =>  {return sale['debt'] >0}) //solo las que tienen deuda del cliente
+  async fetchSalesDebt(client_code:string){
+    this.client_SALES = this.sales.filter((sale: { client_id: string; }) =>{return sale.client_id == client_code} )
 
-    sales = sales?.sort((a: { sale_date: string | number | Date; }, b: { sale_date: string | number | Date; }) => {
+    this.client_SALES = this.client_SALES.filter((sale: { debt: string; }) =>  {return Number(sale.debt) != 0}) //solo las que tienen deuda del cliente
+    this.client_SALES = this.client_SALES.sort((a: { sale_date: string | number | Date; }, b: { sale_date: string | number | Date; }) => {
       // Convert the 'sale_date' strings to Date objects for comparison
       const dateA = new Date(a.sale_date);
       const dateB = new Date(b.sale_date);

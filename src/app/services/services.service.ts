@@ -330,7 +330,32 @@ export class Kera3Service {
     .select("*")
     return registro_pagos || null;
     }
+
+  async getAbonos() {
+    let { data: registro_recibos, error } = await this.supabase
+    .from('registro_recibos')
+    .select('numero,fecha,monto,cliente(codigo_cliente)')
+    if (error) {console.log(error)}
+    return registro_recibos || error;
+  }
+  async addAbono(client_code:string,codigo:string,_monto:string){
+    console.log(_monto);
+    const { data, error } = await this.supabase
+    .from('registro_recibos')
+    .insert([
+      {numero: codigo,
+      monto: _monto ,
+      codigo_cliente: client_code}
+    ])
+    .select()
+    if (error){
+      console.log(error)
+    }
+    return data || error;
+  }
+
   async addPayment(codigo:string, monto:string) {
+    console.log(`adding ${monto} to registro_pagos , sale: ${codigo}`);
     const saleData =  { codigo_movimiento: codigo ,
      monto_movimiento: monto }
     const { data, error } = await this.supabase
