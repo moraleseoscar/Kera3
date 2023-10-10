@@ -50,8 +50,10 @@ export class AbonosComponent implements OnInit {
       }
   }
   async ngOnInit() {
-    this.payments = await this.service.getAbonos();
+    await this.transformData()
+    console.log(this.payments)
     this.data = this.payments.slice(this.minIndex,this.maxIndex)
+    console.log(this.data)
     this.filterClientData()
 
     this.dataCli = this.clients.slice(this.minIndex,this.maxIndex)
@@ -73,6 +75,19 @@ export class AbonosComponent implements OnInit {
         break;
       }
     }
+  }
+  async transformData(){
+    this.payments = await this.service.getAbonos();
+    this.payments?.map((payment: { fecha: string | number | Date; })=>{
+      const date = new Date(payment.fecha);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      payment['fecha'] = `${day}-${month}-${year} ${hours}:${minutes}`;
+    })
+    console.log(this.payments)
   }
   async setPayment(client_code:string,client_name: string,client_debt:number){
     const {value:Recipt} = await Swal.fire({

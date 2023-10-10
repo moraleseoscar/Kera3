@@ -334,7 +334,7 @@ export class Kera3Service {
   async getAbonos() {
     let { data: registro_recibos, error } = await this.supabase
     .from('registro_recibos')
-    .select('numero,fecha,monto,cliente(codigo_cliente)')
+    .select('numero,fecha,monto,cliente(codigo_cliente,*)')
     if (error) {console.log(error)}
     return registro_recibos || error;
   }
@@ -345,7 +345,8 @@ export class Kera3Service {
     .insert([
       {numero: codigo,
       monto: _monto ,
-      codigo_cliente: client_code}
+      codigo_cliente: client_code,
+      fecha: this.Now()}
     ])
     .select()
     if (error){
@@ -355,9 +356,8 @@ export class Kera3Service {
   }
 
   async addPayment(codigo:string, monto:string) {
-    console.log(`adding ${monto} to registro_pagos , sale: ${codigo}`);
     const saleData =  { codigo_movimiento: codigo ,
-     monto_movimiento: monto }
+     monto_movimiento: monto ,fecha_pago: this.Now()}
     const { data, error } = await this.supabase
     .from('registro_pagos')
     .insert([
@@ -373,5 +373,16 @@ export class Kera3Service {
     .from('lineas_productos')
     .select('*')
     return lineas_productos || null
+  }
+  Now() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
 }
