@@ -38,14 +38,16 @@
                                   <th class="uk-table-large">Número</th>
                                   <th class="uk-table-expand">Fecha</th>
                                   <th class="uk-table-small">Cantidad</th>
+                                  <th class="uk-table-expand">Cliente</th>
                               </tr>
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let abono of data">
                                   <tr>
-                                    <td>{{ abono.codigo_instalacion }}</td>
-                                    <td>{{ abono.nombre_instalacion }}</td>
-                                    <td>{{ abono.nombre_tipo_instalacion }}</td>
+                                    <td>{{ abono.numero}}</td>
+                                    <td>{{ abono.fecha }}</td>
+                                    <td>{{ abono.monto }}</td>
+                                    <td>{{ abono.nombres }} {{abono.apellidos}}</td>
                                   </tr>
                               </ng-container>
                           </tbody>
@@ -124,15 +126,17 @@
                                   <th class="uk-table-expand">Apellidos</th>
                                   <th class="uk-table-small">Tipo</th>
                                   <th class="uk-table-small">Telefono</th>
+                                  <th class="uk-table-small">Deuda</th>
                               </tr>
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let client of dataCli">
-                                  <tr (click)="setPayment(client.codigo_cliente,client.nombres+' '+client.apellidos)">
+                                  <tr (click)="setPayment(client.codigo_cliente,client.nombres+' '+client.apellidos,client['saldo_total'])">
                                     <td>{{ client.nombres }}</td>
                                     <td>{{ client.apellidos }}</td>
                                     <td>{{ client.tipo }}</td>
                                     <td>{{ client.telefono}}</td>
+                                    <td>{{ client.saldo_total}}</td>
                                   </tr>
                               </ng-container>
                           </tbody>

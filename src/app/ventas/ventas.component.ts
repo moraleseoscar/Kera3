@@ -14,8 +14,7 @@ export class VentasComponent implements OnInit{
   itemsPerPage: number = 5
   //data
   products:any[] = []
-  clients:any = []
-  sales: any = []
+
   data:any = []
   cart:any = []
   states:any = []
@@ -36,12 +35,15 @@ export class VentasComponent implements OnInit{
   totalPages = 0
   //register a sale
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
+
   @Input() instalation: string = ''
   @Input() user_id: string = ''
+  @Input() clients:any = []
+  @Input() sales: any = []
+
   showSaleForm: boolean = false;
   //real time handlers
-  salesAllEventSubscription: any
-  paymentsAllEventSubscription: any
+
 
   constructor(private service: Kera3Service) {}
 
@@ -51,20 +53,16 @@ export class VentasComponent implements OnInit{
     if (this.totalPages===0){
       this.totalPages+=1
     }
-    this.fetchSales();
+    this.filterSales();
     this.products = await this.service.getAllProducts();
-    console.log(this.products)
-    console.log(this.instalation)
     this.products = this.products.filter(product =>{
       return product['codigo_instalacion'] ==this.instalation
     })
-    console.log(this.products)
 
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => this.validStateNames.includes(state.nombre_estado));
-    this.clients = await this.service.getClients();
     this.states = await this.service.getAllStates();
-    this.subscribeToChanges();
+
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
@@ -318,48 +316,11 @@ export class VentasComponent implements OnInit{
       this.pointers = [];
     }
   }
-  subscribeToChanges(){
-    this.paymentsAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          this.fetchSales();
-        }
-      )
-      .subscribe();
 
-      this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'movimiento_producto' },
-        (payload) => {
-          this.fetchSales();
-        }
-      )
-      .subscribe();
-  }
   //fetchers and real time
-  async fetchSales() : Promise<void>{
-    this.sales = await this.service.getAllSales();
-    this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
-      if (sale['installation_code'] == this.instalation ){
-        let payments = await this.service.getPaymentsDetails(sale.sale_code);
-        if(payments != null) {
-          let payment_amount = 0;
-          payments.forEach(payment =>{
-            payment_amount += payment['monto_movimiento'] ;
-          })
-          sale['payments'] = payments;
-          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
-        }
-        else {
-          sale['payments'] = [];
-          sale['debt'] = 0;
-        }
-      }
-      }
-    )
-    this.data = this.sales.slice(this.minIndex, this.maxIndex)
+  filterSales() {
+    this.sales = this.sales.filter((sale: { installation_code: string; }) => {
+      return sale.installation_code === this.instalation
+    })
   }
 }

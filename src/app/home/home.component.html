@@ -43,15 +43,15 @@
 <!-- CONTENT -->
 <div id="content" data-uk-height-viewport="expand: true">
 <!-- inventory panel -->
-  <app-inventory [instalation] = "this.userData.codigo_instalacion" *ngIf="navcurrent == 'inv'"></app-inventory>
+  <app-inventory [instalation] = "this.userData.codigo_instalacion" [products]="products" *ngIf="navcurrent == 'inv'"></app-inventory>
   <!-- dispatch pannel -->
   <app-dispatch [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'desp'" ></app-dispatch>
   <!-- Instalaciones panel -->
-  <app-abonos *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion"></app-abonos>
+  <app-abonos [sales]="sales" *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion" [clients]="clients"></app-abonos>
   <!-- clients panel -->
-  <app-clients *ngIf="navcurrent == 'cli'"></app-clients>
+  <app-clients *ngIf="navcurrent == 'cli'" [clients]="clients"></app-clients>
   <!-- panel de ventas -->
-  <app-ventas [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'sale'"></app-ventas>
+  <app-ventas [sales]="sales"  [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id"  [clients]="clients"  *ngIf="navcurrent == 'sale'"></app-ventas>
   <!-- panel de compras -->
   <app-compras [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'buys'"></app-compras>
   <!-- employees panel -->
