@@ -37,7 +37,7 @@
                               <tr>
                                   <th class="uk-table-large">Número</th>
                                   <th class="uk-table-expand">Fecha</th>
-                                  <th class="uk-table-small">Cantidad</th>
+                                  <th class="uk-table-small">Monto</th>
                                   <th class="uk-table-expand">Cliente</th>
                               </tr>
                           </thead>
@@ -46,8 +46,8 @@
                                   <tr>
                                     <td>{{ abono.numero}}</td>
                                     <td>{{ abono.fecha }}</td>
-                                    <td>{{ abono.monto }}</td>
-                                    <td>{{ abono.nombres }} {{abono.apellidos}}</td>
+                                    <td>Q {{ abono.monto }}</td>
+                                    <td>{{ abono.cliente.nombres }} {{abono.cliente.apellidos}}</td>
                                   </tr>
                               </ng-container>
                           </tbody>

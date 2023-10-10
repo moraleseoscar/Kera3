@@ -31,7 +31,10 @@ export class HomeComponent implements OnInit{
   //ventas
   salesAllEventSubscription: any
   paymentsAllEventSubscription: any
-
+  //clientes:
+  clientInsertsOnClientsTbled: any
+  clientInsertsOnPaymentsTbled: any
+  clientInsertsOnRecordsTbled: any
   constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){
 
    }
@@ -117,6 +120,7 @@ export class HomeComponent implements OnInit{
   subscrbeAll(){ //subscribirse a todos los datos tiempo real que lo requieren
     this.subscribeToInvChanges()
     this.subscribeToSaleChanges()
+    this.subscribeToClientsChanges()
   }
   //inventario
   subscribeToInvChanges() {
@@ -173,4 +177,34 @@ export class HomeComponent implements OnInit{
       )
       .subscribe();
   }
+  //clientes
+  subscribeToClientsChanges(){
+    this.clientInsertsOnClientsTbled = this.service.getSupabase().channel('custom-insert-channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'cliente' },
+        (payload) => {
+          this.fetchClientsData();
+        }
+      )
+      .subscribe();
+    this.clientInsertsOnPaymentsTbled = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_pagos' },
+      (payload) => {
+        this.fetchClientsData();
+      }
+    )
+    .subscribe();
+    this.clientInsertsOnRecordsTbled = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_recibos' },
+      (payload) => {
+        this.fetchClientsData();
+      }
+    )
+    .subscribe();
+}
 }
