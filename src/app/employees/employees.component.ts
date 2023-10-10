@@ -4,8 +4,7 @@ import Swal from 'sweetalert2'
 @Component({
   selector: 'app-employees',
   templateUrl: './employees.component.html',
-  styleUrls: ['./employees.component.scss','../home/home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./employees.component.scss','../home/home.component.scss']
 })
 export class EmployeesComponent {
   minIndex:number = 0
