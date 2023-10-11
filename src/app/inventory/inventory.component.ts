@@ -11,7 +11,7 @@ export class InventoryComponent implements OnInit {
   categorias: any = []
   estados: any = []
   instalaciones:any = []
-  products: any = []
+
   dimens: any = []
   categoriaValue = 'all'
   estadoValue = '0'
@@ -23,11 +23,10 @@ export class InventoryComponent implements OnInit {
   currentPage: number = 1
   itemsPerPage: number = 5
   brands: any = []
-  @Input() instalation: string = ''
 
-  //realtime handlers
-  invUpdateSubscription:any;
-  invInsertSubscription:any;
+  @Input() instalation: string = ''
+  @Input() products: any= []
+
 
 
   constructor(private service: Kera3Service,private changeDetectorRef: ChangeDetectorRef) { }
@@ -41,13 +40,13 @@ export class InventoryComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.fetchInventory()
-    this.subscribeToInvChanges()
+    console.log(this.products)
+    this.fileterd = this.products
+    this.data = this.fileterd.slice(this.minIndex,this.maxIndex)
     this.categorias = await this.service.getAllCategories()
     this.estados = await this.service.getAllStates()
     this.estados = this.estados.filter((estado: { codigo_estado: number; }) => estado.codigo_estado >= 7 && estado.codigo_estado <= 9); //fiter only the correct states
     this.brands = await this.service.getBrands()
-    console.log(this.brands)
     this.dimens = await this.service.getAllDimens()
   }
 
@@ -79,19 +78,7 @@ export class InventoryComponent implements OnInit {
       this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
     }
   }
-  //make the realtime data available
-  async fetchInventory(): Promise<void> {
-    try {
-      this.products = await this.service.getAllProducts()
-      this.fileterd = this.products
-      console.log(this.products)
-      if (this.fileterd != null){
-        this.data =  this.fileterd.slice(this.minIndex, this.maxIndex)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
+
   async getDetails(product : any){ //ver los detalles del producto
     Swal.fire({
       title: 'Detalles',
@@ -213,39 +200,4 @@ export class InventoryComponent implements OnInit {
     }
   }
 
-  //realtime handlers
-
-  subscribeToInvChanges() {
-    this.invInsertSubscription = this.service.getSupabase().channel('custom-insert-channel')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          this.fetchInventory() // llamar los datos de nuevo
-        }
-      )
-      .subscribe();
-
-    this.invUpdateSubscription = this.service.getSupabase().channel('custom-update-channel')
-    .on(
-      'postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'registro_inventario' },
-      (payload) => {
-        this.products?.forEach((element: { codigo_registro: any; cantidad: any; }) => {
-          if(element.codigo_registro == payload.new['codigo_registro']) {
-            element.cantidad = payload.new['cantidad'];
-      }});
-        this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
-      }
-    )
-    .subscribe()
-  }
-  unsubscribeToInvChanges() {
-    if (this.invInsertSubscription) {
-      this.invInsertSubscription.unsubscribe();
-    }
-    if (this.invUpdateSubscription) {
-      this.invUpdateSubscription.unsubscribe();
-    }
-  }
 }

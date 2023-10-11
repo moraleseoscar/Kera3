@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2'
 @Component({
@@ -12,7 +12,7 @@ export class ClientsComponent implements OnInit {
   maxIndex:number = 5
   currentPage: number = 1
   itemsPerPage: number = 5
-  clients: any = []
+
   filteredData: any =[]
   data:any = []
   searchQuery: string = ''
@@ -21,6 +21,7 @@ export class ClientsComponent implements OnInit {
   saldoClientes: any = [];
   constructor(private service: Kera3Service) { }
 
+  @Input() clients: any = []
   //realtime handlers
   registroPagos: any
   salesAllEventSubscription: any
@@ -29,7 +30,6 @@ export class ClientsComponent implements OnInit {
     this.subscribeToRealtimeEvents()
   }
   async fetchData(){
-    this.clients = await this.convertData()
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.filteredData = this.clients;
     this.types = await this.service.getClientsTypes()
@@ -37,7 +37,7 @@ export class ClientsComponent implements OnInit {
   applyFilter() {
       const rgxSearch = new RegExp(this.searchQuery, 'i');
       if (this.searchQuery !== "") {
-      this.filteredData = this.data.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
+      this.filteredData = this.clients.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
       return (
         (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
         (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
@@ -53,18 +53,7 @@ export class ClientsComponent implements OnInit {
       this.currentPage = 1
     }
   }
-  async convertData(){
-    let _clients = await this.service.getClients() //temporal hold of clients
-    let _saldos =  await this.service.getSaldoClientes();
-    _clients?.map(client => {
-      //verificar si tiene pendientes de pago
-      const deudas = _saldos?.filter(item => item['codigo_cliente'] == client['codigo_cliente'])
-      const saldo_total = deudas?.reduce((sum, item) => sum + item['saldo_cliente'], 0.00);
-      client['saldo_total'] = saldo_total;
-      client['deudas'] = deudas
-    });
-    return _clients
-    }
+
 
   displayDetails(clientData : any){
     if (clientData.deudas.length > 0) {
