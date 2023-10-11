@@ -1,4 +1,4 @@
-import { Component, OnInit,ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import Swal from 'sweetalert2';
 
@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css','../home/home.component.scss']
 })
-export class InventoryComponent implements OnInit {
+export class InventoryComponent implements OnInit , OnChanges {
   categorias: any = []
   estados: any = []
   instalaciones:any = []
@@ -25,11 +25,15 @@ export class InventoryComponent implements OnInit {
   brands: any = []
 
   @Input() instalation: string = ''
-  @Input() products: any= []
+  @Input({required:true}) products: any= []
 
 
 
   constructor(private service: Kera3Service,private changeDetectorRef: ChangeDetectorRef) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.fileterd = this.products
+    this.data = this.fileterd.slice(this.minIndex,this.maxIndex)
+  }
 
   get totalPages(): number {
     try {
