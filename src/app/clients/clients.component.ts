@@ -37,7 +37,7 @@ export class ClientsComponent implements OnInit {
   applyFilter() {
       const rgxSearch = new RegExp(this.searchQuery, 'i');
       if (this.searchQuery !== "") {
-      this.filteredData = this.data.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
+      this.filteredData = this.clients.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
       return (
         (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
         (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
