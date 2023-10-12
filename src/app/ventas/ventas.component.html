@@ -78,9 +78,9 @@
                                       <span *ngIf="sale.codigo_estado==10" style="margin-right: 10px;" >
                                         <img alt="" src="../../assets/payment.png"  (click)="addPayment(sale.sale_code)"class="action-button"/>
                                       </span>
-                                      <span *ngIf="sale.payments.length>0">
+                                      <!-- <span *ngIf="sale.payments.length>0">
                                         <img alt="" src="../../assets/payment-history.png"  (click)="getPayments(sale.payments, sale.debt)" class="action-button">
-                                      </span>
+                                      </span> -->
                                   </tr>
                               </ng-container>
                           </tbody>

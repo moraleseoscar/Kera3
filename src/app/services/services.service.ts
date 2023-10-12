@@ -34,6 +34,17 @@ export class Kera3Service {
     return data || null
 
   }
+  async insertClient(client:any){
+    const { data, error} = await this.supabase
+    .from('cliente')
+    .insert([
+      { nombres: client.nombres, apellidos: client.apellidos ,
+        tipo: client.tipo , telefono: client.telefono ,
+        direccion: client.direccion
+      }
+    ])
+    .select()
+  }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }

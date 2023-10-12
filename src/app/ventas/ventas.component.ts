@@ -49,11 +49,12 @@ export class VentasComponent implements OnInit{
 
   async ngOnInit() {
     this.sales = await this.service.getAllSales();
+    console.log(this.sales)
+    this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
       this.totalPages+=1
     }
-    this.filterSales();
     this.products = await this.service.getAllProducts();
     this.products = this.products.filter(product =>{
       return product['codigo_instalacion'] ==this.instalation
@@ -315,12 +316,5 @@ export class VentasComponent implements OnInit{
       this.data = this.sales.slice(this.minIndex, this.maxIndex);
       this.pointers = [];
     }
-  }
-
-  //fetchers and real time
-  filterSales() {
-    this.sales = this.sales.filter((sale: { installation_code: string; }) => {
-      return sale.installation_code === this.instalation
-    })
   }
 }
