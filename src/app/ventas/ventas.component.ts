@@ -1,5 +1,6 @@
 import {Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
+import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 @Component({
   selector: 'app-ventas',
@@ -49,7 +50,6 @@ export class VentasComponent implements OnInit{
 
   async ngOnInit() {
     this.sales = await this.service.getAllSales();
-    console.log(this.sales)
     this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
@@ -134,6 +134,19 @@ export class VentasComponent implements OnInit{
       });
       return; // Don't proceed further
     }
+    if (this.paymentSelected==='A PLAZOS'){
+      const quantityInput = document.getElementById('exactDate') as HTMLInputElement;
+      this.dateSelected = quantityInput.value
+      if (this.dateSelected.length===0){
+        console.log(this.dateSelected)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No has seleccionado la fecha de vencimiento'
+        });
+        return; // Don't proceed further
+      }
+    }
     // Check for invalid quantities in selectedProducts
     const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);
     if (invalidProducts.length > 0) {
@@ -157,17 +170,23 @@ export class VentasComponent implements OnInit{
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = ''
   }
   //send the sale to database
   sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
-    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
+    if (this.paymentSelected!=='A PLAZOS') {
+      const currentTimestamp = new Date();
+      this.dateSelected = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
+    }
+    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = '';
   }
 
   //payments of the sales

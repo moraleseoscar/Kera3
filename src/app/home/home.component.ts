@@ -89,8 +89,7 @@ export class HomeComponent implements OnInit{
       this.products = await this.service.getAllProducts()
       this.products = this.products.filter((product: { codigo_instalacion: string; }) =>{
         return product.codigo_instalacion == this.userData.codigo_instalacion
-      })
-      console.log(this.products)
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
