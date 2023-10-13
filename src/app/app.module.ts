@@ -15,6 +15,8 @@ import { LoginComponent } from './login/login.component';
 import { EmployeesComponent } from './employees/employees.component';
 import { VentasComponent } from './ventas/ventas.component';
 import { ComprasComponent } from './compras/compras.component';
+import { InventoryComponent } from './inventory/inventory.component';
+import { AbonosComponent } from './abonos/abonos.component';
 
 
 @NgModule({
@@ -29,7 +31,9 @@ import { ComprasComponent } from './compras/compras.component';
     LoginComponent,
     EmployeesComponent,
     VentasComponent,
-    ComprasComponent
+    ComprasComponent,
+    InventoryComponent,
+    AbonosComponent
    ],
   imports: [
     BrowserModule,
