@@ -34,6 +34,17 @@ export class Kera3Service {
     return data || null
 
   }
+  async insertClient(client:any){
+    const { data, error} = await this.supabase
+    .from('cliente')
+    .insert([
+      { nombres: client.nombres, apellidos: client.apellidos ,
+        tipo: client.tipo , telefono: client.telefono ,
+        direccion: client.direccion
+      }
+    ])
+    .select()
+  }
    async getAllCategories(){let { data: categoria, error } = await this.supabase.from('categoria').select('*')
    return categoria || null
    }
@@ -262,7 +273,7 @@ export class Kera3Service {
       }
     }
   }
-  async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[]) {
+  async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[], dateSelected: string) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
     const currentTimestamp = new Date();
@@ -291,23 +302,34 @@ export class Kera3Service {
       // Successfully added the sale, now insert the sale details into detalle_movimiento
       const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
       if (codigo_movimiento) {
-        for (const product of selectedProducts) {
-          // Prepare the sale detail data
-          const saleDetailData = {
-            codigo_movimiento: codigo_movimiento,
-            codigo_producto: product.cod,
-            cantidad_producto: product.quantity
-
-          };
-
-          // Insert the sale detail record into detalle_movimiento
-          const { error: detailError } = await this.supabase
-            .from('detalle_movimiento')
-            .upsert([saleDetailData]);
-
-          if (detailError) {
-            // Handle the detail error appropriately, e.g., show a message
-            console.error('Error adding sale detail:', detailError);
+        const { data, error } = await this.supabase
+        .from('registro_crédito')
+        .insert([
+          { codigo_movimiento: codigo_movimiento, fecha_vencimiento: dateSelected },
+        ])
+        .select()
+        if (error){
+          // Handle the error appropriately, e.g., show a message
+          console.error('Error adding registro credito:');
+          console.error(error);
+        }
+        else{
+          for (const product of selectedProducts) {
+            // Prepare the sale detail data
+            const saleDetailData = {
+              codigo_movimiento: codigo_movimiento,
+              codigo_producto: product.cod,
+              cantidad_producto: product.quantity
+            };
+            // Insert the sale detail record into detalle_movimiento
+            const { error: detailError } = await this.supabase
+              .from('detalle_movimiento')
+              .upsert([saleDetailData]);
+            if (detailError) {
+              // Handle the detail error appropriately, e.g., show a message
+              console.error('Error adding sale detail:', detailError);
+              break;
+            }
           }
         }
       }

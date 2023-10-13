@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
 import { ActivatedRoute , Router } from '@angular/router';
@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit{
   clientInsertsOnClientsTbled: any
   clientInsertsOnPaymentsTbled: any
   clientInsertsOnRecordsTbled: any
-  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router ){
 
    }
   async ngOnInit(){
@@ -87,11 +87,9 @@ export class HomeComponent implements OnInit{
   async fetchInventory() {
     try {
       this.products = await this.service.getAllProducts()
-      console.log(this.products)
       this.products = this.products.filter((product: { codigo_instalacion: string; }) =>{
         return product.codigo_instalacion == this.userData.codigo_instalacion
-      })
-      console.log(this.products)
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
