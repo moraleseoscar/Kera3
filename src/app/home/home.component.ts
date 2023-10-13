@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2'
 import { Kera3Service } from '../services/services.service';
 import { ActivatedRoute , Router } from '@angular/router';
@@ -8,22 +8,11 @@ import { ActivatedRoute , Router } from '@angular/router';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit{
-  categorias: any = []
-  estados: any = []
-  instalaciones:any = []
-  products: any = []
-  dimens: any = []
-  categoriaValue = 'all'
-  instalacionValue = 'all'
-  estadoValue = '0'
-  data:any = []
-  fileterd:any = []
-  searchQuery: string = ''
-  minIndex:number = 0
-  maxIndex:number = 5
-  currentPage: number = 1
-  itemsPerPage: number = 5
   navcurrent: string = 'inv' //variable de navegacion
+
+  clients : any = []
+  products : any = []
+  sales : any = []
   userData : {user_id:string,user_nombres : string ;
                 user_apellidos: string;
                 codigo_instalacion: string;
@@ -33,53 +22,23 @@ export class HomeComponent implements OnInit{
               codigo_instalacion: '',
               rol_interno: 'USER ROL',
               email: 'mail'} //variable de info del usuario en sesion solo para lo visual en UI
-    //realtime handlers
-    invUpdateSubscription:any;
-    invInsertSubscription:any;
-  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router , private changeDetectorRef: ChangeDetectorRef){
+
+
+  //realtime handlers
+  //inventario
+  invUpdateSubscription:any;
+  invInsertSubscription:any;
+  //ventas
+  salesAllEventSubscription: any
+  paymentsAllEventSubscription: any
+  //clientes:
+  clientInsertsOnClientsTbled: any
+  clientInsertsOnPaymentsTbled: any
+  clientInsertsOnRecordsTbled: any
+  constructor(private service: Kera3Service , private route: ActivatedRoute, private router: Router ){
 
    }
-  get totalPages(): number {
-    return Math.ceil(this.fileterd.length / this.itemsPerPage);
-  }
-  returnFirstPage() {
-    this.currentPage = 1
-    this.maxIndex = this.itemsPerPage;
-    this.minIndex = 0;
-    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
-  }
-  returnLastPage() {
-    this.currentPage = this.totalPages
-    this.maxIndex = this.products.length;
-    this.minIndex = this.products.length-this.itemsPerPage;
-    this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
-  }
-  nextPage() {
-    if (this.currentPage !== this.totalPages){
-      this.currentPage +=1
-      this.maxIndex+=this.itemsPerPage
-      this.minIndex+=this.itemsPerPage
-      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
-    }
-  }
-  prevPage() {
-    if (this.currentPage !== 1) {
-      this.currentPage -=1
-      this.maxIndex-=this.itemsPerPage
-      this.minIndex-=this.itemsPerPage
-      this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
-    }
-  }
   async ngOnInit(){
-    this.fetchInventory()
-    this.subscribeToInvChanges()
-    this.categorias = await this.service.getAllCategories()
-    this.estados = await this.service.getAllStates()
-    this.estados = this.estados.filter((estado: { codigo_estado: number; }) => estado.codigo_estado >= 7 && estado.codigo_estado <= 9); //fiter only the correct states
-
-    this.dimens = await this.service.getAllDimens()
-    this.instalaciones = await this.service.getInstalaciones()
-    this.instalaciones = this.instalaciones.filter((i: { codigo_instalacion: string; }) => i.codigo_instalacion != 'TMP');
     let email = await sessionStorage.getItem('datos');
     let user = await this.service.getUserData(email);
       try{
@@ -88,142 +47,13 @@ export class HomeComponent implements OnInit{
           codigo_instalacion: user[0]['codigo_instalacion'],
           rol_interno: user[0]['rol_interno'],
           email: user[0]['email']}
-          this.instalacionValue = user[0]['codigo_instalacion']
         }
       }catch (error){
       }
-
+    await this.fetchAll()
+    await this.subscrbeAll()
 
   }
-  //make the realtime data available
-  async fetchInventory(): Promise<void> {
-    try {
-      this.products = await this.service.getAllProducts()
-      this.fileterd = this.products
-      this.data =  this.fileterd.slice(this.minIndex, this.maxIndex)
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-  async getDetails(product : any){ //ver los detalles del producto
-    Swal.fire({
-      title: 'Detalles',
-      html:`
-      <p>${product.nombre_producto}</p>
-      <p>${product.descripcion_producto}</p>
-      <p>codigo: ${product.codigo_producto}</p>
-      <p>Cantidad:  ${product.cantidad} ${product.codigo_dimensional}</p>
-      <p class=${product.nombre_estado}>Estado: ${product.nombre_estado}</p>
-      <p> precio: Q ${product.precio_producto}</p>
-      <p> Ubicacion: ${product.codigo_instalacion}</p>
-      `
-  } )
-  }
-   async insertingProduct () {
-    var cat = `<option value="" disabled selected>Categoria</option>`
-    var dime = `<option value="" disabled selected>Dimensional</option>`
-    var place = `<option value="" disabled selected>Sucursal</option>`
-    var indexDime = ""
-    var indexCat = ""
-    for (let index = 0; index < this.dimens.length; index++) {
-      dime = dime+`<option value="${this.dimens[index].codigo_dimensional}">${this.dimens[index].nombre_dimensional}</option>`
-    }
-    for (let index = 0; index < this.categorias.length; index++) {
-      cat = cat+`<option value="${this.categorias[index].codigo_categoria}">${this.categorias[index].nombre_categoria}</option>`
-    }
-    for (let index = 0; index < this.instalaciones.length; index++) {
-      place = place+`<option value="${this.instalaciones[index].codigo_instalacion}">${this.instalaciones[index].nombre_instalacion}</option>`
-    }
-    Swal.fire({
-      title: 'Agregar producto',
-      html: `
-        <input type="text" id="codigo" class="swal2-input" placeholder="Código">
-        <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
-        <input type="number" step=".01" id="precio" class="swal2-input" placeholder="Precio">
-        <input type="text" id="descripcion" class="swal2-input" placeholder="Descripcion">
-        <input type="text" id="cantidad" class="swal2-input" placeholder="0">
-        <select class="uk-select" id="categoria" placeholder="Categoria">
-          ${cat}
-        </select>
-        <select class="uk-select" id="unidad" placeholder="Unidad">
-          ${dime}
-        </select>
-        <select class="uk-select" id="ubicacion" placeholder="Unidad">
-          ${place}
-        </select>
-
-      `,
-      confirmButtonText: 'Ingrese nuevo producto',
-      focusConfirm: false,
-      preConfirm: () => {
-        const codigo = (<HTMLInputElement>document.getElementById('codigo')).value;
-        const nombre = (<HTMLInputElement>document.getElementById('nombre')).value;
-        const precio = (<HTMLSelectElement>document.getElementById('precio')).value;
-        const descripcion = (<HTMLSelectElement>document.getElementById('descripcion')).value;
-        const indexCat = (<HTMLSelectElement>document.getElementById('categoria')).value;
-        const indexDime = (<HTMLSelectElement>document.getElementById('unidad')).value;
-        const indexLocacion = (<HTMLSelectElement>document.getElementById('ubicacion')).value;
-        const cantidadN = (<HTMLSelectElement>document.getElementById('cantidad')).value;
-        return {
-          codigo: codigo,
-          nombre: nombre,
-          categoria: indexCat,
-          unidad: indexDime,
-          precio: precio,
-          descripcion: descripcion,
-          cod_instalacion: indexLocacion,
-          cantidad:cantidadN
-        };
-      }
-    }).then( async (result) => {
-      if (result.isConfirmed) {
-        this.service.addProduct(result.value)
-        setTimeout(()=> {
-          this.service.addProductCategory(result.value)
-          this.service.addInventoryRegister(result.value)
-        }, 1000)
-      }
-      this.products = await this.service.getAllProducts()
-      this.fileterd = await this.products
-      this.data = await this.fileterd.slice(this.minIndex, this.maxIndex)
-      this.changeDetectorRef.markForCheck();
-    });
-  }
-  onFilterAndSearch() {
-    if (this.searchQuery != ""){
-
-    this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
-      // Apply search filter
-      const rgxSearch = new RegExp(this.searchQuery, 'i');
-      const isMatchingSearch = rgxSearch.test(product.nombre_producto.toUpperCase()) ||
-                               rgxSearch.test(product.codigo_producto.toUpperCase());
-
-      // Apply ngIf-like conditions
-      const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
-      const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
-      const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
-
-      // Combine all conditions with logical AND
-      return isMatchingSearch && isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
-    });
-
-    // Apply pagination or any other post-filtering logic
-    this.data = this.fileterd.slice(this.minIndex, this.maxIndex);}
-    else{
-      this.fileterd = this.products.filter((product: { nombre_producto: string; codigo_producto: string; codigo_categoria: string; codigo_estado: string; codigo_instalacion: string; }) => {
-        // Apply ngIf-like conditions
-        const isMatchingCategoria = this.categoriaValue === product.codigo_categoria || this.categoriaValue === 'all';
-        const isMatchingEstado = this.estadoValue == product.codigo_estado || this.estadoValue === '0';
-        const isMatchingInstalacion = product.codigo_instalacion == this.instalacionValue || this.instalacionValue == 'all';
-
-        // Combine all conditions with logical AND
-        return isMatchingCategoria && isMatchingEstado && isMatchingInstalacion;
-      });
-       // Apply pagination or any other post-filtering logic
-      this.data = this.fileterd.slice(this.minIndex, this.maxIndex);
-    }
-  }
-
   setCurrentNav(panel :string){
     this.navcurrent = panel
   }
@@ -233,8 +63,64 @@ export class HomeComponent implements OnInit{
     this.router.navigate(['/login']);
   }
 
-  //realtime handlers
+  //metodos para los datos compartidos de varios páneles
+  //llamar a todos los fetc
+  async fetchAll(){
+    this.fetchInventory()
+    this.fetchClientsData()
+    this.fetchSales()
+  }
+  //clientes , ventas y abonos: Datos de clientes
+  async fetchClientsData(){
+    let _clients = await this.service.getClients() //temporal hold of clients
+    let _saldos =  await this.service.getSaldoClientes();
+    _clients?.map(client => {
+      //verificar si tiene pendientes de pago
+      const deudas = _saldos?.filter(item => item['codigo_cliente'] == client['codigo_cliente'])
+      const saldo_total = deudas?.reduce((sum, item) => sum + item['saldo_cliente'], 0.00);
+      client['saldo_total'] = saldo_total;
+      client['deudas'] = deudas
+    });
+    this.clients = _clients
+  }
+  //inventario filtrado
+  async fetchInventory() {
+    try {
+      this.products = await this.service.getAllProducts()
+      this.products = this.products.filter((product: { codigo_instalacion: string; }) =>{
+        return product.codigo_instalacion == this.userData.codigo_instalacion
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
 
+  async fetchSales(){
+    this.sales = await this.service.getAllSales();
+    this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
+        let payments = await this.service.getPaymentsDetails(sale.sale_code);
+        if(payments != null) {
+          let payment_amount = 0;
+          payments.forEach(payment =>{
+            payment_amount += payment['monto_movimiento'] ;
+          })
+          sale['payments'] = payments;
+          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
+        }
+        else {
+          sale['payments'] = [];
+          sale['debt'] = 0;
+        }
+      }
+    )
+  }
+  //real time handlings
+  subscrbeAll(){ //subscribirse a todos los datos tiempo real que lo requieren
+    this.subscribeToInvChanges()
+    this.subscribeToSaleChanges()
+    this.subscribeToClientsChanges()
+  }
+  //inventario
   subscribeToInvChanges() {
     this.invInsertSubscription = this.service.getSupabase().channel('custom-insert-channel')
       .on(
@@ -255,7 +141,6 @@ export class HomeComponent implements OnInit{
           if(element.codigo_registro == payload.new['codigo_registro']) {
             element.cantidad = payload.new['cantidad'];
       }});
-        this.data = this.fileterd.slice(this.minIndex, this.maxIndex)
       }
     )
     .subscribe()
@@ -268,4 +153,56 @@ export class HomeComponent implements OnInit{
       this.invUpdateSubscription.unsubscribe();
     }
   }
+  //ventas
+  subscribeToSaleChanges(){
+    this.paymentsAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'registro_inventario' },
+        (payload) => {
+          this.fetchSales();
+        }
+      )
+      .subscribe();
+
+      this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'movimiento_producto' },
+        (payload) => {
+          this.fetchSales();
+        }
+      )
+      .subscribe();
+  }
+  //clientes
+  subscribeToClientsChanges(){
+    this.clientInsertsOnClientsTbled = this.service.getSupabase().channel('custom-insert-channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'cliente' },
+        (payload) => {
+          this.fetchClientsData();
+        }
+      )
+      .subscribe();
+    this.clientInsertsOnPaymentsTbled = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_pagos' },
+      (payload) => {
+        this.fetchClientsData();
+      }
+    )
+    .subscribe();
+    this.clientInsertsOnRecordsTbled = this.service.getSupabase().channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'registro_recibos' },
+      (payload) => {
+        this.fetchClientsData();
+      }
+    )
+    .subscribe();
+}
 }

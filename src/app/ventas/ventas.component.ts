@@ -1,5 +1,6 @@
 import {Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
+import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 @Component({
   selector: 'app-ventas',
@@ -14,8 +15,7 @@ export class VentasComponent implements OnInit{
   itemsPerPage: number = 5
   //data
   products:any[] = []
-  clients:any = []
-  sales: any = []
+
   data:any = []
   cart:any = []
   states:any = []
@@ -32,51 +32,86 @@ export class VentasComponent implements OnInit{
   clienteSelected = ''
   productSelected = ''
   paymentSelected = ''
+  dateSelected = ''
   totalPages = 0
   //register a sale
   selectedProducts: { name: string, quantity: number,cod:string }[] = [];
+
   @Input() instalation: string = ''
   @Input() user_id: string = ''
+  @Input() clients:any = []
+  @Input() sales: any = []
+
   showSaleForm: boolean = false;
-  instalations: any = []
   //real time handlers
-  salesAllEventSubscription: any
-  paymentsAllEventSubscription: any
+
 
   constructor(private service: Kera3Service) {}
 
   async ngOnInit() {
-    this.instalations = await this.service.getAllInstalaciones();
     this.sales = await this.service.getAllSales();
+    this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
       this.totalPages+=1
     }
-    this.fetchSales();
-    this.products = await this.service.getProducts(this.instalation);
+    this.products = await this.service.getAllProducts();
+    this.products = this.products.filter(product =>{
+      return product['codigo_instalacion'] ==this.instalation
+    })
+
     // Filter the states array to include only the valid names
     this.states = this.states.filter((state: { nombre_estado: string; }) => this.validStateNames.includes(state.nombre_estado));
-    this.clients = await this.service.getClients();
     this.states = await this.service.getAllStates();
-    this.subscribeToChanges();
+
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
   }
   //details from the sale
-  getDetails(saleData:any){
+  getDetails(saleData:any, date:any, nombre_estado: any){
+    let nDate = new Date(date);
+    let restDate = new Date();
+    let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
       productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
       });
-      Swal.fire({
-        title: `Detalles venta a ${saleData.client_name}`,
-        html: `
-        <p>Productos:</p>
-        <pre>${productList}</pre>
-        `,
-        confirmButtonText: 'OK'
-      });
+      if (result<0 && nombre_estado !== 'FINALIZADO'){
+        let result = Math.floor((-nDate.getTime() + restDate.getTime())*1/1000*1/3600*1/24)
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Se venció hace: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else if (result > 0 && nombre_estado !== 'FINALIZADO'){
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Falta para que se venza: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else{
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
   }
 
   // Method to add a product to selectedProducts array
@@ -129,6 +164,19 @@ export class VentasComponent implements OnInit{
       });
       return; // Don't proceed further
     }
+    if (this.paymentSelected==='A PLAZOS'){
+      const quantityInput = document.getElementById('exactDate') as HTMLInputElement;
+      this.dateSelected = quantityInput.value
+      if (this.dateSelected.length===0){
+        console.log(this.dateSelected)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No has seleccionado la fecha de vencimiento'
+        });
+        return; // Don't proceed further
+      }
+    }
     // Check for invalid quantities in selectedProducts
     const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);
     if (invalidProducts.length > 0) {
@@ -152,17 +200,23 @@ export class VentasComponent implements OnInit{
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = ''
   }
   //send the sale to database
   sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
-    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
+    if (this.paymentSelected!=='A PLAZOS') {
+      const currentTimestamp = new Date();
+      this.dateSelected = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
+    }
+    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = '';
   }
 
   //payments of the sales
@@ -285,7 +339,7 @@ export class VentasComponent implements OnInit{
       this.filteredData = this.sales.filter((sale: { client_name: string; employee_lastname: string; employee_name: string; installation: string;}) => {
         return (
           (this.estadoValue === '0') &&
-          (rgxSearch.test(sale.client_name) || rgxSearch.test(sale.employee_lastname) || rgxSearch.test(sale.employee_name) || rgxSearch.test(sale.installation) )
+          (rgxSearch.test(sale.client_name) || rgxSearch.test(sale.employee_lastname) || rgxSearch.test(sale.employee_name) )
         );
       });
       if (this.pointers.length === 0) {
@@ -311,47 +365,5 @@ export class VentasComponent implements OnInit{
       this.data = this.sales.slice(this.minIndex, this.maxIndex);
       this.pointers = [];
     }
-  }
-  subscribeToChanges(){
-    this.paymentsAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          this.fetchSales();
-        }
-      )
-      .subscribe();
-
-      this.salesAllEventSubscription = this.service.getSupabase().channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'movimiento_producto' },
-        (payload) => {
-          this.fetchSales();
-        }
-      )
-      .subscribe();
-  }
-  //fetchers and real time
-  async fetchSales() : Promise<void>{
-    this.sales = await this.service.getAllSales();
-    this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
-        let payments = await this.service.getPaymentsDetails(sale.sale_code);
-        if(payments != null) {
-          let payment_amount = 0;
-          payments.forEach(payment =>{
-            payment_amount += payment['monto_movimiento'] ;
-          })
-          sale['payments'] = payments;
-          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
-        }
-        else {
-          sale['payments'] = [];
-          sale['debt'] = 0;
-        }
-      }
-    )
-    this.data = this.sales.slice(this.minIndex, this.maxIndex)
   }
 }
