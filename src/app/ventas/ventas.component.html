@@ -67,7 +67,7 @@
                           <tbody>
                               <ng-container *ngFor="let sale of data">
                                   <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
-                                    <td (click)="getDetails(sale)">{{ sale.sale_code }}</td>
+                                    <td (click)="getDetails(sale, sale.fecha_vencimiento, sale.nombre_estado)">{{ sale.sale_code }}</td>
                                     <td >{{ sale.sale_date }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>

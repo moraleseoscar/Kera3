@@ -69,19 +69,49 @@ export class VentasComponent implements OnInit{
     this.showSaleForm = !this.showSaleForm
   }
   //details from the sale
-  getDetails(saleData:any){
+  getDetails(saleData:any, date:any, nombre_estado: any){
+    let nDate = new Date(date);
+    let restDate = new Date();
+    let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
       productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
       });
-      Swal.fire({
-        title: `Detalles venta a ${saleData.client_name}`,
-        html: `
-        <p>Productos:</p>
-        <pre>${productList}</pre>
-        `,
-        confirmButtonText: 'OK'
-      });
+      if (result<0 && nombre_estado !== 'FINALIZADO'){
+        let result = Math.floor((-nDate.getTime() + restDate.getTime())*1/1000*1/3600*1/24)
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Se venció hace: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else if (result > 0 && nombre_estado !== 'FINALIZADO'){
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Falta para que se venza: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else{
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
   }
 
   // Method to add a product to selectedProducts array
