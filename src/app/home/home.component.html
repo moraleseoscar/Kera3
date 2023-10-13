@@ -23,7 +23,6 @@
   <div class="left-nav-wrap">
       <div class="left-content-box uk-margin-top">
         <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
-        <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
         <h5 class="nav-option {{ navcurrent === 'pay' ? 'active' : '' }}" (click)="setCurrentNav('pay')">Recibos</h5>
         <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Envíos</h5>
         <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
@@ -44,8 +43,6 @@
 <div id="content" data-uk-height-viewport="expand: true">
 <!-- inventory panel -->
   <app-inventory [instalation] = "this.userData.codigo_instalacion" [products]="products" *ngIf="navcurrent == 'inv'"></app-inventory>
-  <!-- dispatch pannel -->
-  <app-dispatch [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id" *ngIf="navcurrent == 'desp'" ></app-dispatch>
   <!-- Instalaciones panel -->
   <app-abonos [sales]="sales" *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion" [clients]="clients"></app-abonos>
   <!-- clients panel -->
@@ -65,7 +62,6 @@
       <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
       <ul class="uk-nav uk-nav-default uk-position-center">
         <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
-        <h5 class="nav-option {{ navcurrent === 'desp' ? 'active' : '' }}" (click)="setCurrentNav('desp')">Despachos</h5>
         <h5 class="nav-option {{ navcurrent === 'pay' ? 'active' : '' }}" (click)="setCurrentNav('pay')">Abonos</h5>
         <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Envíos</h5>
         <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
