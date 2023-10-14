@@ -1,0 +1,136 @@
+<div class="uk-container uk-container-expand">
+  <div class="uk-grid-divider uk-grid-medium uk-child-width-1-1 uk-child-width-1-2@s" data-uk-grid>
+      <div>
+          <div class="uk-child-width-1-2" uk-grid>
+              <div>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Compras</h1>
+              </div>
+          </div>
+      </div>
+      <div>
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar compra</button>
+      </div>
+  </div>
+  <hr>
+  <div *ngIf="!showBuyForm"  class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+
+      <!-- panel -->
+      <div class="uk-width-1-1">
+          <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+              <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small ">
+                      <div class="uk-width-expand uk-width-1-4">
+                          <div class="uk-margin">
+                              <form class="uk-search uk-width-expand uk-search-default">
+                                  <span uk-search-icon></span>
+                                  <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" >
+                              </form>
+                          </div>
+                      </div>
+                      <div class="uk-width-expand uk-width-1-4">
+                        <div class="display--filters">
+                            <label for="" style="margin-right: 5%;">Estado:</label>
+                            <select class="uk-select" placeholder="Estado">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let estado of validStateNames" [value]="estado">{{estado}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="uk-width-expand uk-width-1-4">
+                        <div class="display--filters">
+                            <label for="" style="margin-right: 5%;">Instalacion:</label>
+                            <select title="filtro" class="uk-select" placeholder="Instalacion">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let instalation of instalations" [value]="instalation.nombre_instalacion">{{instalation.nombre_instalacion}}</option>
+                            </select>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="uk-card-body">
+                  <div class="chart-container uk-overflow-auto">
+                      <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+                          <thead>
+                              <tr>
+                                <th class="uk-table-large">Codigo</th>
+                                  <th class="uk-table-large">Fecha</th>
+                                  <th class="uk-table-expand">Sucursal</th>
+                                  <th class="uk-table-small">Encargado</th>
+                                  <th class="uk-table-small">Monto Total</th>
+                                  <th class="uk-table-expand">Estado</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <ng-container *ngFor="let compra of data">
+                                  <tr (click)="getDetails(compra)" *ngIf="(instalationValue == compra.instalacion_emitente || instalationValue === '0') && (estadoValue ==='0' || estadoValue === compra.estado)">
+                                    <td>{{ compra.numero_movimiento }}</td>
+                                    <td>{{ compra.fecha_inicio }}</td>
+                                    <td>{{ compra.instalacion_emitente }}</td>
+                                    <td>{{ compra.encargado }}</td>
+                                    <td>Q.{{ compra.monto_total }}</td>
+                                    <td class={{compra.estado}}>{{ compra.estado }}</td>
+                                  </tr>
+                              </ng-container>
+                          </tbody>
+                      </table>
+                      <ng-template #empty>
+                          <h3>Datos no encontrados, por favor verifica tus filtros.</h3>
+                      </ng-template>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <ul *ngIf="!showBuyForm" class="uk-pagination pagination--position center-flex" uk-margin>
+    <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+    <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+    <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+  </ul>
+  <!-- Register new sale form -->
+<section *ngIf="showBuyForm">
+  <h2>Registrar una compra</h2>
+  <div>
+    <div>
+      <label for="proveedorDropdown">Proveedor:</label>
+      <select id="proveedorDropdown" class="form-control" >
+        <option value="" disabled selected>Proveedor</option>
+        <option *ngFor="let proveedor of proveedores" [value]="proveedor.codigo_proveedor">{{ proveedor.nombre_proveedor }}</option>
+      </select>
+      <select title="Payment" id="paymentDropdown" class="form-control" >
+        <option value="" disabled selected>Tipo de pago</option>
+        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+      </select>
+      <label for="productDropdown">Producto:</label>
+      <select id="productDropdown" class="form-control" >
+        <option value="" disabled selected>Selecciona un producto</option>
+        <option *ngFor="let product of products" [value]="product.codigo_producto">{{ product.nombre_producto }}</option>
+      </select>
+      <label for="quantityInput">Cantidad:</label>
+      <input id="quantityInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Cantidad">
+      <label for="montoInput">Monto: Q.</label>
+      <input id="montoInput" type="number" onkeypress="return event.charCode >= 48" min="1" placeholder="Monto en quetzales">
+      <button (click)="addProduct()">Agregar Producto</button>
+    </div>
+    <div>
+      <ul>
+        <li *ngFor="let product of selectedProducts; let i = index">
+            Nombre: {{ product.name }}
+            Cantidad: <input type="number" >
+            Monto total del producto: <input type="number" >
+            <button (click)="removeProduct(i)">Eliminar</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+    <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmBuy()">Confirmar</button>
+    <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+  <div>
+  <footer class="uk-section uk-section-small uk-text-center">
+      <hr>
+      <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"
+              href="https://www.facebook.com/profile.php?id=100054286971522">Kera3</a> | Proyecto Ingenieria de
+          Software</span>
+  </footer>
+</div>

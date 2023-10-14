@@ -47,6 +47,8 @@
   <app-abonos [sales]="sales" *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion" [clients]="clients"></app-abonos>
   <!-- clients panel -->
   <app-clients *ngIf="navcurrent == 'cli'" [clients]="clients"></app-clients>
+  <!-- Deudas -->
+  <app-clients *ngIf="navcurrent == 'cli'" [clients]="clients"></app-clients>
   <!-- panel de ventas -->
   <app-ventas [sales]="sales"  [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id"  [clients]="clients"  *ngIf="navcurrent == 'sale'"></app-ventas>
   <!-- panel de compras -->
@@ -62,6 +64,8 @@
       <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
       <ul class="uk-nav uk-nav-default uk-position-center">
         <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Inventario</h5>
+        <h5 class="nav-option {{ navcurrent === 'inv' ? 'active' : '' }}" (click)="setCurrentNav('inv')">Deudas</h5>
+
         <h5 class="nav-option {{ navcurrent === 'pay' ? 'active' : '' }}" (click)="setCurrentNav('pay')">Abonos</h5>
         <h5 class="nav-option {{ navcurrent === 'sale' ? 'active' : '' }}" (click)="setCurrentNav('sale')">Envíos</h5>
         <h5 class="nav-option {{ navcurrent === 'buys' ? 'active' : '' }}" (click)="setCurrentNav('buys')">Compras</h5>
