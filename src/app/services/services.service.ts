@@ -376,7 +376,6 @@ export class Kera3Service {
     }
     return data || error;
   }
-
   async addPayment(codigo:string, monto:string) {
     const saleData =  { codigo_movimiento: codigo ,
      monto_movimiento: monto ,fecha_pago: this.Now()}
