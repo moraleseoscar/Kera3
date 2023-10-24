@@ -374,6 +374,7 @@ export class Kera3Service {
     if (error){
       console.log(error)
     }
+    
     return data || error;
   }
   async addPayment(codigo:string, monto:string) {
