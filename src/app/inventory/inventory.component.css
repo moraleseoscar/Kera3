@@ -1,0 +1,34 @@
+/* Contenedor general de paginación */
+.uk-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+/* Estilo general para los botones */
+.btn-pagination {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: 1px solid #c0c0c0;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Deshabilitar el efecto hover y el cursor para botones deshabilitados */
+.btn-pagination[disabled] {
+    background-color: #e5e5e5;
+    cursor: not-allowed;
+}
+
+/* Hover effect para los botones */
+.btn-pagination:not([disabled]):hover {
+    background-color: #e0e0e0;
+}
+
+/* Estilo para el contador de páginas */
+.pagination-indicator {
+    margin: 0 10px;
+    font-weight: bold;
+}
