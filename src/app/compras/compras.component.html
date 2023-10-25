@@ -81,13 +81,13 @@
           </div>
       </div>
   </div>
-  <ul *ngIf="!showBuyForm" class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul>
+</ul>
   <!-- Register new sale form -->
 <section *ngIf="showBuyForm">
   <h2>Registrar una compra</h2>
