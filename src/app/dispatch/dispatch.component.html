@@ -101,7 +101,7 @@
       <label for="instalacionDropdown">Instalacion:</label>
       <select id="instalacionDropdown" class="form-control" [(ngModel)]="instalacionSelected" (change)="whenSelectedInstalation()">
         <option value="" disabled selected>Instalacion</option>
-        <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_instalacion">{{ instalacion.nombre_instalacion }}</option>
+        <option *ngFor="let instalacion of instalations" [value]="instalacion.codigo_instalacion">{{ instalacion.nombre_instalacion }}</option>
       </select>
       <label for="productDropdown">Producto:</label>
       <select disabled id="productDropdown" class="form-control" [(ngModel)]="productSelected">

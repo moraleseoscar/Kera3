@@ -18,6 +18,7 @@ import { ComprasComponent } from './compras/compras.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { AbonosComponent } from './abonos/abonos.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,

@@ -4,12 +4,12 @@
           <div>
               <div class="uk-child-width-1-2" uk-grid>
                   <div>
-                      <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Clientes</h1>
+                      <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Registro</h1>
                   </div>
               </div>
           </div>
           <div>
-              <button (click)="onAddClient()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Cliente</button>
+              <button class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Cliente</button>
           </div>
       </div>
       <hr>
@@ -24,16 +24,38 @@
                               <div class="uk-margin">
                                   <form class="uk-search uk-width-expand uk-search-default">
                                       <span uk-search-icon></span>
-                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="applyFilter()" [ngModelOptions]="{standalone: true}">
+                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                                   </form>
                               </div>
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
+                                  <!-- <label for="" style="margin-right: 5%;">Categoría:</label>
+                                  <select class="uk-select" placeholder="Ubicación" [(ngModel)]="categoriaValue">
+                                      <option value="all">Todos</option>
+                                      <option *ngFor="let categoria of categorias"
+                                          [value]="categoria.codigo_categoria">{{ categoria.nombre_categoria }}
+                                      </option>
+                                  </select> -->
+                              </div>
+                          </div>
+                          <div class="uk-width-expand uk-width-1-4">
+                              <div class="display--filters">
+                                  <!-- <label for="" style="margin-right: 5%;">Estado:</label>
+                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                      <option value="0">Todos</option>
+                                      <option *ngFor="let estado of estados" [value]="estado.codigo_estado">{{
+                                          estado.nombre_estado }}</option>
+                                  </select> -->
+                              </div>
+                          </div>
+                          <div class="uk-width-expand uk-width-1-4">
+                              <div class="display--filters">
                                   <label for="" style="margin-right: 5%;">Tipo de cliente:</label>
-                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue" (ngModelChange)="applyFilter()">
-                                    <option value="0">Todos</option>
-                                    <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{ estado.tipo_cliente }}</option>
+                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue">
+                                      <option value="0">Todos</option>
+                                      <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{
+                                        estado.tipo_cliente }}</option>
                                   </select>
                               </div>
                           </div>
@@ -48,17 +70,17 @@
                                       <th class="uk-table-expand">Apellidos</th>
                                       <th class="uk-table-small">Tipo</th>
                                       <th class="uk-table-small">Telefono</th>
-                                      <th class="uk-table-expand">Saldo</th>
+                                      <th class="uk-table-expand">Direccion</th>
                                   </tr>
                               </thead>
                               <tbody>
                                   <ng-container *ngFor="let client of data">
-                                      <tr (click)="displayDetails(client)">
+                                      <tr *ngIf ="(estadoValue == '0' || estadoValue == client.tipo)">
                                         <td>{{ client.nombres }}</td>
                                         <td>{{ client.apellidos }}</td>
                                         <td>{{ client.tipo }}</td>
                                         <td>{{ client.telefono}}</td>
-                                        <td>{{ client.saldo_total }}</td>
+                                        <td>{{ client.direccion }}</td>
                                       </tr>
                                   </ng-container>
                               </tbody>

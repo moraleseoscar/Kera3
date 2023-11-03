@@ -48,6 +48,18 @@
                               </select>
                           </div>
                       </div>
+
+                      <!-- <div class="uk-width-expand uk-width-1-4">
+                        <div class="display--filters">
+                            <label for="" style="margin-right: 5%;">Instalacion:</label>
+                            <select class="uk-select" [(ngModel)]="estadoValue" (ngModelChange)="onFilterAndSearch()">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let instalacion of instalaciones" [value]="instalacion.codigo_estado">{{
+                                    estado.nombre_estado }}</option>
+                            </select>
+                        </div>
+                    </div> -->
+
                   </div>
               </div>
               <div class="uk-card-body">
@@ -66,7 +78,7 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let product of data">
-                                  <tr  (click)="getDetails(product)">
+                                  <tr  (click)="getDetails(product)" *ngIf="product.codigo_instalacion==instalation">
                                     <td>{{ product.codigo_producto }}</td>
                                     <td>{{ product.nombre_producto }}</td>
                                     <td>{{ product.nombre_categoria }}</td>
@@ -93,7 +105,8 @@
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul>
+</ul>
+
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"

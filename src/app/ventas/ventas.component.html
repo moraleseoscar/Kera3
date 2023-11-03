@@ -3,12 +3,12 @@
       <div>
           <div class="uk-child-width-1-2" uk-grid>
               <div>
-                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Enviós</h1>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Envíos</h1>
               </div>
           </div>
       </div>
       <div>
-          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Venta</button>
+          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar envío</button>
       </div>
   </div>
   <hr>
@@ -66,21 +66,15 @@
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let sale of data">
-                                  <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
-                                    <td (click)="getDetails(sale)">{{ sale.sale_code }}</td>
+                                  <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)"
+                                  (click)="getDetails(sale, sale.fecha_vencimiento, sale.nombre_estado)">
+                                    <td >{{ sale.sale_code }}</td>
                                     <td >{{ sale.sale_date }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
                                     <td>{{ sale.credit_days }}</td>
                                     <td>{{ sale.total_amount}}</td>
                                     <td>{{ sale.nombre_estado}}</td>
-                                    <td >
-                                      <span *ngIf="sale.codigo_estado==10" style="margin-right: 10px;" >
-                                        <img alt="" src="../../assets/payment.png"  (click)="addPayment(sale.sale_code)"class="action-button"/>
-                                      </span>
-                                      <span *ngIf="sale.payments.length>0">
-                                        <img alt="" src="../../assets/payment-history.png"  (click)="getPayments(sale.payments, sale.debt)" class="action-button">
-                                      </span>
                                   </tr>
                               </ng-container>
                           </tbody>
@@ -94,13 +88,13 @@
       </div>
       <!-- /panel -->
   </div>
-  <ul *ngIf="!showSaleForm" class="uk-pagination pagination--position center-flex" uk-margin>
+  <ul class="uk-pagination pagination--position center-flex" uk-margin>
     <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
     <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
     <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
     <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-  </ul>
+</ul>
   <!-- Register new sale form -->
 <section *ngIf="showSaleForm">
   <h2>Registrar una venta</h2>
@@ -115,9 +109,9 @@
         <option value="" disabled selected>Tipo de pago</option>
         <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
       </select>
-      <label for="creditDate" *ngIf="paymentSelected=='A PLAZOS'">Fecha de vencimiento del crédito:</label>
-      <form class="uk-form" id="creditDate" *ngIf="paymentSelected=='A PLAZOS'">
-        <input type="date" [(ngModel)]="dateSelected" data-uk-datepicker="{format:'DD.MM.YYYY'}">
+      <label for="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">Fecha de vencimiento del crédito:</label>
+      <form class="uk-form" id="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">
+        <input id="exactDate" type="date" placeholder="fecha" [(ngModel)]="dateSelected">
       </form>
       <label for="productDropdown">Producto:</label>
       <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">

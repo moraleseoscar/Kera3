@@ -1,5 +1,6 @@
 import {Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
+import { format } from 'date-fns';
 import Swal from 'sweetalert2'
 @Component({
   selector: 'app-ventas',
@@ -64,7 +65,6 @@ export class VentasComponent implements OnInit{
     if (this.totalPages===0){
       this.totalPages+=1
     }
-    this.filterSales();
     this.products = await this.service.getAllProducts();
     this.products = this.products.filter(product =>{
       return product['codigo_instalacion'] ==this.instalation
@@ -79,19 +79,49 @@ export class VentasComponent implements OnInit{
     this.showSaleForm = !this.showSaleForm
   }
   //details from the sale
-  getDetails(saleData:any){
+  getDetails(saleData:any, date:any, nombre_estado: any){
+    let nDate = new Date(date);
+    let restDate = new Date();
+    let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
       productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
       });
-      Swal.fire({
-        title: `Detalles venta a ${saleData.client_name}`,
-        html: `
-        <p>Productos:</p>
-        <pre>${productList}</pre>
-        `,
-        confirmButtonText: 'OK'
-      });
+      if (result<0 && nombre_estado !== 'FINALIZADO'){
+        let result = Math.floor((-nDate.getTime() + restDate.getTime())*1/1000*1/3600*1/24)
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Se venció hace: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else if (result > 0 && nombre_estado !== 'FINALIZADO'){
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Fecha de vencimiento: ${date}</p>
+          <p>Falta para que se venza: ${result} días</p>
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else{
+        Swal.fire({
+          title: `Detalles venta a ${saleData.client_name}`,
+          html: `
+          <p>Productos:</p>
+          <pre>${productList}</pre>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
   }
 
   // Method to add a product to selectedProducts array
@@ -179,17 +209,23 @@ export class VentasComponent implements OnInit{
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = ''
   }
   //send the sale to database
   sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
-    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts);
+    if (this.paymentSelected!=='A PLAZOS') {
+      const currentTimestamp = new Date();
+      this.dateSelected = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
+    }
+    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
+    this.dateSelected = '';
   }
 
   //payments of the sales
@@ -338,12 +374,5 @@ export class VentasComponent implements OnInit{
       this.data = this.sales.slice(this.minIndex, this.maxIndex);
       this.pointers = [];
     }
-  }
-
-  //fetchers and real time
-  filterSales() {
-    this.sales = this.sales.filter((sale: { installation_code: string; }) => {
-      return sale.installation_code === this.instalation
-    })
   }
 }
