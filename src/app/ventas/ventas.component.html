@@ -59,7 +59,7 @@
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Cliente</th>
                                   <th class="uk-table-expand">Cajero</th>
-                                  <th class="uk-table-small">Crédito</th>
+                                  <th class="uk-table-small">Días Crédito</th>
                                   <th class="uk-table-small">Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
@@ -71,7 +71,7 @@
                                     <td >{{ sale.sale_date }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
-                                    <td>{{ sale.installation }}</td>
+                                    <td>{{ sale.credit_days }}</td>
                                     <td>{{ sale.total_amount}}</td>
                                     <td>{{ sale.nombre_estado}}</td>
                                     <td >

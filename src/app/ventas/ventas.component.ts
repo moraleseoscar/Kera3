@@ -49,6 +49,17 @@ export class VentasComponent implements OnInit{
 
   async ngOnInit() {
     this.sales = await this.service.getAllSales();
+    this.sales.map((sale: { [x: string]: string; }) => {
+      if (sale['codigo_estado'] == '10'){
+        let nDate = new Date(sale['fecha_vencimiento']);
+        let restDate = new Date();
+        let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
+        sale['credit_days'] = String(result);
+      }else{
+        sale['credit_days'] = 'NA';
+      }
+    })
+    this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
       this.totalPages+=1
@@ -132,6 +143,18 @@ export class VentasComponent implements OnInit{
         text: 'No has seleccionado ningún tipo de pago'
       });
       return; // Don't proceed further
+    }
+    if (this.paymentSelected==='A PLAZOS'){
+      const quantityInput = document.getElementById('exactDate') as HTMLInputElement;
+      this.dateSelected = quantityInput.value
+      if (this.dateSelected.length===0){
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No has seleccionado la fecha de vencimiento'
+        });
+        return; // Don't proceed further
+      }
     }
     // Check for invalid quantities in selectedProducts
     const invalidProducts = this.selectedProducts.filter(product => product.quantity <= 0);

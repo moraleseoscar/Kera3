@@ -99,7 +99,7 @@ export class HomeComponent implements OnInit{
 
   async fetchSales(){
     this.sales = await this.service.getAllSales();
-    this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
+    this.sales = this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
         let payments = await this.service.getPaymentsDetails(sale.sale_code);
         if(payments != null) {
           let payment_amount = 0;
@@ -112,6 +112,14 @@ export class HomeComponent implements OnInit{
         else {
           sale['payments'] = [];
           sale['debt'] = 0;
+        }
+        if (sale['codigo_estado'] == '10'){
+          let nDate = new Date(sale['fecha_vencimiento']);
+          let restDate = new Date();
+          let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
+          sale['credit_days'] = result;
+        }else{
+          sale['credit_days'] = 'NA';
         }
       }
     )
