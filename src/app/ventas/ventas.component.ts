@@ -29,7 +29,8 @@ export class VentasComponent implements OnInit{
   estadoValue = '0'
   instalationValue = '0'
   //sale
-  clienteSelected = ''
+  clienteSelected = '' //name
+  _clienteSelected = '' //the code
   productSelected = ''
   paymentSelected = ''
   dateSelected = ''
@@ -57,7 +58,7 @@ export class VentasComponent implements OnInit{
         let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
         sale['credit_days'] = String(result);
       }else{
-        sale['credit_days'] = 'NA';
+        sale['credit_days'] = 'N/A';
       }
     })
     this.data = this.sales;
@@ -74,6 +75,20 @@ export class VentasComponent implements OnInit{
     this.states = this.states.filter((state: { nombre_estado: string; }) => this.validStateNames.includes(state.nombre_estado));
     this.states = await this.service.getAllStates();
 
+  }
+  selectClientCode() {
+    //retreive the selected code
+    let name = this.clienteSelected.split(' ');
+    let id = this.clients.find((c: { nombres: string; apellidos: string; }) => c.nombres == name[0] && c.apellidos == name[1]);
+    if (id) {
+
+    }else{
+      Swal.fire('Error','Clienete no hallado','error');
+    }
+  }
+  selectedProduct(prodCode: string){
+    console.log(prodCode);
+    this.productSelected = prodCode;
   }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
@@ -126,9 +141,10 @@ export class VentasComponent implements OnInit{
 
   // Method to add a product to selectedProducts array
   addProduct() {
+    console.log(this.productSelected);
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
     // Find the selected product based on codigo_producto
-    const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
+    const selectedProduct = this.products.find(product => product.codigo_producto == this.productSelected);
     const val = parseInt(quantityInput.value, 10);
     if (this.productSelected!='' && val > 0 && selectedProduct) {
       this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
@@ -148,7 +164,7 @@ export class VentasComponent implements OnInit{
   }
   confirmSale() {
     // Check if clienteSelected is empty
-    if (!this.clienteSelected) {
+    if (!this._clienteSelected) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -223,6 +239,7 @@ export class VentasComponent implements OnInit{
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
+    this._clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
     this.dateSelected = '';

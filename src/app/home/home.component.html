@@ -47,8 +47,6 @@
   <app-abonos [sales]="sales" *ngIf="navcurrent == 'pay'" [instalation] = "this.userData.codigo_instalacion" [clients]="clients"></app-abonos>
   <!-- clients panel -->
   <app-clients *ngIf="navcurrent == 'cli'" [clients]="clients"></app-clients>
-  <!-- Deudas -->
-  <app-clients *ngIf="navcurrent == 'cli'" [clients]="clients"></app-clients>
   <!-- panel de ventas -->
   <app-ventas [sales]="sales"  [instalation] = "this.userData.codigo_instalacion" [user_id]="this.userData.user_id"  [clients]="clients"  *ngIf="navcurrent == 'sale'"></app-ventas>
   <!-- panel de compras -->
