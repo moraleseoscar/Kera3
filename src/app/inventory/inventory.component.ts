@@ -44,7 +44,6 @@ export class InventoryComponent implements OnInit , OnChanges {
   }
 
   async ngOnInit() {
-    this.products = await this.service.getAllProducts()
     this.fileterd = this.products
     this.instalaciones = await this.service.getAllInstalaciones();
     this.data = this.fileterd.slice(this.minIndex,this.maxIndex)

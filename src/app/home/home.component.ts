@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit{
 
    }
   async ngOnInit(){
-    let email = await sessionStorage.getItem('datos');
+    let email = sessionStorage.getItem('datos');
     let user = await this.service.getUserData(email);
       try{
         if(user !=null){
@@ -50,8 +50,8 @@ export class HomeComponent implements OnInit{
         }
       }catch (error){
       }
-    await this.fetchAll()
-    await this.subscrbeAll()
+    this.fetchAll()
+    this.subscrbeAll()
 
   }
   setCurrentNav(panel :string){
@@ -66,9 +66,10 @@ export class HomeComponent implements OnInit{
   //metodos para los datos compartidos de varios páneles
   //llamar a todos los fetc
   async fetchAll(){
-    this.fetchInventory()
-    this.fetchClientsData()
-    this.fetchSales()
+    await this.fetchInventory()
+    await this.fetchSales()
+    await this.fetchClientsData()
+
   }
   //clientes , ventas y abonos: Datos de clientes
   async fetchClientsData(){
@@ -97,30 +98,50 @@ export class HomeComponent implements OnInit{
 
   async fetchSales(){
     this.sales = await this.service.getAllSales();
-    this.sales = this.sales?.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) =>{
+    let updatedSales: any[] = [];
+    await Promise.all(this.sales.map(async (sale: { [x: string]: any; sale_code: string; total_amount: string; }) => {
         let payments = await this.service.getPaymentsDetails(sale.sale_code);
-        if(payments != null) {
-          let payment_amount = 0;
-          payments.forEach(payment =>{
-            payment_amount += payment['monto_movimiento'] ;
-          })
-          sale['payments'] = payments;
-          sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
+        if (payments != null) {
+            let payment_amount = 0;
+            payments.forEach(payment => {
+                payment_amount += payment['monto_movimiento'];
+            });
+            sale['payments'] = payments;
+            sale['debt'] = (Number.parseFloat(sale.total_amount) - payment_amount).toString();
+        } else {
+            sale['payments'] = [];
+            sale['debt'] = 0;
         }
-        else {
-          sale['payments'] = [];
-          sale['debt'] = 0;
+        if (sale['codigo_estado'] == '10') {
+            let nDate = new Date(sale['fecha_vencimiento']);
+            let restDate = new Date();
+            let result = Math.floor((nDate.getTime() - restDate.getTime()) * 1 / 1000 * 1 / 3600 * 1 / 24);
+            sale['credit_days'] = result;
+        } else {
+            sale['credit_days'] = 'NA';
         }
-        if (sale['codigo_estado'] == '10'){
-          let nDate = new Date(sale['fecha_vencimiento']);
-          let restDate = new Date();
-          let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
-          sale['credit_days'] = result;
-        }else{
-          sale['credit_days'] = 'NA';
-        }
-      }
-    )
+        updatedSales.push(sale); // Push the modified sale object to the updatedSales array
+        //sort the sales
+        updatedSales = updatedSales.sort((a, b) => {
+          const dateA = new Date(a.sale_date).getTime();
+          const dateB = new Date(b.sale_date).getTime();
+          return dateB - dateA; // Sort in descending order (most recent first)
+        });
+        //give the new format to the sale_date
+        updatedSales = updatedSales.map((sale) => {
+          const sale_date = new Date(sale.sale_date);
+          const year = sale_date.getFullYear();
+          const month = (sale_date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+          const day = sale_date.getDate().toString().padStart(2, '0');
+          const hours = sale_date.getHours().toString().padStart(2, '0');
+          const minutes = sale_date.getMinutes().toString().padStart(2, '0');
+          const seconds = sale_date.getSeconds().toString().padStart(2, '0');
+          const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+          return { ...sale, sale_date: formattedDate };
+        });
+    }));
+
+    this.sales = updatedSales;
   }
   //real time handlings
   subscrbeAll(){ //subscribirse a todos los datos tiempo real que lo requieren
@@ -134,8 +155,8 @@ export class HomeComponent implements OnInit{
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          this.fetchInventory() // llamar los datos de nuevo
+        async (payload) => {
+          await this.fetchInventory() // llamar los datos de nuevo
         }
       )
       .subscribe();
@@ -167,8 +188,8 @@ export class HomeComponent implements OnInit{
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'registro_inventario' },
-        (payload) => {
-          this.fetchSales();
+        async (payload) => {
+          await this.fetchSales();
         }
       )
       .subscribe();
@@ -177,8 +198,8 @@ export class HomeComponent implements OnInit{
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'movimiento_producto' },
-        (payload) => {
-          this.fetchSales();
+        async (payload) => {
+          await this.fetchSales();
         }
       )
       .subscribe();
@@ -189,8 +210,8 @@ export class HomeComponent implements OnInit{
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'cliente' },
-        (payload) => {
-          this.fetchClientsData();
+        async (payload) => {
+          await this.fetchClientsData();
         }
       )
       .subscribe();
@@ -198,8 +219,8 @@ export class HomeComponent implements OnInit{
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'registro_pagos' },
-      (payload) => {
-        this.fetchClientsData();
+      async (payload) => {
+        await this.fetchClientsData();
       }
     )
     .subscribe();
@@ -207,8 +228,8 @@ export class HomeComponent implements OnInit{
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'registro_recibos' },
-      (payload) => {
-        this.fetchClientsData();
+      async (payload) => {
+        await this.fetchClientsData();
       }
     )
     .subscribe();

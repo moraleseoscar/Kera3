@@ -1,4 +1,4 @@
-import {Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
@@ -41,26 +41,14 @@ export class VentasComponent implements OnInit{
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   @Input() clients:any = []
-  @Input() sales: any = []
+  @Input({required:true}) sales: any = []
 
   showSaleForm: boolean = false;
   //real time handlers
 
 
   constructor(private service: Kera3Service) {}
-
   async ngOnInit() {
-    this.sales = await this.service.getAllSales();
-    this.sales.map((sale: { [x: string]: string; }) => {
-      if (sale['codigo_estado'] == '10'){
-        let nDate = new Date(sale['fecha_vencimiento']);
-        let restDate = new Date();
-        let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
-        sale['credit_days'] = String(result);
-      }else{
-        sale['credit_days'] = 'N/A';
-      }
-    })
     this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
@@ -78,16 +66,16 @@ export class VentasComponent implements OnInit{
   }
   selectClientCode() {
     //retreive the selected code
+
     let name = this.clienteSelected.split(' ');
     let id = this.clients.find((c: { nombres: string; apellidos: string; }) => c.nombres == name[0] && c.apellidos == name[1]);
     if (id) {
-
+      this._clienteSelected = id.codigo_cliente;
     }else{
-      Swal.fire('Error','Clienete no hallado','error');
+      Swal.fire('Error','Cliente no hallado','error');
     }
   }
   selectedProduct(prodCode: string){
-    console.log(prodCode);
     this.productSelected = prodCode;
   }
   changePanelMode(){
@@ -141,7 +129,6 @@ export class VentasComponent implements OnInit{
 
   // Method to add a product to selectedProducts array
   addProduct() {
-    console.log(this.productSelected);
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
     // Find the selected product based on codigo_producto
     const selectedProduct = this.products.find(product => product.codigo_producto == this.productSelected);
@@ -163,6 +150,8 @@ export class VentasComponent implements OnInit{
     }
   }
   confirmSale() {
+    //obtener el código del cliente
+    this.selectClientCode();
     // Check if clienteSelected is empty
     if (!this._clienteSelected) {
       Swal.fire({
@@ -228,14 +217,17 @@ export class VentasComponent implements OnInit{
     this.dateSelected = ''
   }
   //send the sale to database
-  sendSaleData() {
+  async sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
     if (this.paymentSelected!=='A PLAZOS') {
       const currentTimestamp = new Date();
       this.dateSelected = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
     }
-    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
+    const res = await this.service.addVenta(this.user_id,this.instalation, this._clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
+    if ( res==true) {
+      Swal.fire('Éxito','envió registrado','success');
+    }
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
