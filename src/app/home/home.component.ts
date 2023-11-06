@@ -129,15 +129,7 @@ export class HomeComponent implements OnInit{
         });
         //give the new format to the sale_date
         updatedSales = updatedSales.map((sale) => {
-          const sale_date = new Date(sale.sale_date);
-          const year = sale_date.getFullYear();
-          const month = (sale_date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-          const day = sale_date.getDate().toString().padStart(2, '0');
-          const hours = sale_date.getHours().toString().padStart(2, '0');
-          const minutes = sale_date.getMinutes().toString().padStart(2, '0');
-          const seconds = sale_date.getSeconds().toString().padStart(2, '0');
-          const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-          return { ...sale, sale_date: formattedDate };
+          sale.sale_date = String(sale.sale_date).replace('T',' ');
         });
     }));
 
