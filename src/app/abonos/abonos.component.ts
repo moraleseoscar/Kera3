@@ -85,6 +85,11 @@ export class AbonosComponent implements OnInit {
       const minutes = String(date.getMinutes()).padStart(2, '0');
       payment['fecha'] = `${day}-${month}-${year} ${hours}:${minutes}`;
     })
+    this.payments?.sort((a: { sale_date: string | number | Date; }, b: { sale_date: string | number | Date; }) => {
+      const dateA = new Date(a.sale_date).getTime();
+      const dateB = new Date(b.sale_date).getTime();
+      return dateB - dateA; // Sort in descending order (most recent first)
+    });
   }
   async setPayment(client_code:string,client_name: string,client_debt:number){
     const {value:Recipt} = await Swal.fire({

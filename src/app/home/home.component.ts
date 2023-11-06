@@ -127,10 +127,6 @@ export class HomeComponent implements OnInit{
           const dateB = new Date(b.sale_date).getTime();
           return dateB - dateA; // Sort in descending order (most recent first)
         });
-        //give the new format to the sale_date
-        updatedSales = updatedSales.map((sale) => {
-          sale.sale_date = String(sale.sale_date).replace('T',' ');
-        });
     }));
 
     this.sales = updatedSales;

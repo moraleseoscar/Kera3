@@ -71,7 +71,7 @@
                                   <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)"
                                   (click)="getDetails(sale, sale.fecha_vencimiento, sale.nombre_estado)">
                                     <td >{{ sale.sale_code }}</td>
-                                    <td >{{ sale.sale_date }}</td>
+                                    <td >{{ sale.sale_date.replace('T',' ') }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
                                     <td>{{ sale.credit_days }}</td>

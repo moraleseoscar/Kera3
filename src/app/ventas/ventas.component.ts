@@ -88,7 +88,13 @@ export class VentasComponent implements OnInit{
     let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
-      productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
+      productList += `<tr>
+      <td>${product.id}</td>
+      <td>${product.name}</td>
+      <td>${product.quantity}</td>
+      <td>${product.price}</td>
+      <td>${Number(product.price)*Number(product.quantity)}</td></tr>
+      `;
       });
       if (result<0 && nombre_estado !== 'FINALIZADO'){
         let result = Math.floor((-nDate.getTime() + restDate.getTime())*1/1000*1/3600*1/24)
@@ -96,9 +102,22 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Fecha de vencimiento: ${date}</p>
-          <p>Se venció hace: ${result} días</p>
+          <p>SCrédito vencido hace: ${result} días</p>
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
@@ -108,9 +127,23 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Fecha de vencimiento: ${date}</p>
-          <p>Falta para que se venza: ${result} días</p>
+          <p>Días Crédito Disponibles: ${result} días</p>
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
@@ -120,7 +153,20 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
