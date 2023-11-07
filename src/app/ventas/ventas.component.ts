@@ -1,4 +1,4 @@
-import {Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
 import { format } from 'date-fns';
 import Swal from 'sweetalert2'
@@ -29,7 +29,8 @@ export class VentasComponent implements OnInit{
   estadoValue = '0'
   instalationValue = '0'
   //sale
-  clienteSelected = ''
+  clienteSelected = '' //name
+  _clienteSelected = '' //the code
   productSelected = ''
   paymentSelected = ''
   dateSelected = ''
@@ -40,16 +41,14 @@ export class VentasComponent implements OnInit{
   @Input() instalation: string = ''
   @Input() user_id: string = ''
   @Input() clients:any = []
-  @Input() sales: any = []
+  @Input({required:true}) sales: any = []
 
   showSaleForm: boolean = false;
   //real time handlers
 
 
   constructor(private service: Kera3Service) {}
-
   async ngOnInit() {
-    this.sales = await this.service.getAllSales();
     this.data = this.sales;
     this.totalPages = (Math.ceil(this.sales.length / this.itemsPerPage));
     if (this.totalPages===0){
@@ -65,6 +64,20 @@ export class VentasComponent implements OnInit{
     this.states = await this.service.getAllStates();
 
   }
+  selectClientCode() {
+    //retreive the selected code
+
+    let name = this.clienteSelected.split(' ');
+    let id = this.clients.find((c: { nombres: string; apellidos: string; }) => c.nombres == name[0] && c.apellidos == name[1]);
+    if (id) {
+      this._clienteSelected = id.codigo_cliente;
+    }else{
+      Swal.fire('Error','Cliente no hallado','error');
+    }
+  }
+  selectedProduct(prodCode: string){
+    this.productSelected = prodCode;
+  }
   changePanelMode(){
     this.showSaleForm = !this.showSaleForm
   }
@@ -75,7 +88,13 @@ export class VentasComponent implements OnInit{
     let result = Math.floor((nDate.getTime() - restDate.getTime())*1/1000*1/3600*1/24)
     let productList = '';
     saleData.products.forEach((product: { id: any; name: any; price: any; quantity:any; }) => {
-      productList += `${product.name}, Cantidad: ${product.quantity}, Precio Unitario: ${product.price} \n`;
+      productList += `<tr>
+      <td>${product.id}</td>
+      <td>${product.name}</td>
+      <td>${product.quantity}</td>
+      <td>${product.price}</td>
+      <td>${Number(product.price)*Number(product.quantity)}</td></tr>
+      `;
       });
       if (result<0 && nombre_estado !== 'FINALIZADO'){
         let result = Math.floor((-nDate.getTime() + restDate.getTime())*1/1000*1/3600*1/24)
@@ -83,9 +102,22 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Fecha de vencimiento: ${date}</p>
-          <p>Se venció hace: ${result} días</p>
+          <p>SCrédito vencido hace: ${result} días</p>
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
@@ -95,9 +127,23 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Fecha de vencimiento: ${date}</p>
-          <p>Falta para que se venza: ${result} días</p>
+          <p>Días Crédito Disponibles: ${result} días</p>
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
@@ -107,7 +153,20 @@ export class VentasComponent implements OnInit{
           title: `Detalles venta a ${saleData.client_name}`,
           html: `
           <p>Productos:</p>
-          <pre>${productList}</pre>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Nombre</th>
+                    <th class="uk-table-small">Cantidad</th>
+                    <th class="uk-table-small">Precio</th>
+                    <th class="uk-table-small">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${productList}
+            </tbody>
+            </table>
           `,
           confirmButtonText: 'OK'
         });
@@ -118,7 +177,7 @@ export class VentasComponent implements OnInit{
   addProduct() {
     const quantityInput = document.getElementById('quantityInput') as HTMLInputElement;
     // Find the selected product based on codigo_producto
-    const selectedProduct = this.products.find(product => product.codigo_producto === this.productSelected);
+    const selectedProduct = this.products.find(product => product.codigo_producto == this.productSelected);
     const val = parseInt(quantityInput.value, 10);
     if (this.productSelected!='' && val > 0 && selectedProduct) {
       this.selectedProducts.push({ name: selectedProduct.nombre_producto, quantity: parseInt(quantityInput.value,10),cod:this.productSelected });
@@ -137,8 +196,10 @@ export class VentasComponent implements OnInit{
     }
   }
   confirmSale() {
+    //obtener el código del cliente
+    this.selectClientCode();
     // Check if clienteSelected is empty
-    if (!this.clienteSelected) {
+    if (!this._clienteSelected) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -168,7 +229,6 @@ export class VentasComponent implements OnInit{
       const quantityInput = document.getElementById('exactDate') as HTMLInputElement;
       this.dateSelected = quantityInput.value
       if (this.dateSelected.length===0){
-        console.log(this.dateSelected)
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -203,17 +263,21 @@ export class VentasComponent implements OnInit{
     this.dateSelected = ''
   }
   //send the sale to database
-  sendSaleData() {
+  async sendSaleData() {
     // Perform actions to send the sale data
     // You can send the data to your server or perform other operations here
     if (this.paymentSelected!=='A PLAZOS') {
       const currentTimestamp = new Date();
       this.dateSelected = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
     }
-    this.service.addVenta(this.user_id,this.instalation, this.clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
+    const res = await this.service.addVenta(this.user_id,this.instalation, this._clienteSelected , this.paymentSelected, this.selectedProducts, this.dateSelected)
+    if ( res==true) {
+      Swal.fire('Éxito','envió registrado','success');
+    }
     // Reset form
     this.paymentSelected = '';
     this.clienteSelected = '';
+    this._clienteSelected = '';
     this.showSaleForm = false;
     this.selectedProducts = [];
     this.dateSelected = '';

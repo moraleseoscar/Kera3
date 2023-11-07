@@ -56,11 +56,18 @@ export class ClientsComponent implements OnInit {
 
 
   displayDetails(clientData : any){
+    console.log(clientData)
     if (clientData.deudas.length > 0) {
       // Client has debts, create a scrollable list
       let debtList = '';
       clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_cliente: any; }) => {
-        debtList += `Codigo Movimiento: ${deuda.codigo_movimiento}, Fecha Emision: ${deuda.fecha_emision}, Saldo Total: ${deuda.saldo_cliente}\n`;
+        if(Number(deuda.saldo_cliente) > 0){
+        debtList += `<tr>
+        <td> ${deuda.codigo_movimiento} </td>,
+        <td>${deuda.fecha_emision.replace('T',' ')}</td>,
+        <td>${deuda.saldo_cliente}</td>
+        </tr>`;
+        }
       });
 
       Swal.fire({
@@ -69,9 +76,21 @@ export class ClientsComponent implements OnInit {
         <p>Direccion:
         ${clientData.direccion}</p>
         <p>Telefono:
-          ${clientData.telefono}</p>
+        ${clientData.telefono}</p>
         <p>Deudas:</p>
-        <pre>${debtList}</pre>
+
+        <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+            <thead>
+                <tr>
+                    <th class="uk-table-small">Codigo</th>
+                    <th class="uk-table-small">Fecha</th>
+                    <th class="uk-table-small">Deuda</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${debtList}
+            </tbody>
+            </table>
         `,
         confirmButtonText: 'OK'
       });

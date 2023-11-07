@@ -3,13 +3,15 @@
       <div>
           <div class="uk-child-width-1-2" uk-grid>
               <div>
-                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">Envíos</h1>
+                  <h1 class="uk-heading-primary uk-margin-remove  uk-text-third">{{ showSaleForm ? 'Registrar Envío' : 'Envíos' }}</h1>
               </div>
           </div>
       </div>
       <div>
-          <button (click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar envío</button>
-      </div>
+        <button *ngIf= "showSaleForm" class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
+        <button *ngIf= "showSaleForm"class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
+          <button *ngIf= "!showSaleForm"(click) = "changePanelMode()" class="add-product uk-button uk-align-left uk-button-primary"><span [attr.uk-icon]="showSaleForm ? 'icon: arrow-left' : 'icon: plus'"></span>{{ showSaleForm ? 'Regresar' : 'Registrar Envío' }}</button>
+        </div>
   </div>
   <hr>
   <!-- main panel  -->
@@ -59,28 +61,22 @@
                                   <th class="uk-table-large">Fecha</th>
                                   <th class="uk-table-expand">Cliente</th>
                                   <th class="uk-table-expand">Cajero</th>
-                                  <th class="uk-table-small">Crédito</th>
+                                  <th class="uk-table-small">Días Crédito</th>
                                   <th class="uk-table-small">Total</th>
                                   <th class="uk-table-expand">Estado</th>
                               </tr>
                           </thead>
                           <tbody>
                               <ng-container *ngFor="let sale of data">
-                                  <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)">
-                                    <td (click)="getDetails(sale, sale.fecha_vencimiento, sale.nombre_estado)">{{ sale.sale_code }}</td>
-                                    <td >{{ sale.sale_date }}</td>
+                                  <tr  *ngIf="(instalationValue == sale.installation || instalationValue === '0') && (estadoValue ==='0' || estadoValue === sale.nombre_estado)"
+                                  (click)="getDetails(sale, sale.fecha_vencimiento, sale.nombre_estado)">
+                                    <td >{{ sale.sale_code }}</td>
+                                    <td >{{ sale.sale_date.replace('T',' ') }}</td>
                                     <td>{{ sale.client_name }}</td>
                                     <td>{{sale.employee_name}} {{sale.employee_lastname}}</td>
-                                    <td>{{ sale.installation }}</td>
+                                    <td>{{ sale.credit_days }}</td>
                                     <td>{{ sale.total_amount}}</td>
                                     <td>{{ sale.nombre_estado}}</td>
-                                    <td >
-                                      <span *ngIf="sale.codigo_estado==10" style="margin-right: 10px;" >
-                                        <img alt="" src="../../assets/payment.png"  (click)="addPayment(sale.sale_code)"class="action-button"/>
-                                      </span>
-                                      <!-- <span *ngIf="sale.payments.length>0">
-                                        <img alt="" src="../../assets/payment-history.png"  (click)="getPayments(sale.payments, sale.debt)" class="action-button">
-                                      </span> -->
                                   </tr>
                               </ng-container>
                           </tbody>
@@ -92,40 +88,54 @@
               </div>
           </div>
       </div>
+      <ul class="uk-pagination pagination--position center-flex" uk-margin>
+        <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+        <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+        <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
+        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
+        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+    </ul>
       <!-- /panel -->
   </div>
-  <ul class="uk-pagination pagination--position center-flex" uk-margin>
-    <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
-    <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
-    <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
-    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
-    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-</ul>
+
   <!-- Register new sale form -->
 <section *ngIf="showSaleForm">
-  <h2>Registrar una venta</h2>
   <div>
-    <div>
-      <label for="clientDropdown">Cliente:</label>
-      <select id="clientDropdown" class="form-control" [(ngModel)]="clienteSelected">
-        <option value="" disabled selected>Cliente</option>
-        <option *ngFor="let client of clients" [value]="client.codigo_cliente">{{ client.nombres }} {{ client.apellidos }}</option>
-      </select>
-      <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
-        <option value="" disabled selected>Tipo de pago</option>
-        <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
-      </select>
-      <label for="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">Fecha de vencimiento del crédito:</label>
-      <form class="uk-form" id="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">
-        <input id="exactDate" type="date" placeholder="fecha" [(ngModel)]="dateSelected">
-      </form>
-      <label for="productDropdown">Producto:</label>
-      <select id="productDropdown" class="form-control" [(ngModel)]="productSelected">
-        <option value="" disabled selected>Selecciona un producto</option>
-        <option *ngFor="let product of products" [value]="product.codigo_producto">{{product.linea_nombre}}:{{product.nombre_producto}} "{{product.descripcion_producto}}"</option>
-      </select>
-      <input id="quantityInput" type="number" placeholder="Cantidad">
-      <button (click)="addProduct()">Agregar Producto</button>
+    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <label for="clientDropdown">Cliente:</label>
+        <input type="text" id="client_name" placeholder="Nombre Cliente" list="clientDropdown" [(ngModel)]="clienteSelected" (change)="selectClientCode()">
+        <datalist id="clientDropdown" class="form-control">
+          <option *ngFor="let client of clients">
+            {{ client.nombres }} {{ client.apellidos }}
+          </option>
+        </datalist>
+      </div>
+      <div>
+        <label for="paymentDropdown">Tipo de pago:</label>
+        <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+          <option value="" disabled selected>Tipo de pago</option>
+          <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
+        </select>
+      </div>
+      <div style="display: flex;">
+        <label for="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">Fecha de vencimiento del crédito:</label>
+        <form class="uk-form" id="creditDate" *ngIf="paymentSelected == 'A PLAZOS'">
+          <input id="exactDate" type="date" placeholder="fecha" [(ngModel)]="dateSelected">
+        </form>
+      </div>
+      <div >
+        <label for="productDropdown">Producto:</label>
+        <input type="text" [(ngModel)]="productSelected" id="Producto_name" placeholder="Nombre Producto" list="productDropdown">
+        <datalist id="productDropdown" class="form-control" >
+          <option value="" disabled selected>Selecciona un producto</option>
+          <option *ngFor="let product of products" [value]="product.codigo_producto">{{product.linea_nombre}}:{{product.nombre_producto}} "{{product.descripcion_producto}}"</option>
+        </datalist>
+        <input id="quantityInput" type="number" placeholder="Cantidad" style="margin-right: 3vw;">
+          <button class="uk-button uk-button-primary" (click)="addProduct()">Agregar Producto</button>
+      </div>
+
+      </div>
     </div>
     <div>
       <ul>
@@ -136,10 +146,7 @@
         </li>
       </ul>
     </div>
-  </div>
   <div>
-  <button class="uk-align-left uk-button-primary confirmSale" (click)="confirmSale()">Confirmar</button>
-  <button class="uk-align-left uk-button-primary cancelSale" (click)="cancelSale()">Cancelar</button>
   <footer class="uk-section uk-section-small uk-text-center">
       <hr>
       <span class="uk-text-small uk-text-muted">© 2023 <a class="uk-text-third"

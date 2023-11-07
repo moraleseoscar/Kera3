@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { format } from 'date-fns';
+import Swal from 'sweetalert2';
 export const PLAYER_TABLE = 'player'
 export const TEAM_TABLE = 'club'
 export const COUNTRY_TABLE = 'country'
@@ -73,11 +74,6 @@ export class Kera3Service {
   }
    async getAllProducts(){
     let { data: inventario, error } = await this.supabase.rpc('get_registro_inventario')
-    if (error){
-      console.log(error)
-    }else{
-      console.log(inventario)
-    }
     return inventario
   }
   async addProduct(values: any){
@@ -298,6 +294,8 @@ export class Kera3Service {
       // Handle the error appropriately, e.g., show a message
       console.error('Error adding sale:');
       console.error(error);
+      Swal.fire('Error',error.message,'error');
+      return false;
     } else {
       // Successfully added the sale, now insert the sale details into detalle_movimiento
       const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
@@ -311,7 +309,8 @@ export class Kera3Service {
         if (error){
           // Handle the error appropriately, e.g., show a message
           console.error('Error adding registro credito:');
-          console.error(error);
+          Swal.fire('Error',error.message,'error');
+          return false;
         }
         else{
           for (const product of selectedProducts) {
@@ -327,13 +326,15 @@ export class Kera3Service {
               .upsert([saleDetailData]);
             if (detailError) {
               // Handle the detail error appropriately, e.g., show a message
+              Swal.fire('Error',detailError.message,'error');
               console.error('Error adding sale detail:', detailError);
-              break;
+              return false;
             }
           }
         }
       }
     }
+    return true;
   }
   async getAllSales() {
     let {data:sales, error} = await this.supabase.rpc('get_sales')
@@ -357,11 +358,9 @@ export class Kera3Service {
     let { data: registro_recibos, error } = await this.supabase
     .from('registro_recibos')
     .select('numero,fecha,monto,cliente(codigo_cliente,*)')
-    if (error) {console.log(error)}
     return registro_recibos || error;
   }
   async addAbono(client_code:string,codigo:string,_monto:string){
-    console.log(_monto);
     const { data, error } = await this.supabase
     .from('registro_recibos')
     .insert([
@@ -372,7 +371,6 @@ export class Kera3Service {
     ])
     .select()
     if (error){
-      console.log(error)
     }
     
     return data || error;

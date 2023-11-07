@@ -51,9 +51,7 @@ export class AbonosComponent implements OnInit {
   }
   async ngOnInit() {
     await this.transformData()
-    console.log(this.payments)
     this.data = this.payments.slice(this.minIndex,this.maxIndex)
-    console.log(this.data)
     this.filterClientData()
 
     this.dataCli = this.clients.slice(this.minIndex,this.maxIndex)
@@ -87,7 +85,11 @@ export class AbonosComponent implements OnInit {
       const minutes = String(date.getMinutes()).padStart(2, '0');
       payment['fecha'] = `${day}-${month}-${year} ${hours}:${minutes}`;
     })
-    console.log(this.payments)
+    this.payments?.sort((a: { sale_date: string | number | Date; }, b: { sale_date: string | number | Date; }) => {
+      const dateA = new Date(a.sale_date).getTime();
+      const dateB = new Date(b.sale_date).getTime();
+      return dateB - dateA; // Sort in descending order (most recent first)
+    });
   }
   async setPayment(client_code:string,client_name: string,client_debt:number){
     const {value:Recipt} = await Swal.fire({
@@ -127,7 +129,6 @@ export class AbonosComponent implements OnInit {
 
         try {
             // Attempt to register the payment
-            console.log(paymentAmount);
             var res = await this.service.addPayment(this.client_SALES[i].sale_code, String(paymentAmount));
             if ('message' in res && 'details' in res) {
               Swal.fire('Error registrando pagos',`${res.message}`,'error');
@@ -143,7 +144,6 @@ export class AbonosComponent implements OnInit {
 
     if (remainingPayment > 0) {
         // Handle case where there is remaining payment that could not be applied
-        console.log("Remaining payment could not be applied:", remainingPayment);
         // You might want to handle this situation, such as displaying a message to the user
     }else{
       var res = await this.service.addAbono(client_code, Recipt.number, Recipt.amount)
