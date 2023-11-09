@@ -224,6 +224,16 @@ export class Kera3Service {
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
     const currentTimestamp = new Date();
     const formattedTimestamp = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
+    var detalle_compra = []
+    for (const product of selectedProducts) {
+      // Prepare the sale detail data
+      const saleDetailData = {
+        codigo_producto: product.cod,
+        cantidad_producto: product.quantity,
+        monto:product.monto
+      };
+      detalle_compra.push(saleDetailData)
+    }
     // Prepare the sale data
     const saleData = {
       codigo_instalacion_emitente: instalation,
@@ -231,107 +241,51 @@ export class Kera3Service {
       codigo_estado: codigo_estado,
       codigo_tipo_movimiento: 'C',
       user_id_empleado_encargado: user_id,
-      fecha_emision: formattedTimestamp
+      fecha_emision: formattedTimestamp,
+      detalle_compra:detalle_compra
     };
-    // Insert the sale record into the movimiento_producto table
-    const { data:values, error } = await this.supabase
-      .from('movimiento_producto')
-      .upsert([saleData])
-      .select();
-
-    if (error) {
-      // Handle the error appropriately, e.g., show a message
-      console.error('Error adding sale:');
-      console.error(error);
-    } else {
-      // Successfully added the sale, now insert the sale details into detalle_movimiento
-      const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
-      if (codigo_movimiento) {
-        for (const product of selectedProducts) {
-          // Prepare the sale detail data
-          const saleDetailData = {
-            codigo_movimiento: codigo_movimiento,
-            codigo_producto: product.cod,
-            cantidad_producto: product.quantity,
-            monto:product.monto
-          };
-
-          // Insert the sale detail record into detalle_movimiento
-          const { error: detailError } = await this.supabase
-            .from('detalle_movimiento')
-            .upsert([saleDetailData]);
-          if (detailError) {
-            // Handle the detail error appropriately, e.g., show a message
-            console.error('Error adding sale detail:', detailError);
-          }
-        }
-      }
+    // Insert the sale record into all
+    const { data:any, error } = await this.supabase.rpc('add_buys', {
+      data: saleData
+    });
+    if (error){
+      console.log(error);
+      return false;
     }
+    return true;
   }
   async addVenta(user_id:string,instalation: string, clienteSelected: string, paymentSelected: string, selectedProducts: { name: string, quantity: number, cod: string }[], dateSelected: string) {
     // Determine the codigo_estado based on paymentSelected
     const codigo_estado = paymentSelected === 'UN SOLO PAGO' ? 1 : 10;
     const currentTimestamp = new Date();
     const formattedTimestamp = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss');
-    // Prepare the sale data
+    var detalle_venta = []
+    for (const product of selectedProducts) {
+      // Prepare the sale detail data
+      const saleDetailData = {
+        codigo_producto: product.cod,
+        cantidad_producto: product.quantity
+      };
+      detalle_venta.push(saleDetailData)
+    }
+      // Prepare the data
     const saleData = {
       codigo_instalacion_emitente: instalation,
       codigo_cliente: clienteSelected,
       codigo_estado: codigo_estado,
       codigo_tipo_movimiento: 'V',
       user_id_empleado_encargado: user_id,
-      fecha_emision: formattedTimestamp
+      fecha_emision: formattedTimestamp,
+      detalle_venta: detalle_venta,
+      fecha_vencimiento: dateSelected
     };
-
-    // Insert the sale record into the movimiento_producto table
-    const { data:values, error } = await this.supabase
-      .from('movimiento_producto')
-      .upsert([saleData])
-      .select();
-
-    if (error) {
-      // Handle the error appropriately, e.g., show a message
-      console.error('Error adding sale:');
-      console.error(error);
-      Swal.fire('Error',error.message,'error');
+    // Insert the sale record into all
+    const { data:any, error } = await this.supabase.rpc('add_sale', {
+      data: saleData
+    });
+    if (error){
+      console.log(error);
       return false;
-    } else {
-      // Successfully added the sale, now insert the sale details into detalle_movimiento
-      const codigo_movimiento = (values as any)?.[0]?.codigo_movimiento;
-      if (codigo_movimiento) {
-        const { data, error } = await this.supabase
-        .from('registro_crédito')
-        .insert([
-          { codigo_movimiento: codigo_movimiento, fecha_vencimiento: dateSelected },
-        ])
-        .select()
-        if (error){
-          // Handle the error appropriately, e.g., show a message
-          console.error('Error adding registro credito:');
-          Swal.fire('Error',error.message,'error');
-          return false;
-        }
-        else{
-          for (const product of selectedProducts) {
-            // Prepare the sale detail data
-            const saleDetailData = {
-              codigo_movimiento: codigo_movimiento,
-              codigo_producto: product.cod,
-              cantidad_producto: product.quantity
-            };
-            // Insert the sale detail record into detalle_movimiento
-            const { error: detailError } = await this.supabase
-              .from('detalle_movimiento')
-              .upsert([saleDetailData]);
-            if (detailError) {
-              // Handle the detail error appropriately, e.g., show a message
-              Swal.fire('Error',detailError.message,'error');
-              console.error('Error adding sale detail:', detailError);
-              return false;
-            }
-          }
-        }
-      }
     }
     return true;
   }

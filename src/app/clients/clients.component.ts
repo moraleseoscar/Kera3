@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Kera3Service } from '../services/services.service';
-import Swal from 'sweetalert2'
+import * as  Excel from "exceljs";
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
@@ -26,35 +27,41 @@ export class ClientsComponent implements OnInit {
   registroPagos: any
   salesAllEventSubscription: any
   async ngOnInit() {
-    this.fetchData()
-    this.subscribeToRealtimeEvents()
+    this.fetchData();
+    this.subscribeToRealtimeEvents();
   }
   async fetchData(){
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
     this.filteredData = this.clients;
     this.types = await this.service.getClientsTypes()
   }
-  applyFilter() {
-      const rgxSearch = new RegExp(this.searchQuery, 'i');
-      if (this.searchQuery !== "") {
-      this.filteredData = this.clients.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
-      return (
-        (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
-        (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
-      );
-    });
-    this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
-    this.currentPage = 1
-    } else{
-      this.filteredData = this.clients.filter((client: { tipo: string; }) => {
-        return this.estadoValue === '0' || this.estadoValue === client.tipo;
-      });
-      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
-      this.currentPage = 1
+  async generateExcel(){
+    let clients_filter = this.clients.filter((client:any)=>client.deudas.length>0);
+    let client_table = [];
+    let total_saldo = 0;
+    for (const client of clients_filter) {
+      // Prepare the saldo detail data
+      const saldo = {
+        id: client.codigo_cliente,
+        name: client.nombres+' '+client.apellidos,
+        saldo: client.saldo_total
+      };
+      client_table.push(saldo);
+      total_saldo += client.saldo_total;
     }
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet("Deudores");
+    // Header
+    worksheet.addRow(["ID", "Nombre", "Saldo"]);
+    // Content
+    for (const row of client_table) {
+      worksheet.addRow([row.id, row.name, row.saldo]);
+    }
+    worksheet.addRow(["Deuda total:", total_saldo]);
+    const buffer = await workbook.xlsx.writeBuffer();
+    var FileSaver = require('file-saver');
+    FileSaver.saveAs(new Blob([buffer]), "REPORTE_DE_SALDOS.xlsx");
   }
-
-
   displayDetails(clientData : any){
     console.log(clientData)
     if (clientData.deudas.length > 0) {
@@ -160,7 +167,20 @@ export class ClientsComponent implements OnInit {
       )
       .subscribe();
   }
-
+  // Search in the bar of queries, with names an surnames.
+  onSearch() {
+    if (this.searchQuery !== "") {
+      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
+      this.data = []
+      for (let index = 0; index < this.clients.length; index++) {
+        if (rgx_search.test( this.clients[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.clients[index]['apellidos'].toLocaleUpperCase())){
+          this.data = [...this.data, this.clients[index]]
+        }
+      }
+    } else {
+      this.data = this.clients.slice(this.minIndex, this.maxIndex)
+    }
+  }
   onAddClient(){
     Swal.fire({
       title: 'Registrar nuevo cliente',
@@ -207,7 +227,5 @@ export class ClientsComponent implements OnInit {
       this.clients = await this.service.getEmployees()
       this.data = this.clients.slice(this.minIndex, this.maxIndex)
     });
-
-
   }
 }
