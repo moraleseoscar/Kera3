@@ -34,27 +34,6 @@ export class ClientsComponent implements OnInit {
     this.filteredData = this.clients;
     this.types = await this.service.getClientsTypes()
   }
-  applyFilter() {
-      const rgxSearch = new RegExp(this.searchQuery, 'i');
-      if (this.searchQuery !== "") {
-      this.filteredData = this.clients.filter((client: { tipo: string; nombres: string; apellidos: string; }) => {
-      return (
-        (this.estadoValue === '0' || this.estadoValue === client.tipo) &&
-        (rgxSearch.test(client.nombres) || rgxSearch.test(client.apellidos))
-      );
-    });
-    this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
-    this.currentPage = 1
-    } else{
-      this.filteredData = this.clients.filter((client: { tipo: string; }) => {
-        return this.estadoValue === '0' || this.estadoValue === client.tipo;
-      });
-      this.data = this.filteredData.slice(this.minIndex, this.maxIndex);
-      this.currentPage = 1
-    }
-  }
-
-
   displayDetails(clientData : any){
     console.log(clientData)
     if (clientData.deudas.length > 0) {
@@ -160,7 +139,19 @@ export class ClientsComponent implements OnInit {
       )
       .subscribe();
   }
-
+  onSearch() {
+    if (this.searchQuery !== "") {
+      let rgx_search = new RegExp(this.searchQuery.toLocaleUpperCase(), 'i')
+      this.data = []
+      for (let index = 0; index < this.clients.length; index++) {
+        if (rgx_search.test( this.clients[index]['nombres'].toLocaleUpperCase() ) || rgx_search.test( this.clients[index]['apellidos'].toLocaleUpperCase())){
+          this.data = [...this.data, this.clients[index]]
+        }
+      }
+    } else {
+      this.data = this.clients.slice(this.minIndex, this.maxIndex)
+    }
+  }
   onAddClient(){
     Swal.fire({
       title: 'Registrar nuevo cliente',
