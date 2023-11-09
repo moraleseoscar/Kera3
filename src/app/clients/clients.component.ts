@@ -92,6 +92,7 @@ export class ClientsComponent implements OnInit {
                     <th class="uk-table-small">Codigo</th>
                     <th class="uk-table-small">Fecha</th>
                     <th class="uk-table-small">Deuda</th>
+                    
                 </tr>
             </thead>
             <tbody>
