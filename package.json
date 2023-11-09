@@ -20,12 +20,16 @@
     "@angular/router": "^16.0.0",
     "@supabase/supabase-js": "^2.22.0",
     "date-fns": "^2.30.0",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "jquery": "^3.7.1",
+    "js-xlsx": "^0.8.22",
     "ng": "^0.0.0",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.4.8",
     "tslib": "^2.3.0",
     "uikit": "^3.16.17",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {

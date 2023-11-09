@@ -11,6 +11,9 @@
           <div>
               <button (click)="onAddClient()" class="add-product uk-button uk-align-left uk-button-primary"><span uk-icon="icon: plus"></span> Registrar Cliente</button>
           </div>
+          <div>
+            <button (click)="generateExcel()" class="add-product uk-button uk-align-left uk-button-primary">Generar Saldos</button>
+          </div>
       </div>
       <hr>
       <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
@@ -24,14 +27,14 @@
                               <div class="uk-margin">
                                   <form class="uk-search uk-width-expand uk-search-default">
                                       <span uk-search-icon></span>
-                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="applyFilter()" [ngModelOptions]="{standalone: true}">
+                                      <input class="uk-search-input" type="search" placeholder="Busqueda" aria-label="Search" [(ngModel)]="searchQuery" (input)="onSearch()" [ngModelOptions]="{standalone: true}">
                                   </form>
                               </div>
                           </div>
                           <div class="uk-width-expand uk-width-1-4">
                               <div class="display--filters">
                                   <label for="" style="margin-right: 5%;">Tipo de cliente:</label>
-                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue" (ngModelChange)="applyFilter()">
+                                  <select class="uk-select" placeholder="Estado" [(ngModel)]="estadoValue" (ngModelChange)="onSearch()">
                                     <option value="0">Todos</option>
                                     <option *ngFor="let estado of types" [value]="estado.tipo_cliente">{{ estado.tipo_cliente }}</option>
                                   </select>
