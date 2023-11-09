@@ -12,7 +12,6 @@ export const ALL = '*'
   providedIn: 'root'
 })
 export class Kera3Service {
-
   private supabase: SupabaseClient;
   private tmp_user: any;
   private invSubs: any;
