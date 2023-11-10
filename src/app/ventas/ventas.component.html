@@ -113,7 +113,12 @@
       </div>
       <div>
         <label for="paymentDropdown">Tipo de pago:</label>
-        <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected" style="width: 12%;
+        height: 40px;
+        border-radius: 4px;
+        color: lightgrey;
+        margin-top: 15px;
+        margin-bottom: 15px;">
           <option value="" disabled selected>Tipo de pago</option>
           <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
         </select>
