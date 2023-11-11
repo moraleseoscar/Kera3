@@ -1,0 +1,16 @@
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient('supabaseURL', 'supabaseKey');
+
+const filePath = './ejemplo.pdf';
+
+fs.readFile(filePath, (err, data) => {
+    if (err) throw err;
+
+    supabase.storage.from('nombre_de_tu_bucket').upload('nombre_del_archivo_en_supabase.pdf', data, {
+        contentType: 'application/pdf',
+    }).then((response) => {
+        console.log(response);
+    }).catch((error) => {
+        console.log(error);
+    });
+});

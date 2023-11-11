@@ -120,13 +120,13 @@ export class InventoryComponent implements OnInit , OnChanges {
         <input type="number" step=".01" id="precio" class="swal2-input" placeholder="Precio">
         <input type="text" id="descripcion" class="swal2-input" placeholder="Descripcion">
         <input type="text" id="cantidad" class="swal2-input" placeholder="Cantidad">
-        <select class="uk-select" id="categoria" placeholder="Categoria">
+        <select class="uk-select" id="categoria" placeholder="Categoria" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
           ${cat}
         </select>
-        <select class="uk-select" id="unidad" placeholder="Unidad">
+        <select class="uk-select" id="unidad" placeholder="Unidad" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
           ${dime}
         </select>
-        <select class="uk-select" id="brand" placeholder="Linea">
+        <select class="uk-select" id="brand" placeholder="Linea" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
           ${brands}
         </select>
 
