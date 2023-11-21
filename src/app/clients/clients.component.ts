@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
-  styleUrls: ['./clients.component.css','../home/home.component.scss']
+  styleUrls: ['./clients.component.scss','../home/home.component.scss']
 })
 export class ClientsComponent implements OnInit {
 
@@ -29,7 +29,7 @@ export class ClientsComponent implements OnInit {
   async ngOnInit() {
     this.fetchData();
     this.subscribeToRealtimeEvents();
-    
+
   }
   async fetchData(){
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
