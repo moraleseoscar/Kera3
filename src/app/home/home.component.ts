@@ -71,6 +71,7 @@ export class HomeComponent implements OnInit{
     await this.fetchClientsData()
 
   }
+
   //clientes , ventas y abonos: Datos de clientes
   async fetchClientsData(){
     let _clients = await this.service.getClients() //temporal hold of clients

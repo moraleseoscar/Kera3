@@ -279,6 +279,7 @@ export class Kera3Service {
       detalle_venta: detalle_venta,
       fecha_vencimiento: dateSelected
     };
+    console.log(saleData);
     // Insert the sale record into all
     const { data:any, error } = await this.supabase.rpc('add_sale', {
       data: saleData
