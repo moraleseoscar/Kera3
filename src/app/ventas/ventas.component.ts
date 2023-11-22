@@ -104,14 +104,14 @@ export class VentasComponent implements OnInit{
           <p>Fecha de vencimiento: ${date}</p>
           <p>SCrédito vencido hace: ${result} días</p>
           <p>Productos:</p>
-          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
+          <table class="uk-table uk-table-large uk-table-striped uk-table-responsive">
             <thead>
                 <tr>
-                    <th class="uk-table-small">Codigo</th>
-                    <th class="uk-table-small">Nombre</th>
-                    <th class="uk-table-small">Cantidad</th>
-                    <th class="uk-table-small">Precio</th>
-                    <th class="uk-table-small">Subtotal</th>
+                    <th class="uk-table-large">Codigo</th>
+                    <th class="uk-table-large">Nombre</th>
+                    <th class="uk-table-large">Cantidad</th>
+                    <th class="uk-table-large">Precio</th>
+                    <th class="uk-table-large">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
