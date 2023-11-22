@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
-  styleUrls: ['./clients.component.css','../home/home.component.scss']
+  styleUrls: ['./clients.component.scss','../home/home.component.scss']
 })
 export class ClientsComponent implements OnInit {
 
@@ -29,7 +29,7 @@ export class ClientsComponent implements OnInit {
   async ngOnInit() {
     this.fetchData();
     this.subscribeToRealtimeEvents();
-    
+
   }
   async fetchData(){
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
@@ -68,41 +68,56 @@ export class ClientsComponent implements OnInit {
     if (clientData.deudas.length > 0) {
       // Client has debts, create a scrollable list
       let debtList = '';
+      let existe_saldo = false;
       clientData.deudas.forEach((deuda: { codigo_movimiento: any; fecha_emision: any; saldo_cliente: any; }) => {
         if(Number(deuda.saldo_cliente) > 0){
-        debtList += `<tr>
-        <td> ${deuda.codigo_movimiento} </td>,
-        <td>${deuda.fecha_emision.replace('T',' ')}</td>,
-        <td>${deuda.saldo_cliente}</td>
-        </tr>`;
-        }
+          existe_saldo = true;
+          debtList += `<tr>
+          <td> ${deuda.codigo_movimiento} </td>,
+          <td>${deuda.fecha_emision.replace('T',' ')}</td>,
+          <td>${deuda.saldo_cliente}</td>
+          </tr>`;
+          }
       });
-
-      Swal.fire({
-        title: `${clientData.nombres} ${clientData.apellidos}`,
-        html: `
-        <p>Direccion:
-        ${clientData.direccion}</p>
-        <p>Telefono:
-        ${clientData.telefono}</p>
-        <p>Deudas:</p>
-
-        <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">
-            <thead>
-                <tr>
-                    <th class="uk-table-small">Codigo</th>
-                    <th class="uk-table-small">Fecha</th>
-                    <th class="uk-table-small">Deuda</th>
-
-                </tr>
-            </thead>
-            <tbody>
-            ${debtList}
-            </tbody>
-            </table>
-        `,
-        confirmButtonText: 'OK'
-      });
+      if (!existe_saldo) {
+        // Client doesn't have debts, display without the debt list
+        Swal.fire({
+          title: `${clientData.nombres} ${clientData.apellidos}`,
+          html: `
+            <p>Direccion:
+            ${clientData.direccion}</p>
+            <p>Telefono:
+            ${clientData.telefono}</p>
+            <p> No tiene deudas <p>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
+      else{
+        Swal.fire({
+          title: `${clientData.nombres} ${clientData.apellidos}`,
+          html: `
+          <p>Direccion:
+          ${clientData.direccion}</p>
+          <p>Telefono:
+          ${clientData.telefono}</p>
+          <p>Deudas:</p>
+          <table class="uk-table uk-table-small uk-table-striped uk-table-responsive">'
+              <thead>
+                  <tr>
+                      <th class="uk-table-small">Codigo</th>
+                      <th class="uk-table-small">Fecha </th>
+                      <th class="uk-table-small">Deuda </th>
+                  </tr>
+              </thead>
+              <tbody>
+              ${debtList}
+              </tbody>
+              </table>
+          `,
+          confirmButtonText: 'OK'
+        });
+      }
     } else {
       // Client doesn't have debts, display without the debt list
       Swal.fire({
