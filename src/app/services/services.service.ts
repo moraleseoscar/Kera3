@@ -326,6 +326,7 @@ export class Kera3Service {
     .select()
     if (error){
     }
+    
     return data || error;
   }
   async addPayment(codigo:string, monto:string) {
@@ -356,6 +357,7 @@ export class Kera3Service {
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
       const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+      
       return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
 }

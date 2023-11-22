@@ -29,6 +29,7 @@ export class ClientsComponent implements OnInit {
   async ngOnInit() {
     this.fetchData();
     this.subscribeToRealtimeEvents();
+    
   }
   async fetchData(){
     this.data = this.clients.slice(this.minIndex, this.maxIndex)
@@ -92,6 +93,7 @@ export class ClientsComponent implements OnInit {
                     <th class="uk-table-small">Codigo</th>
                     <th class="uk-table-small">Fecha</th>
                     <th class="uk-table-small">Deuda</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -187,7 +189,7 @@ export class ClientsComponent implements OnInit {
       html: `
       <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
       <input type="text" id="apellido" class="swal2-input" placeholder="Apellido">
-      <select id="tipo" class="uk-select" placeholder="Tipo">
+      <select id="tipo" class="uk-select" placeholder="Tipo" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
       <option value="">Tipo</option>
       <option value="Persona">Persona</option>
       <option value="Empresa">Empresa</option>

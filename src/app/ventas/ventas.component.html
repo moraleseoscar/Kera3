@@ -88,13 +88,13 @@
               </div>
           </div>
       </div>
-      <ul class="uk-pagination pagination--position center-flex" uk-margin>
-        <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
-        <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
-        <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
-        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
-        <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
-    </ul>
+      <ul class="uk-pagination pagination--position center-flex" uk-margin style="margin-left: 35%;">
+    <button type="button" class="btn-pagination " [disabled]="currentPage===1" (click)="returnFirstPage()" >Inicio</button>
+    <button type="button" class="btn-pagination " [disabled]="currentPage === 1" (click)="prevPage()">Anterior</button>
+    <span class="pagination-indicator">{{ currentPage }} / {{ totalPages }}</span>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</button>
+    <button type="button" class="btn-pagination" [disabled]="currentPage === totalPages" (click)="returnLastPage()">Final</button>
+</ul>
       <!-- /panel -->
   </div>
 
@@ -113,7 +113,12 @@
       </div>
       <div>
         <label for="paymentDropdown">Tipo de pago:</label>
-        <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected">
+        <select id="paymentDropdown" class="form-control" [(ngModel)]="paymentSelected" style="width: 12%;
+        height: 40px;
+        border-radius: 4px;
+        color: lightgrey;
+        margin-top: 15px;
+        margin-bottom: 15px;">
           <option value="" disabled selected>Tipo de pago</option>
           <option *ngFor="let payment_type of paymentStates" [value]="payment_type">{{ payment_type}}</option>
         </select>

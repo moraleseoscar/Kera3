@@ -92,13 +92,13 @@ export class EmployeesComponent {
       <input type="text" id="cui" class="swal2-input" placeholder="CUI">
       <input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
       <input type="text" id="apellido" class="swal2-input" placeholder="Apellido">
-      <select class="uk-select" id="categoria" placeholder="Categoria">
+      <select class="uk-select" id="categoria" placeholder="Categoria" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
       ${rol}
       </select>
-      <select class="uk-select" id="dpt" placeholder="Categoria">
+      <select class="uk-select" id="dpt" placeholder="Categoria" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
       ${dpt}
       </select>
-      <select class="uk-select" id="inst" placeholder="Categoria">
+      <select class="uk-select" id="inst" placeholder="Categoria" style="width: 61%; height: 50px; border-radius: 4px; color: lightgrey; margin-top: 20px;">
       ${inst}
       </select>
       <input type="text" id="telefono" class="swal2-input" placeholder="Telefono">
